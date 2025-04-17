@@ -73,10 +73,14 @@ Route::post('/login/penitip', [PenitipController::class, 'login'])->name('login.
 Route::post('/register/pembeli', [PembeliController::class, 'register'])->name('register.pembeli.post');
 Route::post('/register/organisasi', [OrganisasiController::class, 'register'])->name('register.organisasi.post');
 
+
+
 // Verification
 Route::get('/verify_organisasi/{key}', [OrganisasiController::class, 'verify'])->name('verify');
-// Verification
-Route::get('/verify_pembeli/{key}', [OrganisasiController::class, 'verify'])->name('verify');
+Route::get('/verify_pembeli/{key}', [PembeliController::class, 'verify'])->name('verify');
+Route::get('/verify_penitip/{key}', [PenitipController::class, 'verify'])->name('verify');
+
+
 
 // Forget Password
 Route::get('/forgetPassword', function () {

@@ -25,6 +25,7 @@ class Penitip extends Authenticatable
         'poin',
         'saldo',
         'top_seller',
+        'verify_key',
     ];
 
     protected $hidden = [
@@ -32,9 +33,11 @@ class Penitip extends Authenticatable
         'remember_token',
     ];
 
-    protected $casts = [
-        'password' => 'hashed',
-        'tanggal_lahir' => 'date',
-        'top_seller' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
 }

@@ -11,7 +11,7 @@ class Pembeli extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $table = 'pembeli'; // Explicitly define the table name
+    protected $table = 'pembeli';
 
     protected $fillable = [
         'id_pembeli',
