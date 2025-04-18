@@ -37,7 +37,7 @@ Route::get('/login/pegawai', function () {
 
 // Penitip
 Route::get('/login/penitip', function () {
-    return view('login_noEmail', ['role' => session('selected_role', 'penitip')]);
+    return view('login_penitip', ['role' => session('selected_role', 'penitip')]);
 })->name('login.penitip');
 
 

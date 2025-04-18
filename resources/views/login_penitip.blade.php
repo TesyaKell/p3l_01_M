@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Register {{ isset($role) ? ucfirst($role) : '' }}</title>
+    <title>Login {{ isset($role) ? ucfirst($role) : '' }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -39,10 +39,10 @@
             background-color: #f8f9fa;
         }
 
-        .register-card {
+        .login-card {
             flex: 1;
             max-width: 400px;
-            max-height: 600px;
+            max-height: 500px;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -57,6 +57,9 @@
             display: block;
         }
 
+        .login-card {
+            padding: 2rem;
+        }
 
         .form-label {
             font-weight: 700;
@@ -88,6 +91,7 @@
             transform: translateY(-3px);
             box-shadow: 0 5px 15px rgba(232, 67, 147, 0.4);
         }
+
 
         .link-opacity-10 {
             color: #282728;
@@ -145,11 +149,11 @@
 
         <!-- Image Card -->
         <div class="image-card">
-            <img src="/images/imm.png" alt="Register Image">
+            <img src="/images/imm.png" alt="Login Image">
         </div>
 
-        <!-- Register Card -->
-        <div class="register-card">
+        <!-- Login Card -->
+        <div class="login-card">
             @if (session('status'))
                 <div class="alert alert-success" role="alert">
                     {{ session('status') }}
@@ -169,44 +173,29 @@
             @endif
 
             <h3 class="text-center mb-4 fw-bold" style="color: #504f4f;">
-                {{ isset($role) ? 'Register as ' . ucfirst($role) : 'Welcome to ReUsMart' }}
+                {{ isset($role) ? 'Login as ' . ucfirst($role) : 'Welcome to ReUsMart' }}
             </h3>
 
-            <form method="post" action="{{ route('register.organisasi.post') }}">
+            <form method="post" action="{{ route('login.post', ['role' => $role ?? null]) }}">
                 @csrf
-                <div class="mb-3">
-                    <label for="nama_organisasi" class="form-label">Organization Name</label>
-                    <input type="text" class="form-control" id="nama_organisasi" name="nama_organisasi"
-                        placeholder="Enter organization name">
-                </div>
+                <input type="hidden" name="role" value="{{ $role ?? '' }}">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email address</label>
                     <input type="email" class="form-control" id="email" name="email"
                         placeholder="Enter your email">
                 </div>
-                <div class="mb-3">
-                    <label for="no_telp" class="form-label">Phone Number</label>
-                    <input type="text" class="form-control" id="no_telp" name="no_telp"
-                        placeholder="Enter phone number">
-                </div>
-                <div class="mb-3">
+                <div class="mb-4">
                     <label for="password" class="form-label">Password</label>
                     <input type="password" class="form-control" id="password" name="password"
                         placeholder="Enter your password">
                 </div>
-                <div>
-                    <label for="password_confirmation" class="form-label">Confirm Password</label>
-                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation"
-                        placeholder="Confirm your password">
-                </div>
 
                 <div class="d-grid gap-2 mb-4">
-                    <button type="submit" class="btn btn-primary mt-3">Register</button>
+                    <button type="submit" class="btn btn-primary mt-3">Sign In</button>
                 </div>
 
                 <div class="text-center">
-                    <p><a class="link-opacity-10" href="{{ route('login.organisasi') }}">Already have an account?
-                            Login</a></p>
+                    <p><a class="link-opacity-10" href="{{ route('password.request') }}">Forgot Password?</a></p>
                 </div>
             </form>
         </div>
