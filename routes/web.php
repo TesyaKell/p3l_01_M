@@ -8,6 +8,11 @@ use App\Http\Controllers\PenitipController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\UserController;
 
+Route::get('', function () {
+    return view('dashboard');
+})->name('dashboard');
+
+
 // Pembeli
 Route::get('/login/pembeli', function () {
     return view('login_email', ['role' => session('selected_role', 'pembeli')]);
