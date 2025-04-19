@@ -7,6 +7,7 @@ use App\Models\Jabatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class PegawaiController extends Controller
 {
@@ -42,4 +43,17 @@ class PegawaiController extends Controller
         return redirect('/pegawai')->with('status', 'Pegawai berhasil ditambahkan');
     }
 
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string',
+        ]);
+
+        if (Auth::guard('pegawai')->attempt($request->only('email', 'password'))) {
+            return redirect('/dashboard')->with('status', 'Login successful!');
+        }
+
+        return redirect('/login/pegawai')->with('error', 'These credentials do not match our records.');
+    }
 }
