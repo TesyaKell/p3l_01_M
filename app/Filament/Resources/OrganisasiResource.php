@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\OrganisaiResource\Pages;
-use App\Filament\Resources\OrganisaiResource\RelationManagers;
-use App\Models\Organisai;
+use App\Filament\Resources\OrganisasiResource\Pages;
+use App\Filament\Resources\OrganisasiResource\RelationManagers;
+use App\Models\Organisasi;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,9 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class OrganisaiResource extends Resource
+class OrganisasiResource extends Resource
 {
-    protected static ?string $model = Organisai::class;
+    protected static ?string $model = Organisasi::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -56,9 +56,9 @@ class OrganisaiResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListOrganisais::route('/'),
-            'create' => Pages\CreateOrganisai::route('/create'),
-            'edit' => Pages\EditOrganisai::route('/{record}/edit'),
+            'index' => Pages\ListOrganisasis::route('/'),
+            'create' => Pages\CreateOrganisasi::route('/create'),
+            'edit' => Pages\EditOrganisasi::route('/{record}/edit'),
         ];
     }
 }
