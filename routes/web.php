@@ -98,3 +98,7 @@ Route::post('/reset_password', [UserController::class, 'reset_password'])->name(
 Route::get('/jabatan', function () {
     return view('jabatan');
 })->name('jabatan');
+
+Route::middleware(['auth:penitip'])->group(function () {
+    Route::get('/dashboard/penitip', [App\Http\Controllers\PenitipController::class, 'index'])->name('penitip.dashboard');
+});

@@ -52,6 +52,10 @@ return [
             'driver' => 'session',
             'provider' => 'penitip',
         ],
+        'kurir' => [
+            'driver' => 'session',
+            'provider' => 'pegawai', // Assuming 'pegawai' is the provider for kurir
+        ],
         'pegawai' => [
             'driver' => 'session',
             'provider' => 'pegawai',
@@ -91,6 +95,10 @@ return [
         'penitip' => [
             'driver' => 'eloquent',
             'model' => App\Models\Penitip::class,
+        ],
+        'kurir' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Pegawai::class,
         ],
         'pegawai' => [
             'driver' => 'eloquent',

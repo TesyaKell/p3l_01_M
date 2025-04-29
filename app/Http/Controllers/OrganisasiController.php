@@ -15,7 +15,6 @@ use Str;
 
 class OrganisasiController extends Controller
 {
-
     private function generateOrganisasiId()
     {
         $last = \App\Models\Organisasi::orderBy('id_organisasi', 'desc')->first();
@@ -54,7 +53,6 @@ class OrganisasiController extends Controller
             'name' => $request->nama_organisasi,
             'email' => $request->email,
             'datetime' => now(),
-            'url' => "/verify_organisasi/" . $verify_key,
         ];
 
         Notification::route('mail', $request->email)->notify(new VerifyEmail($details));

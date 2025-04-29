@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Penitip;
 use App\Notifications\VerifyEmail;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Hash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,6 +13,12 @@ use Str;
 
 class PenitipController extends Controller
 {
+    // app/Http/Controllers/PenitipController.php
+
+    public function index()
+    {
+        return view('penitip.dashboard');
+    }
     public function register(Request $request)
     {
         $request->validate([
@@ -63,14 +69,9 @@ class PenitipController extends Controller
             'password' => 'required|string',
         ]);
 
-        $user = Penitip::where('email', $request->email)->whereNull('email_verified_at')->exists();
-
-        if ($user) {
-            return redirect('/login')->with('status', 'Email Not Verified!');
-        }
-
+        // Removed email verification check
         if (Auth::guard('penitip')->attempt($request->only('email', 'password'))) {
-            return redirect('/dashboard')->with('status', 'Login successful!');
+            return redirect()->route('penitip.dashboard')->with('status', 'Login successful!');
         }
 
         return redirect('/login')->with('error', 'Invalid credentials');

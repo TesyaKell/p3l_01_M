@@ -9,7 +9,8 @@ use Illuminate\Notifications\Notifiable;
 
 class Organisasi extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory;
+    use Notifiable;
 
     protected $table = 'organisasi';
     protected $primaryKey = 'id_organisasi';
@@ -39,5 +40,10 @@ class Organisasi extends Authenticatable
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new ResetPasswordEmail($token));
+    }
+
+    public function getNameAttribute(): string
+    {
+        return $this->nama_organisasi;
     }
 }
