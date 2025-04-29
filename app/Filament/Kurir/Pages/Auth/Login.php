@@ -19,7 +19,6 @@ class Login extends BaseLogin
             ]);
         }
 
-        // Cek apakah jabatan dia kurir
         if ($pegawai->kode_jabatan != 4) {
             throw ValidationException::withMessages([
                 'email' => 'Hanya akun kurir yang bisa login di panel ini.',

@@ -26,6 +26,7 @@ class KurirPanelProvider extends PanelProvider
             ->id('kurir')
             ->path('kurir')
             ->login()
+            ->authGuard('pegawai')
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -49,6 +50,7 @@ class KurirPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                \App\Http\Middleware\EnsureUserIsKurir::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
