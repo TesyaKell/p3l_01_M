@@ -117,7 +117,7 @@
         }
 
         .brand-header p {
-            color: #520fb0;
+            color: #8e0055;
             font-weight: bold;
             font-size: 20px;
             margin: 0;
@@ -132,7 +132,7 @@
         }
 
         .logo-img {
-            height: 30px;
+            height: 60px;
             width: auto;
             margin-right: 10px;
         }
@@ -141,7 +141,7 @@
 
 <body>
     <div class="brand-header d-flex align-items-center">
-        <img src="/images/logo.png" alt="Logo" class="logo-img me-2">
+        <img src="/images/ReUseMart.png" alt="Logo" class="logo-img me-2">
         <p><strong>ReUseMart</strong></p>
     </div>
 

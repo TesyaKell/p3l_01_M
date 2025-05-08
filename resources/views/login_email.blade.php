@@ -42,13 +42,11 @@
         .login-card {
             flex: 1;
             max-width: 400px;
-            max-height: 500px;
             border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             background-color: white;
             padding: 1rem;
         }
+
 
         .image-card img {
             width: 100%;

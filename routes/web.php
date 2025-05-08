@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\KategoriBarangController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PembeliController;
 use App\Http\Controllers\OrganisasiController;
@@ -7,6 +8,23 @@ use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PenitipController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\UserController;
+use App\Models\Barang;
+use App\Http\Controllers\BarangController;
+use App\Http\Controllers\ProfilController;
+
+
+
+Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
+//Route::get('/profil', [ProfilController::class, 'index'])->middleware('auth');
+
+//home
+Route::get('/', [BarangController::class, 'showKatalog'])->name('homeProduk');
+Route::get('/homeProduk', [BarangController::class, 'showKatalog'])->name('homeProduk');
+
+//BARANG
+Route::get('/katalogBarang', [BarangController::class, 'index'])->name('katalogbarang')->middleware('auth');
+Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('auth');
+
 
 // Pembeli
 Route::get('/login/pembeli', function () {
@@ -16,7 +34,6 @@ Route::get('/login/pembeli', function () {
 Route::get('/register/pembeli', function () {
     return view('register_pembeli', ['role' => session('selected_role', 'pembeli')]);
 })->name('register.pembeli');
-
 
 
 // Organisasi
