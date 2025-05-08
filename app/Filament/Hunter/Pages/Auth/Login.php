@@ -12,7 +12,7 @@ class Login extends BaseLogin
 {
     public function authenticate(): LoginResponse|null
     {
-        $data = request()->only('email', 'password');
+        $data = request()->only(['email', 'password']) + ['email' => null, 'password' => null];
 
         $user = \App\Models\Pegawai::where('email', $data['email'])->first();
 
