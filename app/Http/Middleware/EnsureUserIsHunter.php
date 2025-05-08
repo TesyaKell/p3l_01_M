@@ -4,13 +4,13 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
-class EnsureUserIsKurir
+class EnsureUserIsHunter
 {
     public function handle($request, Closure $next)
     {
-        if ($request->is('kurir/login')) {
+        if ($request->is('hunter/login')) {
             return $next($request);
         }
 
@@ -18,22 +18,22 @@ class EnsureUserIsKurir
 
         \Log::info('User yang login:', ['user' => $user]);
 
-        // Belum login → arahkan ke login kurir
         if (! $user) {
             \Log::warning('Akses ditolak, pengguna tidak login.');
-            session()->flash('error', 'Anda harus login sebagai kurir.');
-            return redirect()->to('/kurir/login');
+            session()->flash('error', 'Anda harus login sebagai Hunter.');
+            return redirect()->to('/hunter/login');
         }
 
         \Log::info('Kode Jabatan yang dideteksi:', ['kode_jabatan' => $user->kode_jabatan]);
 
-        if ($user->kode_jabatan !== 'J06') {
+        if ($user->kode_jabatan !== 'J03') {
             Auth::guard('pegawai')->logout();
-            session()->flash('error', 'Akses hanya untuk kurir.');
-            return redirect()->to('/kurir/login');
+            session()->flash('error', 'Akses hanya untuk Hunter.');
+            return redirect()->to('/hunter/login');
         }
 
         return $next($request);
     }
+
 
 }

@@ -28,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->authGuard('pegawai')
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -37,6 +38,7 @@ class AdminPanelProvider extends PanelProvider
                 Pages\Dashboard::class,
                 \App\Filament\Resources\PegawaiResource\Pages\CreatePegawai::class,
                 \App\Filament\Resources\JabatanResource\Pages\CreateJabatan::class,
+                \App\Filament\Resources\MerchandiseResource\Pages\CreateMerchandise::class
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
@@ -53,6 +55,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                \App\Http\Middleware\Admin::class
             ])
             ->authMiddleware([
                 Authenticate::class,

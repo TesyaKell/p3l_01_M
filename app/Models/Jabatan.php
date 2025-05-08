@@ -25,7 +25,7 @@ class Jabatan extends Model
             if (!$last) {
                 $nextNumber = 1;
             } else {
-                $lastNumber = (int) substr($last->kode_jabatan, 1); // Extract numeric part
+                $lastNumber = (int) substr($last->kode_jabatan, 1);
                 $nextNumber = $lastNumber + 1;
             }
 

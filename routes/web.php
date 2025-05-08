@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PembeliController;
 use App\Http\Controllers\OrganisasiController;

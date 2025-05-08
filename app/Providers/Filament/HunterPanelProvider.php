@@ -25,6 +25,8 @@ class HunterPanelProvider extends PanelProvider
         return $panel
             ->id('hunter')
             ->path('hunter')
+            ->login()
+            ->authGuard('pegawai')
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -32,6 +34,7 @@ class HunterPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Hunter/Pages'), for: 'App\\Filament\\Hunter\\Pages')
             ->pages([
                 Pages\Dashboard::class,
+
             ])
             ->discoverWidgets(in: app_path('Filament/Hunter/Widgets'), for: 'App\\Filament\\Hunter\\Widgets')
             ->widgets([
@@ -48,9 +51,11 @@ class HunterPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                \App\Http\Middleware\EnsureUserIsHunter::class
             ])
             ->authMiddleware([
                 Authenticate::class,
             ]);
     }
+
 }

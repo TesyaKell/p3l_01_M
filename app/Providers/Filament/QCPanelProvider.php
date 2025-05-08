@@ -18,24 +18,24 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-class CustomerServicePanelProvider extends PanelProvider
+class QCPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->id('customerService')
-            ->path('customerService')
+            ->id('qc')
+            ->path('qc')
             ->login()
             ->authGuard('pegawai')
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->discoverResources(in: app_path('Filament/CustomerService/Resources'), for: 'App\\Filament\\CustomerService\\Resources')
-            ->discoverPages(in: app_path('Filament/CustomerService/Pages'), for: 'App\\Filament\\CustomerService\\Pages')
+            ->discoverResources(in: app_path('Filament/QC/Resources'), for: 'App\\Filament\\QC\\Resources')
+            ->discoverPages(in: app_path('Filament/QC/Pages'), for: 'App\\Filament\\QC\\Pages')
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/CustomerService/Widgets'), for: 'App\\Filament\\CustomerService\\Widgets')
+            ->discoverWidgets(in: app_path('Filament/QC/Widgets'), for: 'App\\Filament\\QC\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
@@ -50,7 +50,7 @@ class CustomerServicePanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                \App\Http\Middleware\EnsureUserIsCustomerService::class,
+                \App\Http\Middleware\QC::class
             ])
             ->authMiddleware([
                 Authenticate::class,

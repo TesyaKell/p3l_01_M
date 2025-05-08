@@ -6,8 +6,7 @@ use App\Models\Jabatan;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Forms\Form;
-use Filament\Resources\Table;
-use Filament\Widgets\StatsOverview;
+use Filament\Tables\Table;
 use App\Filament\Resources\JabatanResource\Pages\CreateJabatan;
 use App\Filament\Resources\JabatanResource\Pages\ListJabatan;
 use App\Filament\Resources\JabatanResource\Pages\EditJabatan;
@@ -17,18 +16,17 @@ class JabatanResource extends Resource
     protected static ?string $model = Jabatan::class;
     protected static ?string $navigationIcon = 'heroicon-o-briefcase';
 
-    public static function form(Forms\Form $form): Forms\Form
+    public static function form(Form $form): Form
     {
         return $form
             ->schema([
-
                 Forms\Components\TextInput::make('nama_jabatan')
                     ->required()
                     ->label('Nama Jabatan'),
             ]);
     }
 
-    public static function table(\Filament\Tables\Table $table): \Filament\Tables\Table
+    public static function table(Table $table): Table
     {
         return $table
             ->columns([
@@ -40,10 +38,8 @@ class JabatanResource extends Resource
                     ->label('Nama Jabatan')
                     ->sortable()
                     ->searchable(),
-            ])
-            ->filters([
-                // Tambahkan filter jika perlu
             ]);
+
     }
 
     public static function getPages(): array
@@ -54,4 +50,5 @@ class JabatanResource extends Resource
             'edit' => EditJabatan::route('/{record}/edit'),
         ];
     }
+
 }
