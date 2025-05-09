@@ -74,7 +74,7 @@ class OrganisasiController extends Controller
         }
 
         if (Auth::guard('organisasi')->attempt($request->only('email', 'password'))) {
-            return redirect('/dashboard')->with('status', 'Login successful!');
+            return redirect('/homeProduk')->with('status', 'Login successful!');
         }
 
         return redirect('/login/organisasi')->with('error', 'Invalid credentials');

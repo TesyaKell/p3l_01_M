@@ -30,15 +30,11 @@ class PegawaiController extends Controller
 
         $jabatan = Jabatan::where('nama_jabatan', $request->nama_jabatan)->first();
 
-        Pegawai::create([
-            'id_pegawai' => (string) Str::uuid(),
-            'kode_jabatan' => $jabatan->kode_jabatan,
-            'nama_pegawai' => $request->nama_pegawai,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'no_telp' => $request->no_telp,
-            'tanggal_lahir' => $request->tanggal_lahir,
-        ]);
+        $userData = $request->except('password_confirmation');
+        $userData['password'] = Hash::make($request->password);
+        $userData['role'] = 'Pegawai';
+
+        $user = Pegawai::create($userData);
 
         return redirect('/pegawai')->with('status', 'Pegawai berhasil ditambahkan');
     }
