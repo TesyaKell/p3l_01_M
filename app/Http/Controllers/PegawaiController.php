@@ -7,6 +7,7 @@ use App\Models\Jabatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class PegawaiController extends Controller
 {
@@ -29,17 +30,26 @@ class PegawaiController extends Controller
 
         $jabatan = Jabatan::where('nama_jabatan', $request->nama_jabatan)->first();
 
-        Pegawai::create([
-            'id_pegawai' => (string) Str::uuid(),
-            'kode_jabatan' => $jabatan->kode_jabatan,
-            'nama_pegawai' => $request->nama_pegawai,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'no_telp' => $request->no_telp,
-            'tanggal_lahir' => $request->tanggal_lahir,
-        ]);
+        $userData = $request->except('password_confirmation');
+        $userData['password'] = Hash::make($request->password);
+        $userData['role'] = 'Pegawai';
+
+        $user = Pegawai::create($userData);
 
         return redirect('/pegawai')->with('status', 'Pegawai berhasil ditambahkan');
     }
 
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string',
+        ]);
+
+        if (Auth::guard('pegawai')->attempt($request->only('email', 'password'))) {
+            return redirect('/dashboard')->with('status', 'Login successful!');
+        }
+
+        return redirect('/login/pegawai')->with('error', 'These credentials do not match our records.');
+    }
 }

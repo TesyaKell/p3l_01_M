@@ -14,8 +14,8 @@ return [
     */
 
     'defaults' => [
-        'guard' => env('AUTH_GUARD', 'web'),
-        'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
+        'guard' => 'pegawai',
+        'passwords' => 'pegawai',
     ],
 
     /*
@@ -38,7 +38,7 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'pegawai',
         ],
         'organisasi' => [
             'driver' => 'session',
@@ -51,6 +51,18 @@ return [
         'penitip' => [
             'driver' => 'session',
             'provider' => 'penitip',
+        ],
+        'kurir' => [
+            'driver' => 'session',
+            'provider' => 'pegawai',
+        ],
+        'hunter' => [
+            'driver' => 'session',
+            'provider' => 'pegawai',
+        ],
+        'customerService' => [
+            'driver' => 'session',
+            'provider' => 'pegawai',
         ],
         'pegawai' => [
             'driver' => 'session',
@@ -91,6 +103,14 @@ return [
         'penitip' => [
             'driver' => 'eloquent',
             'model' => App\Models\Penitip::class,
+        ],
+        'kurir' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Pegawai::class,
+        ],
+        'hunter' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Pegawai::class,
         ],
         'pegawai' => [
             'driver' => 'eloquent',

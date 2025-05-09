@@ -6,56 +6,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Login {{ isset($role) ? ucfirst($role) : '' }}</title>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;500;700;800&family=Quicksand:wght@400;700&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="./assets/css/bootstrap.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
     <style>
         body {
-            background: linear-gradient(135deg, #73c04a, #2d8f6f, #73c04a);
+            background: #e9c8ce;
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-family: 'Quicksand', sans-serif;
         }
 
-        .main-card {
-            width: 900px;
-            border: none;
+        .wrapper {
+            display: flex;
+            gap: 2rem;
+            max-width: 1000px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .image-card {
+            flex: 1;
+            overflow: hidden;
+            background-color: #f8f9fa;
+        }
+
+        .login-card {
+            flex: 1;
+            max-width: 400px;
+            max-height: 500px;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            padding: 1rem;
         }
 
-        .card-container {
-            display: flex;
-            flex-direction: row;
-        }
-
-        .login-side {
-            padding: 2rem;
-            width: 50%;
-            background-color: white
-        }
-
-        .image-side {
-            width: 50%;
-            background-color: #f8f9fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .image-side img {
+        .image-card img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
+        }
+
+        .login-card {
+            padding: 2rem;
         }
 
         .form-label {
-            font-weight: 500;
-            color: #2d8f6f;
+            font-weight: 700;
+            color: #a18787;
         }
 
         .form-control {
@@ -65,12 +73,12 @@
         }
 
         .form-control:focus {
-            border-color: #4ecca3;
+            border-color: #070607;
             box-shadow: 0 0 0 0.25rem rgba(76, 202, 163, 0.25);
         }
 
         .btn-primary {
-            background: linear-gradient(to right, #4ecca3, #2d8f6f);
+            background: linear-gradient(to right, #f78fb3, #e84393);
             border: none;
             border-radius: 50px;
             padding: 10px 20px;
@@ -81,73 +89,115 @@
 
         .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(46, 143, 111, 0.4);
+            box-shadow: 0 5px 15px rgba(232, 67, 147, 0.4);
         }
 
+
         .link-opacity-10 {
-            color: #2d8f6f;
+            color: #070607;
             text-decoration: none;
             transition: all 0.3s ease;
         }
 
         .link-opacity-10:hover {
-            color: #4ecca3;
+            color: #070607;
             text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .wrapper {
+                flex-direction: column;
+            }
+        }
+
+        .brand-header {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+        }
+
+        .brand-header p {
+            color: #520fb0;
+            font-weight: bold;
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .brand-header {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            height: 30px;
+            width: auto;
+            margin-right: 10px;
         }
     </style>
 </head>
 
 <body>
-    <div class="main-card">
-        <div class="card-container">
-            <!-- Login form side -->
-            <div class="login-side">
-                @if (session('status'))
-                    <div class="alert alert-success" role="alert">
-                        {{ session('status') }}
-                    </div>
-                @endif
+    <div class="brand-header d-flex align-items-center">
+        <img src="/images/logo.png" alt="Logo" class="logo-img me-2">
+        <p><strong>ReUseMart</strong></p>
+    </div>
 
-                @if (session('error'))
-                    <div class="alert alert-danger" role="alert">
-                        {{ session('error') }}
-                    </div>
-                @endif
+    <div class="wrapper">
 
-                @if ($errors->any())
-                    <div class="alert alert-danger" role="alert">
-                        {{ $errors->first() }}
-                    </div>
-                @endif
+        <!-- Image Card -->
+        <div class="image-card">
+            <img src="/images/imm.png" alt="Login Image">
+        </div>
 
-                <h3 class="text-center mb-4" style="color: #2d8f6f;">
-                    {{ isset($role) ? 'Login as ' . ucfirst($role) : 'Welcome to ReUsMart' }}
-                </h3>
+        <!-- Login Card -->
+        <div class="login-card">
+            @if (session('status'))
+                <div class="alert alert-success" role="alert">
+                    {{ session('status') }}
+                </div>
+            @endif
 
-                <form method="post" action="{{ route('login.post') }}">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="email" name="email"
-                            placeholder="Enter your email">
-                    </div>
-                    <div class="mb-4">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password"
-                            placeholder="Enter your password">
-                    </div>
+            @if (session('error'))
+                <div class="alert alert-danger" role="alert">
+                    {{ session('error') }}
+                </div>
+            @endif
 
-                    <div class="d-grid gap-2 mb-4">
-                        <button type="submit" class="btn btn-primary">Sign In</button>
-                    </div>
+            @if ($errors->any())
+                <div class="alert alert-danger" role="alert">
+                    {{ $errors->first() }}
+                </div>
+            @endif
 
-                </form>
-            </div>
+            <h3 class="text-center mb-4 fw-bold" style="color: #504f4f;">
+                {{ isset($role) ? 'Login as ' . ucfirst($role) : 'Welcome to ReUsMart' }}
+            </h3>
 
-            <!-- Image side -->
-            <div class="image-side">
-                <img src="/images/bck2.png" alt="Login Image">
-            </div>
+            <form method="post" action="{{ route('login.post', ['role' => $role ?? null]) }}">
+                @csrf
+                <input type="hidden" name="role" value="{{ $role ?? '' }}">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username"
+                        placeholder="Enter your username">
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password"
+                        placeholder="Enter your password">
+                </div>
+
+                <div class="d-grid gap-2 mb-4">
+                    <button type="submit" class="btn btn-primary mt-3">Sign In</button>
+                </div>
+
+                <div class="text-center">
+                    <p><a class="link-opacity-10" href="{{ route('password.request') }}">Forgot Password?</a></p>
+                </div>
+            </form>
         </div>
     </div>
 </body>

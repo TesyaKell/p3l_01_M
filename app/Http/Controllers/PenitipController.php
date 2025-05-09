@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Penitip;
 use App\Notifications\VerifyEmail;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Hash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,6 +13,12 @@ use Str;
 
 class PenitipController extends Controller
 {
+    // app/Http/Controllers/PenitipController.php
+
+    public function index()
+    {
+        return view('penitip.dashboard');
+    }
     public function register(Request $request)
     {
         $request->validate([
@@ -53,7 +59,7 @@ class PenitipController extends Controller
 
         Notification::route('mail', $request->email)->notify(new VerifyEmail($details));
 
-        return redirect('/login')->with('status', 'Registration successful, please verify your email!');
+        return redirect('/login/penitip')->with('status', 'Registration successful, please verify your email!');
     }
 
     public function login(Request $request)
@@ -66,14 +72,14 @@ class PenitipController extends Controller
         $user = Penitip::where('email', $request->email)->whereNull('email_verified_at')->exists();
 
         if ($user) {
-            return redirect('/login')->with('status', 'Email Not Verified!');
+            return redirect('/login/penitip')->with('status', 'Email Not Verified!');
         }
 
         if (Auth::guard('penitip')->attempt($request->only('email', 'password'))) {
-            return redirect('/dashboard')->with('status', 'Login successful!');
+            return redirect()->route('penitip.dashboard')->with('status', 'Login successful!');
         }
 
-        return redirect('/login')->with('error', 'Invalid credentials');
+        return redirect('/login/penitip')->with('error', 'Invalid credentials');
     }
 
     public function verify(Request $request, $key)
@@ -84,10 +90,10 @@ class PenitipController extends Controller
             $user->email_verified_at = now();
             $user->save();
 
-            return redirect('/login')->with('status', 'Email verified successfully!');
+            return redirect('/login/penitip')->with('status', 'Email verified successfully!');
         }
 
-        return redirect('/login')->with('error', 'Invalid verification link');
+        return redirect('/login/penitip')->with('error', 'Invalid verification link');
     }
 
     public function update(Request $request)
@@ -133,6 +139,6 @@ class PenitipController extends Controller
     public function logout()
     {
         Auth::guard('penitip')->logout();
-        return redirect('/login')->with('status', 'Logout successful!');
+        return redirect('/login/penitip')->with('status', 'Logout successful!');
     }
 }

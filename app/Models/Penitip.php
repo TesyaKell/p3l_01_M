@@ -40,4 +40,9 @@ class Penitip extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function getNameAttribute(): string
+    {
+        return $this->nama_penitip;
+    }
 }
