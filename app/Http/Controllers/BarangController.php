@@ -21,7 +21,6 @@ class BarangController extends Controller
 
     public function showKatalog()
     {
-        // dd(\Auth::guard('organisasi')->check());
         $kategoriList = \App\Models\KategoriBarang::all(); // Fetch all categories
         $barangTersedia = Barang::with('kategori')->where('status', 'tersedia')->get();
 

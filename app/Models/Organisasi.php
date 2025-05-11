@@ -32,6 +32,26 @@ class Organisasi extends Authenticatable
         'remember_token',
         'verify_key',
     ];
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($organisasi) {
+            if (empty($organisasi->id_organisasi)) {
+                $last = self::orderBy('id_organisasi', 'desc')->first();
+
+                if (!$last) {
+                    $nextNumber = 1;
+                } else {
+                    $lastNumber = (int) substr($last->id_organisasi, 3);
+                    $nextNumber = $lastNumber + 1;
+                }
+
+                $organisasi->id_organisasi = 'ORG' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
+            }
+        });
+    }
+
 
     protected $casts = [
         'email_verified_at' => 'datetime',

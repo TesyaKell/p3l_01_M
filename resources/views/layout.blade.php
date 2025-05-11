@@ -11,8 +11,6 @@ use App\Http\Controllers\UserController;
 use App\Models\Barang;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ProfilController;
-use Illuminate\Http\Request;
-use App\Models\Merchandise;
 
 Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
 //Route::get('/profil', [ProfilController::class, 'index'])->middleware('auth');
@@ -22,9 +20,12 @@ Route::get('/', [BarangController::class, 'showKatalog'])->name('homeProduk');
 Route::get('/homeProduk', [BarangController::class, 'showKatalog'])->name('homeProduk');
 
 //BARANG
-Route::get('/katalogBarang', [BarangController::class, 'index'])->name('katalogbarang')->middleware('auth');
-Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('auth');
-
+Route::get('/katalogBarang', [BarangController::class, 'index'])
+    ->name('katalogbarang')
+    ->middleware('auth');
+Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])
+    ->name('kategoriBarang')
+    ->middleware('auth');
 
 // Pembeli
 Route::get('/login/pembeli', function () {
@@ -34,7 +35,6 @@ Route::get('/login/pembeli', function () {
 Route::get('/register/pembeli', function () {
     return view('register_pembeli', ['role' => session('selected_role', 'pembeli')]);
 })->name('register.pembeli');
-
 
 // Organisasi
 Route::get('/login/organisasi', function () {
@@ -57,11 +57,9 @@ Route::get('/login/penitip', function () {
     return view('login_penitip', ['role' => session('selected_role', 'penitip')]);
 })->name('login.penitip');
 
-
 Route::get('/login', function () {
     return redirect()->route('jabatan');
 })->name('login');
-
 
 Route::post('/login', function (\Illuminate\Http\Request $request) {
     $role = $request->input('role');
@@ -90,14 +88,10 @@ Route::post('/login/penitip', [PenitipController::class, 'login'])->name('login.
 Route::post('/register/pembeli', [PembeliController::class, 'register'])->name('register.pembeli.post');
 Route::post('/register/organisasi', [OrganisasiController::class, 'register'])->name('register.organisasi.post');
 
-
-
 // Verification
 Route::get('/verify_organisasi/{key}', [OrganisasiController::class, 'verify'])->name('verify');
 Route::get('/verify_pembeli/{key}', [PembeliController::class, 'verify'])->name('verify');
 Route::get('/verify_penitip/{key}', [PenitipController::class, 'verify'])->name('verify');
-
-
 
 // Forget Password
 Route::get('/forgetPassword', function () {
@@ -123,7 +117,6 @@ Route::get('/jabatan-pegawai', function () {
 Route::middleware(['auth:penitip'])->group(function () {
     Route::get('/dashboard/penitip', [App\Http\Controllers\PenitipController::class, 'index'])->name('penitip.dashboard');
 });
-
 
 Route::get('/set-role', function (Request $request) {
     $role = strtolower(str_replace(' ', '', $request->role));
@@ -163,28 +156,5 @@ Route::get('/set-role/{role}', function ($role) {
     abort(404, 'Role not found');
 })->name('set.role');
 
-Route::post('/logout', function () {
-    Auth::logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
-    return redirect()->route('jabatan.pegawai'); // Redirect to jabatan-pegawai
-})->name('logout');
-
-
-Route::get('/merchandise', [App\Http\Controllers\MerchandiseController::class, 'index'])->name('merchandise.index');
-
-Route::post('/redeem-merchandise', function (Request $request) {
-    $merchandise = Merchandise::find($request->merchandise_id);
-
-    if (!$merchandise || $merchandise->stok <= 0) {
-        return response()->json(['success' => false, 'message' => 'Merchandise not available or out of stock']);
-    }
-
-    // Reduce stock by 1
-    $merchandise->stok -= 1;
-    $merchandise->save();
-
-    // Add to cart logic (if needed, implement cart storage here)
-
-    return response()->json(['success' => true, 'new_stock' => $merchandise->stok]);
-});
+// Logout route
+Route::post('/logout', [UserController::class, 'logout'])->name('logout');

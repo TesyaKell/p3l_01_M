@@ -162,56 +162,63 @@
             <p class="subtitle">Silakan pilih jabatan untuk melanjutkan ke halaman login</p>
         </div>
 
+
         <div class="roles-container">
-            <!-- Pegawai Role -->
-            <a href="{{ route('jabatan.pegawai') }}" class="role-card">
-                <div class="role-icon">
-                    <i class="fas fa-user-tie"></i>
-                </div>
+            <a href="{{ route('set.role', ['role' => 'Owner']) }}" class="role-card">
+                <div class="role-icon"><i class="fas fa-user-tie"></i></div>
                 <div class="role-text">
-                    <div class="role-name">Pegawai</div>
-                    <p class="role-description">Login sebagai pegawai untuk mengelola sistem.</p>
+                    <div class="role-name">Owner</div>
+                    <p class="role-description">Login sebagai Owner.</p>
                 </div>
                 <i class="fas fa-chevron-right arrow-icon"></i>
             </a>
 
-
-            <!-- Penitip Role -->
-            <a href="{{ route('set.role', ['role' => 'penitip']) }}" class="role-card">
-                <div class="role-icon">
-                    <i class="fas fa-box"></i>
-                </div>
+            <a href="{{ url('/admin/login') }}" class="role-card">
+                <div class="role-icon"><i class="fas fa-building"></i></div>
                 <div class="role-text">
-                    <div class="role-name">Penitip</div>
-                    <p class="role-description">Login sebagai penitip untuk mengelola barang Anda.</p>
+                    <div class="role-name">Admin</div>
+                    <p class="role-description">Login sebagai Admin.</p>
                 </div>
                 <i class="fas fa-chevron-right arrow-icon"></i>
             </a>
 
-            <!-- Pembeli Role -->
-            <a href="{{ route('set.role', ['role' => 'pembeli']) }}" class="role-card">
-                <div class="role-icon">
-                    <i class="fas fa-shopping-cart"></i>
-                </div>
+            <a href="{{ url('/hunter/login') }}" class="role-card">
+                <div class="role-icon"><i class="fas fa-box"></i></div>
                 <div class="role-text">
-                    <div class="role-name">Pembeli</div>
-                    <p class="role-description">Login sebagai pembeli untuk melakukan transaksi.</p>
+                    <div class="role-name">Hunter</div>
+                    <p class="role-description">Login sebagai Hunter.</p>
                 </div>
                 <i class="fas fa-chevron-right arrow-icon"></i>
             </a>
 
-            <!-- Organisasi Role -->
-            <a href="{{ route('set.role', ['role' => 'organisasi']) }}" class="role-card">
-                <div class="role-icon">
-                    <i class="fas fa-building"></i>
-                </div>
+            <a href="{{ url('/qc/login') }}" class="role-card">
+                <div class="role-icon"><i class="fas fa-shopping-cart"></i></div>
                 <div class="role-text">
-                    <div class="role-name">Organisasi</div>
-                    <p class="role-description">Login sebagai organisasi untuk manajemen lembaga.</p>
+                    <div class="role-name">Quality Control</div>
+                    <p class="role-description">Login sebagai Quality Control.</p>
+                </div>
+                <i class="fas fa-chevron-right arrow-icon"></i>
+            </a>
+
+            <a href="{{ url('/customerService/login') }}" class="role-card">
+                <div class="role-icon"><i class="fas fa-building"></i></div>
+                <div class="role-text">
+                    <div class="role-name">Customer Service</div>
+                    <p class="role-description">Login sebagai Customer Service.</p>
+                </div>
+                <i class="fas fa-chevron-right arrow-icon"></i>
+            </a>
+
+            <a href="{{ url('/kurir/login') }}" class="role-card">
+                <div class="role-icon"><i class="fas fa-building"></i></div>
+                <div class="role-text">
+                    <div class="role-name">Kurir</div>
+                    <p class="role-description">Login sebagai Kurir.</p>
                 </div>
                 <i class="fas fa-chevron-right arrow-icon"></i>
             </a>
         </div>
+
 
         <div class="back-link">
             <a href="{{ url('/') }}"><i class="fas fa-arrow-left"></i> Kembali ke halaman utama</a>

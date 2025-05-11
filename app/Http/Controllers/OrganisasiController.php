@@ -32,6 +32,7 @@ class OrganisasiController extends Controller
     public function register(Request $request)
     {
         $request->validate([
+            'id_organisasi' => 'required|string|max:10|unique:organisasi,id_organisasi',
             'nama_organisasi' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:organisasi',
             'password' => 'required|string|min:2|confirmed',

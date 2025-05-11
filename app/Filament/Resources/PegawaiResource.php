@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Models\Pegawai;
 use Filament\Forms;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
 use Filament\Resources\Form;
 use Filament\Resources\Table;
 use Filament\Widgets\StatsOverview;
@@ -74,7 +75,19 @@ class PegawaiResource extends Resource
                     ->label('Tanggal Lahir')
                     ->date(),
             ])
-            ->filters([]);
+            ->filters([])
+            ->actions([
+                Action::make('forget_password')
+                    ->label('Forget Password')
+                    ->action(function ($record) {
+                        $tanggalLahir = \Carbon\Carbon::parse($record->tanggal_lahir);
+                        $record->update([
+                            'password' => bcrypt($tanggalLahir->format('Ymd')),
+                        ]);
+                    })
+                    ->requiresConfirmation()
+                    ->color('danger'),
+            ]);
     }
 
     public static function navigationLabel(?string $label = null): void
