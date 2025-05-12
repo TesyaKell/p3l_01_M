@@ -29,4 +29,5 @@ class Donasi extends Model
         return $this->belongsTo(Penitip::class, 'penitip_id');
     }
 
+    //
 }

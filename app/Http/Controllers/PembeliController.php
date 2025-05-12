@@ -115,6 +115,15 @@ class PembeliController extends Controller
             ? back()->with(['status' => __($status)])
             : back()->withErrors(['email' => __($status)]);
     }
+    public function showProfile(Request $request){
+        ///
+        $request->validate([
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string',
+        ]);
+        
+        return view();
+    }
     public function logout()
     {
         Auth::guard('pembeli')->logout();

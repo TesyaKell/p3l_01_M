@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Notification;
 use Str;
+use Password;
 
 class PenitipController extends Controller
 {
@@ -141,4 +142,6 @@ class PenitipController extends Controller
         Auth::guard('penitip')->logout();
         return redirect('/login/penitip')->with('status', 'Logout successful!');
     }
+
+    
 }

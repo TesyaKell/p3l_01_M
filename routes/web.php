@@ -17,6 +17,7 @@ Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
 
 //home
 Route::get('/', [BarangController::class, 'showKatalog'])->name('homeProduk');
+
 Route::get('/homeProduk', [BarangController::class, 'showKatalog'])->name('homeProduk');
 
 //BARANG
@@ -45,10 +46,15 @@ Route::get('/register/organisasi', function () {
 
 Route::get('/set-role/{role}', [JabatanController::class, 'setRole'])->name('set.role');
 
+
+
 // Pegawai
 Route::get('/login/pegawai', function () {
     return view('login_noEmail', ['role' => session('selected_role', 'pegawai')]);
 })->name('login.pegawai');
+
+
+
 
 // Penitip
 Route::get('/login/penitip', function () {
@@ -109,6 +115,7 @@ Route::get('/resetPassword/{token}', function (string $token) {
 Route::post('/forgot_password', [UserController::class, 'forgot_password'])->name('password.email');
 Route::post('/reset_password', [UserController::class, 'reset_password'])->name('password.update');
 
+
 // Optional View Route for Jabatan
 Route::get('/jabatan', function () {
     return view('jabatan');
@@ -117,3 +124,15 @@ Route::get('/jabatan', function () {
 Route::middleware(['auth:penitip'])->group(function () {
     Route::get('/dashboard/penitip', [App\Http\Controllers\PenitipController::class, 'index'])->name('penitip.dashboard');
 });
+
+
+//Route to jabatan - Pegawai - CS
+Route::get('/cshomepage', function(){
+    return view('cshomepage');
+})->name('homepage.cs');
+
+
+//Register Penitip
+Route::get('/register/penitip', function(){
+    return view('register_penitip');
+})->name('register.penitip');
