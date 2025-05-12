@@ -43,6 +43,6 @@ class Pembeli extends Authenticatable
 
     public function sendPasswordResetNotification($token)
     {
-        $this->notify(new ResetPasswordEmail($token));
+        $this->notify(new ResetPasswordEmail($token, 'pembeli'));
     }
 }

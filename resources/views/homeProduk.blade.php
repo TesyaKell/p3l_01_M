@@ -64,9 +64,18 @@ use App\Http\Helper\Helper;
 <body class="d-flex flex-column min-vh-100">
     @include('components.navbar')
 
-    <!-- Header Image -->
-    <img src="{{ asset('images/header.png') }}" alt="Header Image" class="img-fluid w-100 mt-2"
-        style="max-height: 600px; object-fit: cover;">
+    <div class="position-relative w-100 mt-2" style="max-height: 600px; overflow: hidden;">
+        <img src="{{ asset('images/header.png') }}" alt="Header Image" class="img-fluid w-100"
+            style="object-fit: cover; height: 100%;">
+
+        <!-- Tombol di atas gambar -->
+        <a href="{{ route('katalogbarang') }}" class="btn btn-dark position-absolute"
+            style="bottom: 100px; left: 47%; z-index: 2;">
+            Lihat Katalog Produk
+        </a>
+
+    </div>
+
 
     <!-- SVG Wave -->
     <div style="margin-top: -5px;">
@@ -88,34 +97,39 @@ use App\Http\Helper\Helper;
         @yield('content')
 
         {{-- Informasi Saldo dan Poin --}}
-        @if (auth()->guard('penitip')->check() || auth()->guard('pembeli')->check())
+        @if (Helper::isLoggedIn(['penitip']))
             <div class="table-responsive mb-4">
                 <table class="table table-bordered w-100">
                     <thead class="table-light">
                         <tr class="text-center">
-                            @if (auth()->guard('penitip')->check())
-                                <th>Saldo</th>
-                                <th>Poin</th>
-                            @elseif (auth()->guard('pembeli')->check())
-                                <th>Poin</th>
-                            @endif
+                            <th>Saldo</th>
+                            <th>Poin</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr class="text-center">
-                            @if (auth()->guard('penitip')->check())
-                                <td>Rp{{ number_format(auth()->guard('penitip')->user()->saldo, 0, ',', '.') }}</td>
-                                <td>{{ auth()->guard('penitip')->user()->poin }}</td>
-                            @elseif (auth()->guard('pembeli')->check())
-                                <td>{{ auth()->guard('pembeli')->user()->poin }}</td>
-                            @endif
+                            <td>Rp{{ number_format(auth()->guard('penitip')->user()->saldo, 0, ',', '.') }}</td>
+                            <td>{{ auth()->guard('penitip')->user()->poin }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        @elseif (auth()->guard('pembeli')->check())
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered w-100">
+                    <thead class="table-light">
+                        <tr class="text-center">
+                            <th>Poin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="text-center">
+                            <td>{{ auth()->guard('pembeli')->user()->poin }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         @endif
-
-
 
         <div class="mb-4 mt-5 d-flex align-items-center gap-2">
             <h3 class="mb-0">Cari Semua di</h3>

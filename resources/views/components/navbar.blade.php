@@ -77,9 +77,13 @@ use App\Http\Helper\Helper;
 
                 {{-- Sudah Login --}}
                 @if (Helper::isLoggedIn())
-                    <li class="nav-item me-3">
-                        <a class="nav-link" href="{{ route('keranjang') }}"> 🛒 </a>
-                    </li>
+                    {{-- Tampilkan ikon keranjang hanya jika yang login adalah Pembeli --}}
+                    @if (Helper::getLoggedInUser() && Helper::getLoggedInUser()->nama_pembeli)
+                        <li class="nav-item me-3">
+                            <a class="nav-link" href="{{ route('keranjang') }}"> 🛒 </a>
+                        </li>
+                    @endif
+
 
                     <li class="nav-item me-3">
                         <a class="nav-link" href="{{ route('homeProduk') }}"> {{-- notifications --}}
@@ -91,10 +95,21 @@ use App\Http\Helper\Helper;
                             id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             {{ Helper::getLoggedInUser()->nama_organisasi }}
                             {{ Helper::getLoggedInUser()->nama_pembeli }}
+                            {{ Helper::getLoggedInUser()->nama_penitip }}
+                            {{-- <img src="{{ asset('images/profile.png') }}" alt="Profile" class="profile-img ms-2"> --}}
+                            {{-- {{ Helper::getLoggedInUser()->nama_penitip }} --}}
+                            {{-- {{ Helper::getLoggedInUser()->nama_pembeli }} --}}
                             {{-- {{ Helper::getLoggedInUser()->nama_organisasi }} --}}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                             <li><a class="dropdown-item" href="{{ route('profil') }}">Profil Saya</a></li>
+
+
+                            @if (Helper::getLoggedInUser() && Helper::getLoggedInUser()->nama_penitip)
+                                <li><a class="dropdown-item" href="{{ route('historyPenjualanPenitip') }}">History
+                                        Penjualan</a></li>
+                            @endif
+
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -103,9 +118,9 @@ use App\Http\Helper\Helper;
                                     @csrf
                                     <button class="dropdown-item" type="submit">Keluar</button>
                                 </form>
-
                             </li>
                         </ul>
+
                     </li>
                 @endif
             </ul>

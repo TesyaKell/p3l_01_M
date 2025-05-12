@@ -37,7 +37,7 @@ class AlamatController extends Controller
         return redirect()->route('alamat.store')->with('success', 'Alamat berhasil ditambahkan.');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $user = Helper::getLoggedInUser('pembeli');
 
@@ -45,12 +45,21 @@ class AlamatController extends Controller
             return redirect()->route('jabatan')->with('error', 'Silakan login sebagai pembeli.');
         }
 
-        $alamatList = Alamat::with('pembeli')
-            ->where('id_pembeli', $user->id_pembeli)
-            ->get();
-        //dd($alamatList);
+        $query = Alamat::where('id_pembeli', $user->id_pembeli);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_lengkap', 'like', '%' . $search . '%')
+                    ->orWhere('lokasi', 'like', '%' . $search . '%');
+            });
+        }
+
+        $alamatList = $query->get();
+
         return view('alamat', compact('alamatList'));
     }
+
 
     public function update(Request $request, $id)
     {

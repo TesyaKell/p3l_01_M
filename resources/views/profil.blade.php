@@ -1,6 +1,5 @@
 <?php
 use App\Http\Helper\Helper;
-dd($requestDonasi);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,19 +20,21 @@ dd($requestDonasi);
             font-family: 'Poppins', sans-serif;
         }
 
-        /* Adjust photo size */
         .profile-photo {
             max-height: 200px;
             max-width: 200px;
             object-fit: cover;
         }
 
-        /* Card Styling */
         .card-custom {
-            max-width: 650px;
+            min-height: 150px;
             margin: 0 auto;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
+
 
         .card-img-top {
             max-height: 200px;
@@ -54,21 +55,35 @@ dd($requestDonasi);
         <h3 class="mb-4 text-center mt-4"><strong>Profil Pengguna</strong></h3>
 
         @if (Helper::isLoggedIn())
-            <div class="row mb-4 align-items-start">
+            <div class="row mb-4 d-flex align-items-stretch">
+
                 <!-- Profile Card -->
-                <div class="col-md-12">
-                    <div class="card card-custom">
+                <div class="col-md-8">
+
+                    <div class="card card-custom h-100">
+
                         <div class="row g-0">
-                            <!-- Profile Image -->
-                            <div class="col-md-5 align-items-center d-flex justify-content-center">
-                                <img src="{{ $user->profile_photo_path ? asset('images/' . $user->profile_photo_path) : 'https://via.placeholder.com/200' }}"
-                                    alt="Foto Profil" class="card-img-top profile-photo">
-                            </div>
+                            @if ($guard === 'pembeli')
+                                <!-- Profile Image -->
+                                <div class="col-md-5 align-items-center d-flex justify-content-center">
+                                    <img src="{{ $user->profile_photo_path ? asset('images/' . $user->profile_photo_path) : 'https://via.placeholder.com/200' }}"
+                                        alt="Foto Profil" class="card-img-top profile-photo">
+                                </div>
+                            @endif
                             <!-- Profile Info -->
-                            <div class="col-md-7">
+                            <div class="{{ $guard === 'pembeli' ? 'col-md-7' : 'col-md-12' }}">
+
                                 <div class="card-body">
+                                    @if ($user->top_seller == 1)
+                                        <div class="position-absolute content-center top-0 end-0 px-4 py-3">
+                                            <span class="badge bg-warning text-dark">
+                                                ★ Top Seller
+                                            </span>
+                                        </div>
+                                    @endif
                                     <p><strong>Nama:</strong>
-                                        {{ $user->nama_pembeli ?? ($user->nama_organisasi ?? 'Tidak tersedia') }}</p>
+                                        {{ $user->nama_pembeli ?? ($user->nama_organisasi ?? ($user->nama_penitip ?? 'Tidak tersedia')) }}
+                                    </p>
                                     <p><strong>Email:</strong> {{ $user->email ?? 'Tidak tersedia' }}</p>
                                     <p><strong>Nomor Telepon:</strong> {{ $user->no_telp ?? 'Tidak tersedia' }}</p>
 
@@ -79,8 +94,31 @@ dd($requestDonasi);
                                             Update Profil
                                         </button>
                                     </div>
+
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-custom h-100">
+
+                        <div class="row g-0">
+
+                            @if ($guard === 'penitip')
+                                <!-- Card Saldo dan Poin untuk Penitip -->
+                                <div class="col-md-12 mt-4">
+                                    <h5 class=" text-center mb-5 fw-bold">Saldo & Poin</h5>
+                                    <div class="ps-5 ms-2 position-relative">
+                                        <p><strong>Saldo:</strong> Rp
+                                            {{ number_format($user->saldo ?? 0, 0, ',', '.') }}</p>
+                                        <p><strong>Poin:</strong> {{ $user->poin ?? 0 }}</p>
+
+
+                                    </div>
+                                </div>
+                            @endif
+
                         </div>
                     </div>
                 </div>
@@ -96,24 +134,27 @@ dd($requestDonasi);
                         <h5 class="modal-title" id="updateProfileModalLabel">Update Profil</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="{{ route('pembeli.updateProfil') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route($guard . '.updateProfil') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="modal-body">
                             <div class="mb-3">
                                 <label for="nama" class="form-label">Nama</label>
                                 <input type="text" class="form-control" id="nama" name="nama"
-                                    value="{{ old('nama', $user->nama_pembeli) }}" required>
+                                    value="{{ old('nama', $user->nama_pembeli ?? ($user->nama_organisasi ?? $user->nama_penitip)) }}"
+                                    required>
                             </div>
                             <div class="mb-3">
                                 <label for="no_telp" class="form-label">Nomor Telepon</label>
                                 <input type="text" class="form-control" id="no_telp" name="no_telp"
                                     value="{{ old('no_telp', $user->no_telp) }}" required>
                             </div>
-                            <div class="mb-3">
-                                <label for="foto" class="form-label">Foto Profil</label>
-                                <input type="file" class="form-control" id="foto" name="foto"
-                                    accept="image/*">
-                            </div>
+                            @if ($guard === 'pembeli')
+                                <div class="mb-3">
+                                    <label for="foto" class="form-label">Foto Profil</label>
+                                    <input type="file" class="form-control" id="foto" name="foto"
+                                        accept="image/*">
+                                </div>
+                            @endif
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -170,11 +211,11 @@ dd($requestDonasi);
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($historyDonasi as $donasi)
+                        @forelse ($requestDonasi as $donasi)
                             <tr>
                                 <td>{{ $donasi->tanggal_donasi }}</td>
                                 <td>{{ $donasi->nama_penerima }}</td>
-                                <td>{{ $donasi->penitip->nama_penitip ?? '-' }}</td>
+                                <td>{{ $donasi->nama_penitip ?? '-' }}</td>
                                 <td>{{ $donasi->barang->nama_barang ?? '-' }}</td>
                             </tr>
                         @empty
@@ -199,6 +240,30 @@ dd($requestDonasi);
         const tableRequest = document.getElementById('tableRequest');
         const tableHistory = document.getElementById('tableHistory');
 
+        // Get current URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const akses = urlParams.get('akses');
+
+        // Set initial state based on URL parameter
+        if (akses === 'history_donasi') {
+            // Show history view
+            tableHistory.classList.remove('d-none');
+            tableRequest.classList.add('d-none');
+            btnHistory.classList.add('btn-primary');
+            btnHistory.classList.remove('btn-secondary');
+            btnRequest.classList.remove('btn-primary');
+            btnRequest.classList.add('btn-secondary');
+        } else {
+            // Default to request view
+            tableRequest.classList.remove('d-none');
+            tableHistory.classList.add('d-none');
+            btnRequest.classList.add('btn-primary');
+            btnRequest.classList.remove('btn-secondary');
+            btnHistory.classList.remove('btn-primary');
+            btnHistory.classList.add('btn-secondary');
+        }
+
+        // Keep the original click handlers
         btnRequest.addEventListener('click', () => {
             tableRequest.classList.remove('d-none');
             tableHistory.classList.add('d-none');

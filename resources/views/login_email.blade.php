@@ -204,7 +204,8 @@
                                 Role</a></p>
                     @endif
 
-                    <p><a class="link-opacity-10" href="{{ route('password.request') }}">Forgot Password?</a></p>
+                    <p><a class="link-opacity-10" href="{{ route('password.request', $role) }}">Forgot
+                            Password?</a></p>
                 </div>
             </form>
         </div>

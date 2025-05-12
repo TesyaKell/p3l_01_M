@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Organisasi;
+
+use App\Http\Helper\Helper;
 use App\Notifications\VerifyEmail;
 use Auth;
 use Hash;
@@ -96,15 +98,23 @@ class OrganisasiController extends Controller
         return redirect('/login/organisasi')->with('error', 'Invalid or expired verification link');
     }
 
-    public function forgot_password(Request $request): RedirectResponse
+    public function updateProfil(Request $request)
     {
-        $request->validate(['email' => 'required|email']);
+        $user = Helper::getLoggedInUser('organisasi');
 
-        $status = Password::broker('organisasi')->sendResetLink($request->only('email'));
+        if (!$user) {
+            return redirect()->route('login.organisasi')->with('error', 'Anda harus login terlebih dahulu.');
+        }
 
-        return $status === Password::RESET_LINK_SENT
-            ? back()->with(['status' => __($status)])
-            : back()->withErrors(['email' => __($status)]);
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'no_telp' => 'required|string|max:20',
+        ]);
+
+        $user->nama_organisasi = $request->nama;
+        $user->no_telp = $request->no_telp;
+        $user->save();
+
+        return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
     }
-
 }

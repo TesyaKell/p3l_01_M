@@ -107,22 +107,6 @@ class PembeliController extends Controller
         return redirect('/login/pembeli')->with('error', 'Invalid verification link');
     }
 
-    public function forgot_password(Request $request): RedirectResponse
-    {
-        $request->validate(['email' => 'required|email']);
-
-        $status = Password::broker('pembeli')->sendResetLink($request->only('email'));
-
-        return $status === Password::RESET_LINK_SENT
-            ? back()->with(['status' => __($status)])
-            : back()->withErrors(['email' => __($status)]);
-    }
-    public function logout()
-    {
-        Auth::guard('pembeli')->logout();
-        return redirect('/login/pembeli')->with('status', 'Logout successful!');
-    }
-
     // public function uploadFoto(Request $request)
     // {
     //     $request->validate([

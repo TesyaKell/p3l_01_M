@@ -21,6 +21,15 @@
 
     @include('components.navbar')
     <div class="container py-4">
+        <!-- Form Pencarian -->
+        <form method="GET" action="{{ route('alamat.index') }}" class="mb-3">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Cari nama atau lokasi..."
+                    value="{{ request('search') }}">
+                <button class="btn btn-outline-secondary" type="submit">Cari</button>
+            </div>
+        </form>
+
         <h3 class="mb-4 mt-3">Daftar Alamat</h3>
 
         @if (session('success'))

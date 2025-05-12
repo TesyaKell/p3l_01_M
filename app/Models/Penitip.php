@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Notifications\ResetPasswordEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class Penitip extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $table = 'penitip';
     protected $primaryKey = 'id_penitip';
@@ -39,5 +41,10 @@ class Penitip extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordEmail($token, 'penitip'));
     }
 }

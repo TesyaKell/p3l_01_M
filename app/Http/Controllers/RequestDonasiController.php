@@ -17,31 +17,10 @@ class RequestDonasiController extends Controller
             return redirect()->route('jabatan')->with('error', 'Silakan login terlebih dahulu.');
         }
 
-        $queryParams = $request->query();
-        $akses = $queryParams['akses'] ?? null;
 
-        // masuk lahaman profile tapi lom pencet tombol pas role organisasi default ke request donasi
-        if (Helper::getLoggedInUser('organisasi') && $akses == null) {
-            $akses = 'request_donasi';
-        }
-
-        $requests = [];
-
-        if ($akses == 'request_donasi') {
-            $requests = RequestDonasi::where('id_organisasi', $user->id_organisasi)->get();
-        } else if ($akses == 'history_donasi') {
-            $requests = Donasi::with(['barang', 'penitip'])
-                ->whereIn('id_request', function ($query) use ($user) {
-                    $query->select('id_request')
-                        ->from('request_donasi')
-                        ->where('id_organisasi', $user->id_organisasi);
-                })
-                ->get();
-        }
 
         return view('profil', [
             'user' => $user,
-            'requestDonasi' => $requests
         ]);
     }
 }

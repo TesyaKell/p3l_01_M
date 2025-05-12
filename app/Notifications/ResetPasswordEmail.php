@@ -15,9 +15,11 @@ class ResetPasswordEmail extends Notification
      * Create a new notification instance.
      */
     private $token;
-    public function __construct($token)
+    private $role;
+    public function __construct($token, $role)
     {
         $this->token = $token;
+        $this->role = $role;
     }
 
     /**
@@ -38,7 +40,7 @@ class ResetPasswordEmail extends Notification
         return (new MailMessage)
             ->greeting('Hello!')
             ->line('Anda menerima email ini karena kami menerima permintaan reset password untuk akun anda.')
-            ->action('Reset Password', url("/resetPassword/" . $this->token . "?email=" . $notifiable->getEmailForPasswordReset()))
+            ->action('Reset Password', url("/resetPassword/" . $this->role . "/" . $this->token . "?email=" . $notifiable->getEmailForPasswordReset()))
             ->line('Link reset password akan kadaluarsa dalam 60 menit.')
             ->line('Jika anda tidak merasa melakukan permintaan reset password, abaikan email ini.');
     }

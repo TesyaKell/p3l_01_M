@@ -13,7 +13,7 @@
 
     <main class="container my-5 flex-fill">
         <div class="mb-4">
-            <h3>Produk</h3>
+            <h3 class="fw-bold">Produk</h3>
         </div>
 
         <!-- Tombol Filter -->

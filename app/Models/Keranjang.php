@@ -15,13 +15,9 @@ class Keranjang extends Model
 
     public $timestamps = false;
 
-
     // Misalnya relasi ke model Barang
     public function barang()
     {
         return $this->belongsTo(Barang::class, 'kode_barang', 'kode_barang');
     }
-
-
-
 }

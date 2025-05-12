@@ -83,11 +83,12 @@ class UserController extends Controller
 
         return redirect('/login')->with('error', 'Invalid verification link');
     }
-    public function forgot_password(Request $request): RedirectResponse
+    public function forgot_password(Request $request, $role): RedirectResponse
     {
         $request->validate(['email' => 'required|email']);
 
-        $status = Password::sendResetLink(
+
+        $status = Password::broker($role)->sendResetLink(
             $request->only('email'),
         );
 
@@ -96,17 +97,17 @@ class UserController extends Controller
             : back(fallback: 'login')->withErrors(['email' => __($status)]);
     }
 
-    public function reset_password(Request $request): RedirectResponse
+    public function reset_password(Request $request, $role): RedirectResponse
     {
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
-            'password' => 'required|min:2|confirmed',
+            'password' => 'required|min:8|confirmed',
         ]);
 
-        $status = Password::reset(
+        $status = Password::broker($role)->reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
-            function (User $user, string $password) {
+            function ($user, string $password) {
                 $user->forceFill([
                     'password' => Hash::make($password)
                 ])->setRememberToken(Str::random(60));

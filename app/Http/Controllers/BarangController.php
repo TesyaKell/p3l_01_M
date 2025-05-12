@@ -7,6 +7,7 @@ use App\Models\Barang;
 use App\Http\Helper\Helper;
 use App\Models\Keranjang;
 
+
 use Illuminate\Support\Facades\Storage;
 
 class BarangController extends Controller
@@ -106,7 +107,7 @@ class BarangController extends Controller
     public function tambahKeKeranjang(Request $request)
     {
         $user = Helper::getLoggedInUser('pembeli');
-        // dd($user);
+
         if (!$user) {
             return redirect()->route('jabatan')->with('error', 'Silakan login terlebih dahulu sebagai pembeli.');
         }
@@ -115,7 +116,17 @@ class BarangController extends Controller
             'kode_barang' => 'required|exists:barang,kode_barang',
         ]);
 
-        Keranjang::create([
+        // Cek apakah barang sudah ada di keranjang pembeli
+        $exists = \App\Models\Keranjang::where('id_pembeli', $user->id_pembeli)
+            ->where('kode_barang', $request->kode_barang)
+            ->exists();
+
+        if ($exists) {
+            return redirect()->back()->with('error', 'Barang ini sudah ada di keranjang Anda.');
+        }
+
+        // Jika belum ada, tambahkan ke keranjang
+        \App\Models\Keranjang::create([
             'id_pembeli' => $user->id_pembeli,
             'kode_barang' => $request->kode_barang,
         ]);
@@ -123,6 +134,7 @@ class BarangController extends Controller
         return redirect()->route('detailProduk', ['id' => $request->kode_barang])
             ->with('success', 'Barang berhasil dimasukkan ke keranjang!');
     }
+
 
     public function search(Request $request)
     {
