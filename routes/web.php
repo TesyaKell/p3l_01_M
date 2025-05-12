@@ -11,10 +11,39 @@ use App\Http\Controllers\UserController;
 use App\Models\Barang;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\RequestDonasiController;
+use App\Http\Controllers\KeranjangController;
+use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\AlamatController;
+
+use App\Http\Controllers\KomentarController;
+
+Route::post('/komentar', [KomentarController::class, 'store'])->name('komentar.store');
+
+
+//DONASI
+Route::get('/profil', [RequestDonasiController::class, 'index'])->name('profil')->middleware('logged_in');
+
+
+//ALAMAT
+Route::middleware('logged_in')->group(function () {
+    Route::get('/alamat', [AlamatController::class, 'index'])->name('alamat.index');
+    Route::post('/alamat', [AlamatController::class, 'store'])->name('alamat.store');
+    Route::put('/alamat/{id}', [AlamatController::class, 'update'])->name('alamat.update');
+    Route::delete('/alamat/{id}', [AlamatController::class, 'destroy'])->name('alamat.destroy');
+})->name('alamat');
 
 
 
-Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
+
+// Menangani permintaan POST ke route /
+Route::post('/', [ProfilController::class, 'logout'])->name('homeProduk');
+Route::post('/update-profil', [PembeliController::class, 'updateProfil'])->name('pembeli.updateProfil')->middleware('logged_in');
+
+//Route::post('/pembeli/upload-foto', [PembeliController::class, 'uploadFoto'])->name('pembeli.uploadFoto')->middleware('logged_in');
+
+
+Route::get('/profil', [ProfilController::class, 'index'])->name('profil')->middleware('logged_in');
 //Route::get('/profil', [ProfilController::class, 'index'])->middleware('auth');
 
 //home
@@ -22,9 +51,23 @@ Route::get('/', [BarangController::class, 'showKatalog'])->name('homeProduk');
 Route::get('/homeProduk', [BarangController::class, 'showKatalog'])->name('homeProduk');
 
 //BARANG
-Route::get('/katalogBarang', [BarangController::class, 'index'])->name('katalogbarang')->middleware('auth');
-Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('auth');
+Route::get('/katalogbarang', [BarangController::class, 'katalogbarang'])->name('katalogbarang')->middleware('logged_in');
+Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('logged_in');
+Route::get('/detail-produk/{id}', [BarangController::class, 'detailProduk'])->name('detailProduk');
+Route::get('/produk', [BarangController::class, 'index'])->name('homeProduk');
+Route::get('/search', [BarangController::class, 'search'])->name('search');
 
+
+//KERANJANG
+Route::post('/keranjang', [BarangController::class, 'tambahKeKeranjang'])->name('keranjang')->middleware('logged_in');
+Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang')->middleware('logged_in');
+
+
+//TRANSAKSI
+Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi');
+
+
+//Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('logged_in:organisasi,pembeli');
 
 // Pembeli
 Route::get('/login/pembeli', function () {

@@ -4,18 +4,18 @@
 
 <footer class="footer py-4" style="background: #e9c8ce">
     <div class="container">
-        <div class="row text-center text-md-start">
+        <div class="row text-center text-md-start mt-4">
             <!-- Kiri: Link Route -->
             <div class="col-md-4 mb-3 mb-md-0">
                 <div class="d-flex flex-column align-items-center align-items-md-start">
-                    <a href="{{ route('homeProduk') }}" class="text-dark text-decoration-none mb-2">Profil</a>
-                    <a href="{{ route('homeProduk') }}" class="text-dark text-decoration-none mb-2">Barang</a>
-                    <a href="{{ route('homeProduk') }}" class="text-dark text-decoration-none">Katalog Produk</a>
+                    <a href="{{ route('profil') }}" class="text-dark text-decoration-none mb-2">Profil</a>
+                    <a href="{{ route('katalogbarang') }}" class="text-dark text-decoration-none">Katalog Produk</a>
                 </div>
             </div>
 
             <!-- Tengah: Kontak -->
             <div class="col-md-4 mb-4">
+                <p class="fw-semibold mb-2">Hubungi Kami</p>
                 <div class="d-flex flex-column align-items-center align-items-md-start">
                     <p class="mb-2">📞 0812-3456-7890</p>
                     <p class="mb-2">✉️ reusemart@email.com</p>
@@ -45,3 +45,10 @@
         <p class="text-center mt-4 mb-0">© {{ date('Y') }} ReUseMart. All rights reserved.</p>
     </div>
 </footer>
+
+<style>
+    .text-dark:hover {
+        color: #d99da7 !important;
+        text-decoration: underline;
+    }
+</style>

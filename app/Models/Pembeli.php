@@ -12,6 +12,9 @@ class Pembeli extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $table = 'pembeli';
+    protected $primaryKey = 'id_pembeli';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
         'id_pembeli',

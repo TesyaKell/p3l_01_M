@@ -9,6 +9,7 @@ class Jabatan extends Model
     protected $table = 'jabatan';
     protected $primaryKey = 'kode_jabatan';
     public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
         'kode_jabatan',

@@ -18,11 +18,11 @@
 
         <!-- Tombol Filter -->
         <div class="mb-4 d-flex gap-3">
-            <a href="{{ route('katalogBarang', ['status' => 'tersedia']) }}"
+            <a href="{{ route('katalogbarang', ['status' => 'tersedia']) }}"
                 class="btn {{ $activeStatus == 'tersedia' ? 'btn-primary' : 'btn-outline-primary' }}">
                 Tersedia
             </a>
-            <a href="{{ route('katalogBarang', ['status' => 'terdonasi']) }}"
+            <a href="{{ route('katalogbarang', ['status' => 'terdonasi']) }}"
                 class="btn {{ $activeStatus == 'terdonasi' ? 'btn-primary' : 'btn-outline-primary' }}">
                 Terdonasi
             </a>
@@ -30,22 +30,27 @@
 
         <!-- Daftar Barang -->
         <div class="row">
-            @forelse ($barangList as $barang)
+            @forelse ($barangTersedia as $barang)
                 <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        @if ($barang->foto_produk)
-                            <img src="{{ asset('images/' . $barang->foto_produk) }}" class="card-img-top p-2 rounded"
-                                alt="{{ $barang->nama_barang }}" style="height: 200px; object-fit: contain;">
-                        @else
-                            <img src="{{ asset('images/no-image.png') }}" class="card-img-top p-2 rounded"
-                                alt="No image" style="height: 200px; object-fit: contain;">
-                        @endif
+                    <a href="{{ route('detailProduk', ['id' => $barang->kode_barang]) }}"
+                        class="text-decoration-none text-dark">
+                        <div class="card h-100" style="cursor:pointer;">
 
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $barang->nama_barang }}</h5>
-                            <p class="card-text">Rp{{ number_format($barang->harga, 0, ',', '.') }}</p>
+                            @if ($barang->foto_produk)
+                                <img src="{{ asset('images/' . $barang->foto_produk) }}"
+                                    class="card-img-top p-2 rounded" alt="{{ $barang->nama_barang }}"
+                                    style="height: 200px; object-fit: contain;">
+                            @else
+                                <img src="{{ asset('images/no-image.png') }}" class="card-img-top p-2 rounded"
+                                    alt="No image" style="height: 200px; object-fit: contain;">
+                            @endif
+
+                            <div class="card-body">
+                                <h5 class="card-title">{{ $barang->nama_barang }}</h5>
+                                <p class="card-text">Rp{{ number_format($barang->harga, 0, ',', '.') }}</p>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             @empty
                 <div class="col-12 text-center">
