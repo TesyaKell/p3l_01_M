@@ -128,27 +128,6 @@ Route::middleware(['auth:penitip'])->group(function () {
 });
 
 
-Route::get('/set-role', function (Request $request) {
-    $role = strtolower(str_replace(' ', '', $request->role));
-    session(['role' => $request->role]);
-
-    // Mapping role ke path login
-    $routes = [
-        'owner' => '/owner/login',
-        'admin' => '/admin/login',
-        'hunter' => '/hunter/login',
-        'qualitycontrol' => '/qc/login',
-        'customerservice' => '/customerService/login',
-        'kurir' => '/kurir/login',
-    ];
-
-    if (array_key_exists($role, $routes)) {
-        return redirect($routes[$role]);
-    }
-
-    return redirect('/');
-})->name('set.role');
-
 Route::get('/set-role/{role}', function ($role) {
     $loginRoutes = [
         'Owner' => '/owner/login',
