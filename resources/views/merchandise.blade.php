@@ -482,16 +482,15 @@
 
         <!-- Products Grid -->
         <div id="merchandiseContainer">
-            @if (count($merchandises) > 0)
+            @if (count($merchandises ?? []) > 0)
+
                 <div class="row">
                     @foreach ($merchandises as $merchandise)
                         <div class="col-6 col-md-4 col-lg-3 merchandise-item"
                             data-id="{{ $merchandise->id_merchandise }}" data-name="{{ $merchandise->nama }}"
                             data-points="{{ $merchandise->poin }}">
                             <div class="card h-100">
-                                @if ($merchandise->stok < 5 && $merchandise->stok > 0)
-                                    <div class="flash-sale-badge">Limited Stock!</div>
-                                @endif
+
 
                                 <div class="image-container">
                                     @if ($merchandise->gambar)
@@ -746,7 +745,6 @@
                 const merchandiseItem = document.querySelector(`.merchandise-item[data-id="${id}"]`);
                 if (!merchandiseItem) return;
 
-                // Update stock count
                 const stockElement = merchandiseItem.querySelector('.stock-count');
                 if (stockElement) {
                     stockElement.textContent = newStock;

@@ -8,6 +8,7 @@ use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PenitipController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\MerchandiseController;
 use App\Models\Barang;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ProfilController;
@@ -120,6 +121,8 @@ Route::get('/jabatan-pegawai', function () {
     return view('jabatanPegawai');
 })->name('jabatan.pegawai');
 
+
+
 Route::middleware(['auth:penitip'])->group(function () {
     Route::get('/dashboard/penitip', [App\Http\Controllers\PenitipController::class, 'index'])->name('penitip.dashboard');
 });
@@ -171,7 +174,8 @@ Route::post('/logout', function () {
 })->name('logout');
 
 
-Route::get('/merchandise', [App\Http\Controllers\MerchandiseController::class, 'index'])->name('merchandise.index');
+
+Route::get('/merchandise', [MerchandiseController::class, 'index'])->name('merchandise.index');
 
 Route::post('/redeem-merchandise', function (Request $request) {
     $merchandise = Merchandise::find($request->merchandise_id);
@@ -180,11 +184,9 @@ Route::post('/redeem-merchandise', function (Request $request) {
         return response()->json(['success' => false, 'message' => 'Merchandise not available or out of stock']);
     }
 
-    // Reduce stock by 1
     $merchandise->stok -= 1;
     $merchandise->save();
 
-    // Add to cart logic (if needed, implement cart storage here)
 
     return response()->json(['success' => true, 'new_stock' => $merchandise->stok]);
 });
