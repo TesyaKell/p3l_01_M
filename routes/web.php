@@ -12,20 +12,65 @@ use App\Http\Controllers\MerchandiseController;
 use App\Models\Barang;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ProfilController;
-use Illuminate\Http\Request;
-use App\Models\Merchandise;
+use App\Http\Controllers\RequestDonasiController;
+use App\Http\Controllers\KeranjangController;
+use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\AlamatController;
+use App\Http\Controllers\KomentarController;
 
-Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
+Route::post('/komentar', [KomentarController::class, 'store'])->name('komentar.store');
+
+
+//ALAMAT
+Route::middleware('logged_in')->group(function () {
+    Route::get('/alamat', [AlamatController::class, 'index'])->name('alamat.index');
+    Route::post('/alamat', [AlamatController::class, 'store'])->name('alamat.store');
+    Route::put('/alamat/{id}', [AlamatController::class, 'update'])->name('alamat.update');
+    Route::delete('/alamat/{id}', [AlamatController::class, 'destroy'])->name('alamat.destroy');
+})->name('alamat');
+
+
+//History penjualan penitip
+Route::get('/penitip/history', [PenitipController::class, 'historyPenjualanPenitip'])->name('historyPenjualanPenitip');
+
+
+
+// Menangani permintaan POST ke route /
+Route::post('/', [ProfilController::class, 'logout'])->name('homeProduk');
+Route::post('/update-profil', [PembeliController::class, 'updateProfil'])->name('pembeli.updateProfil')->middleware('logged_in');
+Route::post('/update-profil/penitip', [PenitipController::class, 'updateProfil'])->name('penitip.updateProfil')->middleware('logged_in');
+Route::post('/update-profil/organisasi', [OrganisasiController::class, 'updateProfil'])->name('organisasi.updateProfil')->middleware('logged_in');
+
+
+
+//Route::post('/pembeli/upload-foto', [PembeliController::class, 'uploadFoto'])->name('pembeli.uploadFoto')->middleware('logged_in');
+
+
+Route::get('/profil', [ProfilController::class, 'index'])->name('profil')->middleware('logged_in');
 //Route::get('/profil', [ProfilController::class, 'index'])->middleware('auth');
 
 //home
 Route::get('/', [BarangController::class, 'showKatalog'])->name('homeProduk');
-Route::get('/homeProduk', [BarangController::class, 'showKatalog'])->name('homeProduk');
+Route::get('/homeProduk', [BarangController::class, 'showKatalog'])->name('homeProduk')->middleware('logged_in');
 
 //BARANG
-Route::get('/katalogBarang', [BarangController::class, 'index'])->name('katalogbarang')->middleware('auth');
-Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('auth');
+Route::get('/katalogbarang', [BarangController::class, 'katalogbarang'])->name('katalogbarang')->middleware('logged_in');
+Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('logged_in');
+Route::get('/detail-produk/{id}', [BarangController::class, 'detailProduk'])->name('detailProduk');
+Route::get('/produk', [BarangController::class, 'index'])->name('homeProduk');
+Route::get('/search', [BarangController::class, 'search'])->name('search');
 
+
+//KERANJANG
+Route::post('/keranjang', [BarangController::class, 'tambahKeKeranjang'])->name('keranjang')->middleware('logged_in');
+Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang')->middleware('logged_in');
+
+
+//TRANSAKSI
+Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi');
+
+
+//Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('logged_in:organisasi,pembeli');
 
 // Pembeli
 Route::get('/login/pembeli', function () {
@@ -101,16 +146,16 @@ Route::get('/verify_penitip/{key}', [PenitipController::class, 'verify'])->name(
 
 
 // Forget Password
-Route::get('/forgetPassword', function () {
-    return view('forgetPassword');
+Route::get('/forgetPassword/{role}', function (string $role) {
+    return view('forgetPassword', ['role' => $role]);
 })->name('password.request');
 
-Route::get('/resetPassword/{token}', function (string $token) {
-    return view('resetPassword', ['token' => $token]);
+Route::get('/resetPassword/{role}/{token}', function (string $role, string $token) {
+    return view('resetPassword', ['role' => $role, 'token' => $token]);
 })->name('password.reset');
 
-Route::post('/forgot_password', [UserController::class, 'forgot_password'])->name('password.email');
-Route::post('/reset_password', [UserController::class, 'reset_password'])->name('password.update');
+Route::post('/forgot_password/{role}', [UserController::class, 'forgot_password'])->name('password.email');
+Route::post('/reset_password/{role}', [UserController::class, 'reset_password'])->name('password.update');
 
 // Optional View Route for Jabatan
 Route::get('/jabatan', function () {

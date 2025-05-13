@@ -29,10 +29,15 @@ use App\Http\Helper\Helper;
             flex: 0 0 auto;
         }
 
+        .card a {
+            text-decoration: none !important;
+            color: black !important;
+        }
+
+
         .carousel-control-prev,
         .carousel-control-next {
             width: 5%;
-            /* lebih ramping */
             top: 50%;
             transform: translateY(-50%);
             z-index: 2;
@@ -40,12 +45,10 @@ use App\Http\Helper\Helper;
 
         .carousel-control-prev {
             left: -2rem;
-            /* geser ke kiri */
         }
 
         .carousel-control-next {
             right: -2rem;
-            /* geser ke kanan */
         }
 
         .gradient-text {
@@ -61,9 +64,18 @@ use App\Http\Helper\Helper;
 <body class="d-flex flex-column min-vh-100">
     @include('components.navbar')
 
-    <!-- Header Image -->
-    <img src="{{ asset('images/header.png') }}" alt="Header Image" class="img-fluid w-100 mt-2"
-        style="max-height: 600px; object-fit: cover;">
+    <div class="position-relative w-100 mt-2" style="max-height: 600px; overflow: hidden;">
+        <img src="{{ asset('images/header.png') }}" alt="Header Image" class="img-fluid w-100"
+            style="object-fit: cover; height: 100%;">
+
+        <!-- Tombol di atas gambar -->
+        <a href="{{ route('katalogbarang') }}" class="btn btn-dark position-absolute"
+            style="bottom: 100px; left: 47%; z-index: 2;">
+            Lihat Katalog Produk
+        </a>
+
+    </div>
+
 
     <!-- SVG Wave -->
     <div style="margin-top: -5px;">
@@ -83,6 +95,41 @@ use App\Http\Helper\Helper;
 
     <main class="flex-fill container my-4">
         @yield('content')
+
+        {{-- Informasi Saldo dan Poin --}}
+        @if (Helper::isLoggedIn(['penitip']))
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered w-100">
+                    <thead class="table-light">
+                        <tr class="text-center">
+                            <th>Saldo</th>
+                            <th>Poin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="text-center">
+                            <td>Rp{{ number_format(auth()->guard('penitip')->user()->saldo, 0, ',', '.') }}</td>
+                            <td>{{ auth()->guard('penitip')->user()->poin }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        @elseif (auth()->guard('pembeli')->check())
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered w-100">
+                    <thead class="table-light">
+                        <tr class="text-center">
+                            <th>Poin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="text-center">
+                            <td>{{ auth()->guard('pembeli')->user()->poin }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        @endif
 
         <div class="mb-4 mt-5 d-flex align-items-center gap-2">
             <h3 class="mb-0">Cari Semua di</h3>
@@ -134,18 +181,19 @@ use App\Http\Helper\Helper;
                                 @for ($j = $i; $j < $i + 5 && $j < count($kategoriList); $j++)
                                     @php
                                         $kategori = $kategoriList[$j];
+                                        //dd($kategori);
                                     @endphp
-                                    <a href="{{ Helper::isLoggedIn() ? route('kategoriBarang', ['id' => $kategori->id_kategori]) : route('jabatan') }}"
-                                        class="text-decoration-none text-dark">
-                                        <div class="card" style="width: 200px;">
+
+                                    <div class="card" style="width: 200px;">
+                                        <a href="{{ route('kategoriBarang', ['id' => $kategori->id_kategori]) }}">
                                             <img src="{{ asset('images/kategori/' . $kategori->foto_kategori) }}"
                                                 class="card-img-top p-2 rounded" alt="{{ $kategori->nama_kategori }}"
                                                 style="height: 130px; object-fit: contain;">
                                             <div class="card-body">
                                                 <h6 class="card-title text-center">{{ $kategori->nama_kategori }}</h6>
                                             </div>
-                                        </div>
-                                    </a>
+                                        </a>
+                                    </div>
                                 @endfor
                             </div>
                         </div>
@@ -168,6 +216,7 @@ use App\Http\Helper\Helper;
 
 
 
+
         <div class="mb-4 mt-5">
             <h3>Product</h3>
         </div>
@@ -175,8 +224,9 @@ use App\Http\Helper\Helper;
         <div class="row">
             @foreach ($barangTersedia as $barang)
                 <div class="col-md-4 mb-4">
-                    <a href="{{ Helper::isLoggedIn() ? route('katalogbarang') : route('jabatan') }}"
+                    <a href="{{ route('detailProduk', ['id' => $barang->kode_barang]) }}"
                         class="text-decoration-none text-dark">
+
                         <div class="card h-100" style="cursor:pointer;">
                             @if ($barang->foto_produk)
                                 <img src="{{ asset('images/' . $barang->foto_produk) }}"

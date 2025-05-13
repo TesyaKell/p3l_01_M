@@ -2,7 +2,7 @@
 use App\Http\Helper\Helper;
 ?>
 <style>
-    html,
+    <style>html,
     body {
         margin: 0;
         padding: 0;
@@ -10,8 +10,10 @@ use App\Http\Helper\Helper;
 
     .navbar {
         margin: 0 !important;
-        padding: 0 !important;
-        background-color: #ffffff;
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+        background-color: #ffffff !important;
+        /* pink background */
     }
 
     .btn-brand {
@@ -36,6 +38,8 @@ use App\Http\Helper\Helper;
     }
 </style>
 
+</style>
+
 <nav class="navbar navbar-expand-lg shadow-sm">
     <div class="container-fluid px-4">
         <a class="navbar-brand ms-4" href="{{ url('/') }}">ReUseMart</a>
@@ -49,7 +53,7 @@ use App\Http\Helper\Helper;
 
             {{-- Tengah: Search Bar --}}
             @if (Helper::isLoggedIn())
-                <form class="d-flex mx-auto search-bar" action="{{ route('homeProduk') }}" method="GET">
+                <form class="d-flex mx-auto search-bar" action="{{ route('search') }}" method="GET">
                     <input class="form-control me-2" type="search" name="query" placeholder="Cari produk..."
                         aria-label="Search">
                     <button class="btn btn-outline-secondary" type="submit">Cari</button>
@@ -73,11 +77,14 @@ use App\Http\Helper\Helper;
 
                 {{-- Sudah Login --}}
                 @if (Helper::isLoggedIn())
-                    <li class="nav-item me-3">
-                        <a class="nav-link" href="{{ route('homeProduk') }}"> {{-- cart --}}
-                            🛒
-                        </a>
-                    </li>
+                    {{-- Tampilkan ikon keranjang hanya jika yang login adalah Pembeli --}}
+                    @if (Helper::getLoggedInUser() && Helper::getLoggedInUser()->nama_pembeli)
+                        <li class="nav-item me-3">
+                            <a class="nav-link" href="{{ route('keranjang') }}"> 🛒 </a>
+                        </li>
+                    @endif
+
+
                     <li class="nav-item me-3">
                         <a class="nav-link" href="{{ route('homeProduk') }}"> {{-- notifications --}}
                             🔔
@@ -86,22 +93,34 @@ use App\Http\Helper\Helper;
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
                             id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="{{ asset('images/profil/' . 'default.png') }}" {{-- jangan lupa balikin foto --}}
-                                alt="Profil" class="profile-img me-2">
+                            {{ Helper::getLoggedInUser()->nama_organisasi }}
+                            {{ Helper::getLoggedInUser()->nama_pembeli }}
+                            {{ Helper::getLoggedInUser()->nama_penitip }}
+                            {{-- <img src="{{ asset('images/profile.png') }}" alt="Profile" class="profile-img ms-2"> --}}
+                            {{-- {{ Helper::getLoggedInUser()->nama_penitip }} --}}
+                            {{-- {{ Helper::getLoggedInUser()->nama_pembeli }} --}}
                             {{-- {{ Helper::getLoggedInUser()->nama_organisasi }} --}}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                             <li><a class="dropdown-item" href="{{ route('profil') }}">Profil Saya</a></li>
+
+
+                            @if (Helper::getLoggedInUser() && Helper::getLoggedInUser()->nama_penitip)
+                                <li><a class="dropdown-item" href="{{ route('historyPenjualanPenitip') }}">History
+                                        Penjualan</a></li>
+                            @endif
+
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <li>
-                                <form action="{{ route('homeProduk') }}" method="POST">
+                                <form action="{{ url('/') }}" method="POST">
                                     @csrf
                                     <button class="dropdown-item" type="submit">Keluar</button>
                                 </form>
                             </li>
                         </ul>
+
                     </li>
                 @endif
             </ul>

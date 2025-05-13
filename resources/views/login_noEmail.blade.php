@@ -194,9 +194,12 @@
                     <button type="submit" class="btn btn-primary mt-3">Sign In</button>
                 </div>
 
-                <div class="text-center">
-                    <p><a class="link-opacity-10" href="{{ route('password.request') }}">Forgot Password?</a></p>
-                </div>
+                @if ($role !== 'pegawai')
+                    <div class="text-center">
+                        <p><a class="link-opacity-10" href="{{ route('password.request', $role) }}">Forgot Password?</a>
+                        </p>
+                    </div>
+                @endif
             </form>
         </div>
     </div>

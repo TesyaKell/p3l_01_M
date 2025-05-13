@@ -12,8 +12,8 @@
 
 </head>
 
-<body class = "d-flex justify-content-center">
-    <div class = "card" style="width: 18rem;">
+<body class="d-flex justify-content-center">
+    <div class="card" style="width: 18rem;">
         <div class="card-body">
             @if (session('status'))
                 <div class="alert alert-success" role="alert">
@@ -32,7 +32,7 @@
                     {{ $errors->first() }}
                 </div>
             @endif
-            <form method="post" action="{{ route('password.update') }}">
+            <form method="post" action="{{ route('password.update', $role) }}">
                 @csrf
                 <div class="mb-3">
                     <label for="inputPassword1" class="form-label">Password</label>

@@ -69,4 +69,22 @@ class Helper
 
         return null;
     }
+
+    public static function getAuth($guard = null)
+    {
+        if ($guard) {
+            return \Auth::guard($guard);
+        }
+
+        $validGuards = config('auth.guards');
+        $guards = array_keys($validGuards);
+
+        foreach ($guards as $guard) {
+            if (\Auth::guard($guard)->check()) {
+                return \Auth::guard($guard);
+            }
+        }
+
+        return null;
+    }
 }
