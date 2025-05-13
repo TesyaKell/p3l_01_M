@@ -12,20 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('penitips', function (Blueprint $table) {
-            $table->uuid('id_penitip')->primary();
-            $table->string('no_telp')->unique();
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->date('tanggal_lahir');
-            $table->string('nik');
-            $table->string('foto_ktp');
-            $table->integer('poin')->default(0);
-            $table->double('saldo')->default(0);
-            $table->boolean('top_seller')->default(false);
-            $table->string('nama_penitip');
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('verify_key')->nullable();
-            $table->rememberToken();
+            $table->id();
             $table->timestamps();
         });
     }

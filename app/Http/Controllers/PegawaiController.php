@@ -38,38 +38,16 @@ class PegawaiController extends Controller
 
         return redirect('/pegawai')->with('status', 'Pegawai berhasil ditambahkan');
     }
-    // public function login(Request $request)
-    // {
-    //     $request->validate([
-    //         'email' => 'required|string|email|max:255',
-    //         'password' => 'required|string',
-    //     ]);//validasi cek apakah email dan password sesuai dengan standart
 
-    // }
     public function login(Request $request)
     {
         $request->validate([
-            'nama_pegawai' => 'required|string',
+            'email' => 'required|string|email|max:255',
             'password' => 'required|string',
         ]);
-        if (Auth::guard('pegawai')->attempt($request->only('nama_pegawai', 'password'))) {
-            $user = Auth::guard('pegawai')->user();
-            $jabatan = Jabatan::where('kode_jabatan',$user->kode_jabatan)->first();
-            if($jabatan->nama_jabatan == "Owner"){
-                return redirect('/dash')->with('status', 'Login successful!');
-            }else if($jabatan->nama_jabatan == "Admin"){
-                return redirect('/board')->with('status', 'Login successful!');
-            }else if($jabatan->nama_jabatan == "Hunter"){
-                return redirect('/dboard')->with('status', 'Login successful!');
-            }else if($jabatan->nama_jabatan == "Quality Control"){
-                return redirect('/dddboard')->with('status', 'Login successful!');
-            }else if($jabatan->nama_jabatan == "Customer Service"){
-                return redirect()->route('homepage.cs')->with('status', 'Login successful!');
-            }else if($jabatan->nama_jabatan == "Kurir"){
-                return redirect('/dasboard')->with('status', 'Login successful!');
-            }else{
-                return redirect('/login/pegawai')->with('status', 'Login Failed!');
-            }
+
+        if (Auth::guard('pegawai')->attempt($request->only('email', 'password'))) {
+            return redirect('/dashboard')->with('status', 'Login successful!');
         }
 
         return redirect('/login/pegawai')->with('error', 'These credentials do not match our records.');

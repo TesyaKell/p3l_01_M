@@ -180,9 +180,9 @@
                 @csrf
                 <input type="hidden" name="role" value="{{ $role ?? '' }}">
                 <div class="mb-3">
-                    <label for="nama_pegawai" class="form-label">nama_pegawai</label>
-                    <input type="text" class="form-control" id="nama_pegawai" name="nama_pegawai"
-                        placeholder="Enter your nama_pegawai">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username"
+                        placeholder="Enter your username">
                 </div>
                 <div class="mb-4">
                     <label for="password" class="form-label">Password</label>
