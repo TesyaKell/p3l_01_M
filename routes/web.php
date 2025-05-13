@@ -53,7 +53,6 @@ Route::get('/profil', [ProfilController::class, 'index'])->name('profil')->middl
 Route::get('/', [BarangController::class, 'showKatalog'])->name('homeProduk');
 Route::get('/homeProduk', [BarangController::class, 'showKatalog'])->name('homeProduk')->middleware('logged_in');
 
-
 //BARANG
 Route::get('/katalogbarang', [BarangController::class, 'katalogbarang'])->name('katalogbarang')->middleware('logged_in');
 Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('logged_in');
@@ -94,15 +93,10 @@ Route::get('/register/organisasi', function () {
 
 Route::get('/set-role/{role}', [JabatanController::class, 'setRole'])->name('set.role');
 
-
-
 // Pegawai
 Route::get('/login/pegawai', function () {
     return view('login_noEmail', ['role' => session('selected_role', 'pegawai')]);
 })->name('login.pegawai');
-
-
-
 
 // Penitip
 Route::get('/login/penitip', function () {
@@ -162,7 +156,6 @@ Route::get('/resetPassword/{role}/{token}', function (string $role, string $toke
 
 Route::post('/forgot_password/{role}', [UserController::class, 'forgot_password'])->name('password.email');
 Route::post('/reset_password/{role}', [UserController::class, 'reset_password'])->name('password.update');
-
 
 // Optional View Route for Jabatan
 Route::get('/jabatan', function () {
@@ -242,27 +235,3 @@ Route::post('/redeem-merchandise', function (Request $request) {
 
     return response()->json(['success' => true, 'new_stock' => $merchandise->stok]);
 });
-
-//Route to jabatan - Pegawai - CS
-Route::get('/cshomepage', function(){
-    return view('cshomepage');
-})->name('homepage.cs');
-
-
-//Register Penitip
-Route::get('/register/penitip', function(){
-    return view('register_penitip',['role' => session('selected_role', 'penitip')]);
-})->name('register.penitip');
-
-Route::get('/alldata/penitip', [PenitipController::class, 'showAllPenitip'])->name('showalldata.penitip');
-
-Route::post('/register/penitip', [PenitipController::class, 'register'])->name('register.penitip.post');
-
-Route::put('/update/penitip/{id}', [PenitipController::class, 'update'])->name('update.penitip');
-Route::get('/edit/penitip/{id}', [PenitipController::class, 'edit'])->name('edit.penitip');
-
-Route::get('/penitip/search', [PenitipController::class, 'searchPenitip'])->name('search.penitip');
-
-
-Route::delete('/delete/penitip/{id}', [PenitipController::class, 'destroy'])->name('destroy.penitip');
-

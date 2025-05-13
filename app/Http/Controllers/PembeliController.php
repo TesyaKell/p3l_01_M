@@ -116,6 +116,7 @@ class PembeliController extends Controller
     //     $user = Auth::guard('pembeli')->user();
     //     $filename = time() . '.' . $request->foto->extension();
     //     $request->foto->move(public_path('images'), $filename);
+
     //     $user->profile_photo_path = $filename;
     //     $user->save();
 
@@ -123,21 +124,6 @@ class PembeliController extends Controller
     // }
 
     public function updateProfil(Request $request)
-    {
-        return $status === Password::RESET_LINK_SENT
-            ? back()->with(['status' => __($status)])
-            : back()->withErrors(['email' => __($status)]);
-    }
-    public function showProfile(Request $request){
-        ///
-        $request->validate([
-            'email' => 'required|string|email|max:255',
-            'password' => 'required|string',
-        ]);
-        
-        return view();
-    }
-    public function logout()
     {
         // Dapatkan pengguna yang sedang login menggunakan guard 'pembeli'
         $user = Helper::getLoggedInUser('pembeli');
