@@ -215,3 +215,45 @@ Route::post('/redeem-merchandise', function (Request $request) {
 
     return response()->json(['success' => true, 'new_stock' => $merchandise->stok]);
 });
+
+//Route to jabatan - Pegawai - CS
+Route::get('/cshomepage', function(){
+    return view('cshomepage');
+})->name('homepage.cs');
+
+
+//Register Penitip
+Route::get('/register/penitip', function(){
+    return view('register_penitip',['role' => session('selected_role', 'penitip')]);
+})->name('register.penitip');
+
+Route::get('/alldata/penitip', [PenitipController::class, 'showAllPenitip'])->name('showalldata.penitip');
+
+Route::post('/register/penitip', [PenitipController::class, 'register'])->name('register.penitip.post');
+
+Route::put('/update/penitip/{id}', [PenitipController::class, 'update'])->name('update.penitip');
+Route::get('/edit/penitip/{id}', [PenitipController::class, 'edit'])->name('edit.penitip');
+
+Route::get('/penitip/search', [PenitipController::class, 'searchPenitip'])->name('search.penitip');
+
+
+Route::delete('/delete/penitip/{id}', [PenitipController::class, 'destroy'])->name('destroy.penitip');
+
+//Route to jabatan - Pegawai - CS
+Route::get('/orghomepage', function(){
+    return view('orghomepage');
+})->name('homepage.organisasi');
+
+//Route Request Donasi
+Route::get('/requestdonasi/{id_organisasi}', [RequestDonasiController::class, 'indexByOrg'])->name('request.katalog');
+
+Route::get('/create/requestdonasi/{id_organisasi}', function($id_organisasi){
+    return view('register_requestDonasi', compact('id_organisasi'));
+})->name('create.requestdonasi');
+
+Route::post('/create/requestdonasi', [RequestDonasiController::class, 'create'])->name('create.requestdonasi.post');
+
+Route::put('/update/requestdonasi/{id}', [RequestDonasiController::class, 'update'])->name('update.requestdonasi');
+Route::get('/edit/requestdonasi/{id}', [RequestDonasiController::class, 'edit'])->name('edit.requestdonasi');
+Route::delete('/delete/requestdonasi/{id}', [RequestDonasiController::class, 'destroy'])->name('destroy.requestdonasi');
+Route::get('/search/requestdonasi', [RequestDonasiController::class, 'search'])->name('search.requestdonasi');
