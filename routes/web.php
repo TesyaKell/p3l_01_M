@@ -266,3 +266,23 @@ Route::get('/penitip/search', [PenitipController::class, 'searchPenitip'])->name
 
 Route::delete('/delete/penitip/{id}', [PenitipController::class, 'destroy'])->name('destroy.penitip');
 
+//Route to jabatan - Pegawai - CS
+Route::get('/orghomepage', function(){
+    return view('orghomepage');
+})->name('homepage.organisasi');
+
+//Route Request Donasi
+Route::get('/requestdonasi/{id_organisasi}', [RequestDonasiController::class, 'indexByOrg'])->name('request.katalog');
+
+Route::get('/create/requestdonasi/{id_organisasi}', function($id_organisasi){
+    return view('register_requestDonasi', compact('id_organisasi'));
+})->name('create.requestdonasi');
+
+Route::post('/create/requestdonasi', [RequestDonasiController::class, 'create'])->name('create.requestdonasi.post');
+
+Route::put('/update/requestdonasi/{id}', [RequestDonasiController::class, 'update'])->name('update.requestdonasi');
+Route::get('/edit/requestdonasi/{id}', [RequestDonasiController::class, 'edit'])->name('edit.requestdonasi');
+Route::delete('/delete/requestdonasi/{id}', [RequestDonasiController::class, 'destroy'])->name('destroy.requestdonasi');
+Route::get('/search/requestdonasi', [RequestDonasiController::class, 'search'])->name('search.requestdonasi');
+
+

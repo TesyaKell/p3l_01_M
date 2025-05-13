@@ -131,7 +131,7 @@ class PenitipController extends Controller
         $user->save();
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
-
+    }
     public function update(Request $request, string $id)
     {
         $request->validate([
@@ -198,45 +198,45 @@ class PenitipController extends Controller
         $penitip->delete();
         return redirect()->back()->with('status', 'Profile Deleted successfully!');
     }
-    public function forgot_password(Request $request): RedirectResponse
-    {
-        $user = Helper::getLoggedInUser('penitip');
+    // public function forgot_password(Request $request): RedirectResponse
+    // {
+    //     $user = Helper::getLoggedInUser('penitip');
 
-        if (!$user) {
-            return redirect()->route('login.penitip')->with('error', 'Anda harus login terlebih dahulu.');
-        }
+    //     if (!$user) {
+    //         return redirect()->route('login.penitip')->with('error', 'Anda harus login terlebih dahulu.');
+    //     }
 
-        $bulan = $request->input('bulan', now()->month);
-        $tahun = $request->input('tahun', now()->year);
+    //     $bulan = $request->input('bulan', now()->month);
+    //     $tahun = $request->input('tahun', now()->year);
 
-        $penitip = Penitip::findOrFail($user->id_penitip);
-        $id_penitip = $penitip->id_penitip;
+    //     $penitip = Penitip::findOrFail($user->id_penitip);
+    //     $id_penitip = $penitip->id_penitip;
 
-        $transaksi = DB::table('barang')
-            ->join('detail_transaksi', 'barang.kode_barang', '=', 'detail_transaksi.kode_barang')
-            ->join('transaksi', 'detail_transaksi.no_nota', '=', 'transaksi.no_nota')
-            ->where('barang.id_penitip', $id_penitip)
-            ->whereMonth('transaksi.tanggal_lunas', $bulan)
-            ->whereYear('transaksi.tanggal_lunas', $tahun)
-            ->select(
-                'barang.kode_barang',
-                'barang.nama_barang',
-                'barang.tanggal_masuk',
-                'transaksi.tanggal_lunas as tanggal_laku',
-                'detail_transaksi.harga_jual_bersih',
-                'detail_transaksi.bonus',
-                DB::raw('(detail_transaksi.harga_jual_bersih + detail_transaksi.bonus) as pendapatan')
-            )
-            ->get();
+    //     $transaksi = DB::table('barang')
+    //         ->join('detail_transaksi', 'barang.kode_barang', '=', 'detail_transaksi.kode_barang')
+    //         ->join('transaksi', 'detail_transaksi.no_nota', '=', 'transaksi.no_nota')
+    //         ->where('barang.id_penitip', $id_penitip)
+    //         ->whereMonth('transaksi.tanggal_lunas', $bulan)
+    //         ->whereYear('transaksi.tanggal_lunas', $tahun)
+    //         ->select(
+    //             'barang.kode_barang',
+    //             'barang.nama_barang',
+    //             'barang.tanggal_masuk',
+    //             'transaksi.tanggal_lunas as tanggal_laku',
+    //             'detail_transaksi.harga_jual_bersih',
+    //             'detail_transaksi.bonus',
+    //             DB::raw('(detail_transaksi.harga_jual_bersih + detail_transaksi.bonus) as pendapatan')
+    //         )
+    //         ->get();
 
-        return view('historyPenjualanPenitip', [
-            'penitip' => $penitip,
-            'transaksi' => $transaksi,
-            'bulan' => (int) $bulan,
-            'tahun' => (int) $tahun,
-            'tanggal_cetak' => now()->format('d/m/Y'),
-        ]);
-    }
+    //     return view('historyPenjualanPenitip', [
+    //         'penitip' => $penitip,
+    //         'transaksi' => $transaksi,
+    //         'bulan' => (int) $bulan,
+    //         'tahun' => (int) $tahun,
+    //         'tanggal_cetak' => now()->format('d/m/Y'),
+    //     ]);
+    // }
     public function showAllPenitip(){
         $table = Penitip::latest()->paginate(10);
         return view('katalogPenitip', compact('table'));
