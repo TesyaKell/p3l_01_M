@@ -45,7 +45,7 @@
 
         .register-card {
             flex: 1;
-            max-width: 400px;
+            max-width: 600px;
             height: 800px;
             border-radius: 15px;
             overflow: visible;
@@ -152,9 +152,9 @@
     <div class="wrapper">
 
         <!-- Image Card -->
-        <div class="image-card">
+        <!-- <div class="image-card">
             <img src="/images/bck3.png" alt="Register Image">
-        </div>
+        </div> -->
 
         <!-- Register Card -->
         <div class="register-card">
@@ -176,38 +176,46 @@
                 </div>
             @endif
 
-            <h3 class="text-center mb-4 fw-bold" style="color: #504f4f;">
-                {{ isset($role) ? 'Register as ' . ucfirst($role) : 'Welcome to ReUsMart' }}
+            <h3 class="text-center mb-2 mt-1 fw-bold" style="color: #504f4f;">
+                {{ isset($role) ? 'Register ' . ucfirst($role) : 'Welcome to ReUseMart' }}
             </h3>
 
-            <form method="post" action="{{ route('register.penitip.post') }}">
+            <form method="post" action="{{ route('register.penitip.post') }}" enctype="multipart/form-data">
                 @csrf
-                <div class="mb-3">
-                    <label for="nama_penitip" class="form-label">Full Name</label>
+                <div class="mb-2">
+                    <label for="nama_penitip" class="form-label">Nama Lengkap</label>
                     <input type="text" class="form-control" id="nama_penitip" name="nama_penitip"
                         placeholder="Enter your full name">
                 </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email address</label>
+                <div class="mb-2">
+                    <label for="email" class="form-label">Email</label>
                     <input type="email" class="form-control" id="email" name="email"
                         placeholder="Enter your email">
                 </div>
-                <div class="mb-3">
-                    <label for="no_telp" class="form-label">Phone Number</label>
+                <div class="mb-2">
+                    <label for="no_telp" class="form-label">Nomor Telepon</label>
                     <input type="text" class="form-control" id="no_telp" name="no_telp"
                         placeholder="Enter phone number">
                 </div>
-                <div class="mb-3">
-                    <label for="tanggal_lahir" class="form-label">Date of Birth</label>
+                <div class="mb-2">
+                    <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
                     <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir">
                 </div>
+                <div class="mb-2">
+                    <label for="nik" class="form-label">nik</label>
+                    <input type="text" class="form-control" id="nik" name="nik">
+                </div>
+                <div class="mb-2">
+                    <label for="foto_ktp" class="form-label">Foto KTP</label>
+                    <input type="file" class="form-control" id="foto_ktp" name="foto_ktp">
+                </div>
                 <!-- untuk password dan password_confirmation di kirim via email -->
-                <!-- <div class="mb-3">
+                <div class="mb-2">
                     <label for="password" class="form-label">Password</label>
                     <input type="password" class="form-control" id="password" name="password"
                         placeholder="Enter your password">
                 </div>
-                <div>
+                <!-- <div>
                     <label for="password_confirmation" class="form-label">Confirm Password</label>
                     <input type="password" class="form-control" id="password_confirmation" name="password_confirmation"
                         placeholder="Confirm your password">

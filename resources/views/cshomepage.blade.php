@@ -5,103 +5,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CS - Homepage</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
         body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            display: flex;
+            overflow-x: hidden;
         }
 
         .sidebar {
-            width: 220px;
             height: 100vh;
             background-color: #edd091;
-            color: black;
-            transition: width 0.3s;
-            overflow: hidden;
-            border-right: 1px solid black;
+            border-right: 1px solid #c7a14e;
+            transition: all 0.3s ease;
         }
 
         .sidebar.collapsed {
-            width: 60px;
+            width: 100px !important;
         }
 
-        .sidebar h2 {
-            font-size: 1.4rem;
-            text-align: center;
-            margin: 1.5rem 0;
-            transition: opacity 0.3s;
-        }
-
-        .sidebar.collapsed h2 {
-            opacity: 0;
-        }
-
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            color: black;
-            text-decoration: none;
-            padding: 1rem;
-            transition: background-color 0.3s;
-        }
-
-        .sidebar a:hover {
-            background-color: #c7a14e;
-        }
-
-        .sidebar i {
-            margin-right: 1rem;
-        }
-
-        .sidebar.collapsed a span {
+        .sidebar.collapsed .nav-link span {
             display: none;
+            transition: all 0.3s ease;
         }
 
-        .toggle-btn {
-            background-color: #c7a14e;
+        .sidebar .nav-link {
             color: black;
-            border: none;
-            width: 100%;
-            padding: 1rem;
-            cursor: pointer;
         }
 
-        .main-content {
-            flex-grow: 1;
-            background-color: #f8f9fa;
-            min-height: 100vh;
+        .sidebar .nav-link:hover {
+            background-color: #c7a14e;
         }
+
+        /* .content-area {
+            padding: 1rem;
+        } */
 
         iframe {
             width: 100%;
             height: 100%;
             border: none;
+            /* border-radius: 0rem; */
             background-color: #cf9651;
         }
     </style>
 </head>
+
 <body>
 
-    <div class="sidebar" id="sidebar">
-        <button class="toggle-btn" onclick="toggleSidebar()">CS menu</button>
-        <a href="{{ route('register.penitip') }}" target="cs-content">
-            <i>📋</i><span>Register Penitip</span>
-        </a>
-        <a href="{{ route('jabatan') }}" target="cs-content">
-            <i>💬</i><span>Chat</span>
-        </a>
-        <a href="/">
-            <i>🏠</i><span>Beranda</span>
-        </a>
-    </div>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar p-3" style="width: 220px;">
+            <button class="btn btn-warning w-100 mb-4" onclick="toggleSidebar()">☰ </button>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="{{ route('register.penitip') }}" target="cs-content">
+                    <i class="me-1">📋</i><span>Register Penitip</span>
+                </a>
+                <a class="nav-link" href="{{ route('showalldata.penitip') }}" target="cs-content">
+                    <i class="me-1">📋</i><span>Data Penitip</span>
+                </a>
+                <a class="nav-link" href="{{ route('jabatan') }}" target="cs-content">
+                    <i class="me-1">💬</i><span>Chat</span>
+                </a>
+                <a class="nav-link" href="/">
+                    <i class="me-1">🏠</i><span>Beranda</span>
+                </a>
+            </nav>
+        </div>
 
-    <div class="main-content">
-        <iframe name="cs-content" title="CS Content Frame"></iframe>
+        <!-- Main Content -->
+        <div class="flex-grow-1 content-area">
+            <iframe name="cs-content" title="CS Content Frame"></iframe>
+        </div>
     </div>
 
     <script>

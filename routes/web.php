@@ -134,5 +134,17 @@ Route::get('/cshomepage', function(){
 
 //Register Penitip
 Route::get('/register/penitip', function(){
-    return view('register_penitip');
+    return view('register_penitip',['role' => session('selected_role', 'penitip')]);
 })->name('register.penitip');
+
+Route::get('/alldata/penitip', [PenitipController::class, 'showAllPenitip'])->name('showalldata.penitip');
+
+Route::post('/register/penitip', [PenitipController::class, 'register'])->name('register.penitip.post');
+
+Route::put('/update/penitip/{id}', [PenitipController::class, 'update'])->name('update.penitip');
+Route::get('/edit/penitip/{id}', [PenitipController::class, 'edit'])->name('edit.penitip');
+
+Route::get('/penitip/search', [PenitipController::class, 'searchPenitip'])->name('search.penitip');
+
+
+Route::delete('/delete/penitip/{id}', [PenitipController::class, 'destroy'])->name('destroy.penitip');

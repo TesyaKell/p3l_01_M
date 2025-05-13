@@ -68,7 +68,7 @@ class PegawaiController extends Controller
             }else if($jabatan->nama_jabatan == "Kurir"){
                 return redirect('/dasboard')->with('status', 'Login successful!');
             }else{
-                return redirect('/jabatan')->with('status', 'Login Failed!');
+                return redirect('/login/pegawai')->with('status', 'Login Failed!');
             }
         }
 
