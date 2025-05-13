@@ -8,22 +8,70 @@ use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PenitipController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\MerchandiseController;
 use App\Models\Barang;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\RequestDonasiController;
+use App\Http\Controllers\KeranjangController;
+use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\AlamatController;
+use App\Http\Controllers\KomentarController;
 
-Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
+Route::post('/komentar', [KomentarController::class, 'store'])->name('komentar.store');
+
+
+//ALAMAT
+Route::middleware('logged_in')->group(function () {
+    Route::get('/alamat', [AlamatController::class, 'index'])->name('alamat.index');
+    Route::post('/alamat', [AlamatController::class, 'store'])->name('alamat.store');
+    Route::put('/alamat/{id}', [AlamatController::class, 'update'])->name('alamat.update');
+    Route::delete('/alamat/{id}', [AlamatController::class, 'destroy'])->name('alamat.destroy');
+})->name('alamat');
+
+
+//History penjualan penitip
+Route::get('/penitip/history', [PenitipController::class, 'historyPenjualanPenitip'])->name('historyPenjualanPenitip');
+
+
+
+// Menangani permintaan POST ke route /
+Route::post('/', [ProfilController::class, 'logout'])->name('homeProduk');
+Route::post('/update-profil', [PembeliController::class, 'updateProfil'])->name('pembeli.updateProfil')->middleware('logged_in');
+Route::post('/update-profil/penitip', [PenitipController::class, 'updateProfil'])->name('penitip.updateProfil')->middleware('logged_in');
+Route::post('/update-profil/organisasi', [OrganisasiController::class, 'updateProfil'])->name('organisasi.updateProfil')->middleware('logged_in');
+
+
+
+//Route::post('/pembeli/upload-foto', [PembeliController::class, 'uploadFoto'])->name('pembeli.uploadFoto')->middleware('logged_in');
+
+
+Route::get('/profil', [ProfilController::class, 'index'])->name('profil')->middleware('logged_in');
 //Route::get('/profil', [ProfilController::class, 'index'])->middleware('auth');
 
 //home
 Route::get('/', [BarangController::class, 'showKatalog'])->name('homeProduk');
+Route::get('/homeProduk', [BarangController::class, 'showKatalog'])->name('homeProduk')->middleware('logged_in');
 
-Route::get('/homeProduk', [BarangController::class, 'showKatalog'])->name('homeProduk');
 
 //BARANG
-Route::get('/katalogBarang', [BarangController::class, 'index'])->name('katalogbarang')->middleware('auth');
-Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('auth');
+Route::get('/katalogbarang', [BarangController::class, 'katalogbarang'])->name('katalogbarang')->middleware('logged_in');
+Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('logged_in');
+Route::get('/detail-produk/{id}', [BarangController::class, 'detailProduk'])->name('detailProduk');
+Route::get('/produk', [BarangController::class, 'index'])->name('homeProduk');
+Route::get('/search', [BarangController::class, 'search'])->name('search');
 
+
+//KERANJANG
+Route::post('/keranjang', [BarangController::class, 'tambahKeKeranjang'])->name('keranjang')->middleware('logged_in');
+Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang')->middleware('logged_in');
+
+
+//TRANSAKSI
+Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi');
+
+
+//Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('logged_in:organisasi,pembeli');
 
 // Pembeli
 Route::get('/login/pembeli', function () {
@@ -104,16 +152,16 @@ Route::get('/verify_penitip/{key}', [PenitipController::class, 'verify'])->name(
 
 
 // Forget Password
-Route::get('/forgetPassword', function () {
-    return view('forgetPassword');
+Route::get('/forgetPassword/{role}', function (string $role) {
+    return view('forgetPassword', ['role' => $role]);
 })->name('password.request');
 
-Route::get('/resetPassword/{token}', function (string $token) {
-    return view('resetPassword', ['token' => $token]);
+Route::get('/resetPassword/{role}/{token}', function (string $role, string $token) {
+    return view('resetPassword', ['role' => $role, 'token' => $token]);
 })->name('password.reset');
 
-Route::post('/forgot_password', [UserController::class, 'forgot_password'])->name('password.email');
-Route::post('/reset_password', [UserController::class, 'reset_password'])->name('password.update');
+Route::post('/forgot_password/{role}', [UserController::class, 'forgot_password'])->name('password.email');
+Route::post('/reset_password/{role}', [UserController::class, 'reset_password'])->name('password.update');
 
 
 // Optional View Route for Jabatan
@@ -121,10 +169,79 @@ Route::get('/jabatan', function () {
     return view('jabatan');
 })->name('jabatan');
 
+Route::get('/jabatan-pegawai', function () {
+    return view('jabatanPegawai');
+})->name('jabatan.pegawai');
+
+
+
 Route::middleware(['auth:penitip'])->group(function () {
     Route::get('/dashboard/penitip', [App\Http\Controllers\PenitipController::class, 'index'])->name('penitip.dashboard');
 });
 
+
+Route::get('/set-role', function (Request $request) {
+    $role = strtolower(str_replace(' ', '', $request->role));
+    session(['role' => $request->role]);
+
+    // Mapping role ke path login
+    $routes = [
+        'owner' => '/owner/login',
+        'admin' => '/admin/login',
+        'hunter' => '/hunter/login',
+        'qualitycontrol' => '/qc/login',
+        'customerservice' => '/customerService/login',
+        'kurir' => '/kurir/login',
+    ];
+
+    if (array_key_exists($role, $routes)) {
+        return redirect($routes[$role]);
+    }
+
+    return redirect('/');
+})->name('set.role');
+
+Route::get('/set-role/{role}', function ($role) {
+    $loginRoutes = [
+        'Owner' => '/owner/login',
+        'Admin' => '/admin/login',
+        'Hunter' => '/hunter/login',
+        'Quality Control' => '/qc/login',
+        'Customer Service' => '/customerService/login',
+        'Kurir' => '/kurir/login',
+    ];
+
+    if (array_key_exists($role, $loginRoutes)) {
+        return redirect($loginRoutes[$role]);
+    }
+
+    abort(404, 'Role not found');
+})->name('set.role');
+
+Route::post('/logout', function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect()->route('jabatan.pegawai'); // Redirect to jabatan-pegawai
+})->name('logout');
+
+
+
+Route::get('/merchandise', [MerchandiseController::class, 'index'])->name('merchandise.index');
+
+Route::post('/redeem-merchandise', function (Request $request) {
+    $merchandise = Merchandise::find($request->merchandise_id);
+
+    if (!$merchandise || $merchandise->stok <= 0) {
+        return response()->json(['success' => false, 'message' => 'Merchandise not available or out of stock']);
+    }
+
+    $merchandise->stok -= 1;
+    $merchandise->save();
+
+
+    return response()->json(['success' => true, 'new_stock' => $merchandise->stok]);
+});
 
 //Route to jabatan - Pegawai - CS
 Route::get('/cshomepage', function(){
@@ -148,3 +265,4 @@ Route::get('/penitip/search', [PenitipController::class, 'searchPenitip'])->name
 
 
 Route::delete('/delete/penitip/{id}', [PenitipController::class, 'destroy'])->name('destroy.penitip');
+

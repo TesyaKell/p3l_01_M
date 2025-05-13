@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Organisasi;
+
+use App\Http\Helper\Helper;
 use App\Notifications\VerifyEmail;
 use Auth;
 use Hash;
@@ -32,6 +34,7 @@ class OrganisasiController extends Controller
     public function register(Request $request)
     {
         $request->validate([
+            'id_organisasi' => 'required|string|max:10|unique:organisasi,id_organisasi',
             'nama_organisasi' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:organisasi',
             'password' => 'required|string|min:2|confirmed',
@@ -94,15 +97,23 @@ class OrganisasiController extends Controller
         return redirect('/login/organisasi')->with('error', 'Invalid or expired verification link');
     }
 
-    public function forgot_password(Request $request): RedirectResponse
+    public function updateProfil(Request $request)
     {
-        $request->validate(['email' => 'required|email']);
+        $user = Helper::getLoggedInUser('organisasi');
 
-        $status = Password::broker('organisasi')->sendResetLink($request->only('email'));
+        if (!$user) {
+            return redirect()->route('login.organisasi')->with('error', 'Anda harus login terlebih dahulu.');
+        }
 
-        return $status === Password::RESET_LINK_SENT
-            ? back()->with(['status' => __($status)])
-            : back()->withErrors(['email' => __($status)]);
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'no_telp' => 'required|string|max:20',
+        ]);
+
+        $user->nama_organisasi = $request->nama;
+        $user->no_telp = $request->no_telp;
+        $user->save();
+
+        return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
     }
-
 }

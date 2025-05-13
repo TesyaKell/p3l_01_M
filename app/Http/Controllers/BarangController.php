@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Barang;
+use App\Http\Helper\Helper;
+use App\Models\Keranjang;
+
+
 use Illuminate\Support\Facades\Storage;
 
 class BarangController extends Controller
@@ -11,7 +15,7 @@ class BarangController extends Controller
     public function index()
     {
         $barang = Barang::all();
-        return view('barang.index', compact('barang'));
+        return view('katalogbarang', compact('barang'));
     }
 
     public function create()
@@ -21,23 +25,37 @@ class BarangController extends Controller
 
     public function showKatalog()
     {
-        // dd(\Auth::guard('organisasi')->check());
         $kategoriList = \App\Models\KategoriBarang::all(); // Fetch all categories
         $barangTersedia = Barang::with('kategori')->where('status', 'tersedia')->get();
 
         return view('homeProduk', compact('kategoriList', 'barangTersedia'));
     }
 
-    public function katalogBarang(Request $request)
+    public function katalogbarang(Request $request)
     {
         $status = $request->get('status', 'tersedia');
 
         $barang = \App\Models\Barang::where('status', $status)->get();
+        $kategoriList = \App\Models\KategoriBarang::all(); // Tambah ini
 
-        return view('katalogBarang', [
-            'barangList' => $barang,
+        return view('katalogbarang', [
+            'barangTersedia' => $barang,
+            'kategoriList' => $kategoriList,
             'activeStatus' => $status,
         ]);
+
+    }
+
+    public function detailProduk($id)
+    {
+        $barang = \App\Models\Barang::with('kategori')->findOrFail($id);
+
+        $komentar = \App\Models\RuangDiskusi::with(['pembeli', 'pegawai'])
+            ->where('kode_barang', $barang->kode_barang)
+            ->orderBy('date_added', 'asc')
+            ->get();
+
+        return view('detailProduk', compact('barang', 'komentar'));
     }
 
 
@@ -84,5 +102,54 @@ class BarangController extends Controller
 
         return redirect()->route('barang.index')->with('success', 'Barang berhasil ditambahkan!');
     }
+
+    public function tambahKeKeranjang(Request $request)
+    {
+        $user = Helper::getLoggedInUser('pembeli');
+
+        if (!$user) {
+            return redirect()->route('jabatan')->with('error', 'Silakan login terlebih dahulu sebagai pembeli.');
+        }
+
+        $request->validate([
+            'kode_barang' => 'required|exists:barang,kode_barang',
+        ]);
+
+        // Cek apakah barang sudah ada di keranjang pembeli
+        $exists = \App\Models\Keranjang::where('id_pembeli', $user->id_pembeli)
+            ->where('kode_barang', $request->kode_barang)
+            ->exists();
+
+        if ($exists) {
+            return redirect()->back()->with('error', 'Barang ini sudah ada di keranjang Anda.');
+        }
+
+        // Jika belum ada, tambahkan ke keranjang
+        \App\Models\Keranjang::create([
+            'id_pembeli' => $user->id_pembeli,
+            'kode_barang' => $request->kode_barang,
+        ]);
+
+        return redirect()->route('detailProduk', ['id' => $request->kode_barang])
+            ->with('success', 'Barang berhasil dimasukkan ke keranjang!');
+    }
+
+
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+
+        $results = Barang::with('kategori')
+            ->where('nama_barang', 'like', "%{$query}%")
+            ->where('status', 'tersedia')
+            ->orWhereHas('kategori', function ($q) use ($query) {
+                $q->where('nama_kategori', 'like', "%{$query}%");
+            })
+            ->where('status', 'tersedia')
+            ->get();
+
+        return view('search', compact('results', 'query'));
+    }
+
 
 }

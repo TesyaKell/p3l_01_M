@@ -164,7 +164,7 @@
 
         <div class="roles-container">
             <!-- Pegawai Role -->
-            <a href="{{ route('set.role', ['role' => 'pegawai']) }}" class="role-card">
+            <a href="{{ route('jabatan.pegawai') }}" class="role-card">
                 <div class="role-icon">
                     <i class="fas fa-user-tie"></i>
                 </div>
@@ -174,6 +174,7 @@
                 </div>
                 <i class="fas fa-chevron-right arrow-icon"></i>
             </a>
+
 
             <!-- Penitip Role -->
             <a href="{{ route('set.role', ['role' => 'penitip']) }}" class="role-card">

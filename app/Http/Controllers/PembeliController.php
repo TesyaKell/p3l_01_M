@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Storage;
+use App\Http\Helper\Helper;
 use App\Models\Pembeli;
 use App\Notifications\VerifyEmail;
 use Auth;
@@ -85,7 +87,7 @@ class PembeliController extends Controller
         }
 
         if (Auth::guard('pembeli')->attempt($request->only('email', 'password'))) {
-            return redirect('/dashboard')->with('status', 'Login successful!');
+            return redirect('/')->with('status', 'Login successful!');
         }
 
         return redirect('/login/pembeli')->with('error', 'Invalid credentials');
@@ -105,12 +107,23 @@ class PembeliController extends Controller
         return redirect('/login/pembeli')->with('error', 'Invalid verification link');
     }
 
-    public function forgot_password(Request $request): RedirectResponse
+    // public function uploadFoto(Request $request)
+    // {
+    //     $request->validate([
+    //         'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+    //     ]);
+
+    //     $user = Auth::guard('pembeli')->user();
+    //     $filename = time() . '.' . $request->foto->extension();
+    //     $request->foto->move(public_path('images'), $filename);
+    //     $user->profile_photo_path = $filename;
+    //     $user->save();
+
+    //     return back()->with('status', 'Foto profil berhasil diunggah.');
+    // }
+
+    public function updateProfil(Request $request)
     {
-        $request->validate(['email' => 'required|email']);
-
-        $status = Password::broker('pembeli')->sendResetLink($request->only('email'));
-
         return $status === Password::RESET_LINK_SENT
             ? back()->with(['status' => __($status)])
             : back()->withErrors(['email' => __($status)]);
@@ -126,7 +139,44 @@ class PembeliController extends Controller
     }
     public function logout()
     {
-        Auth::guard('pembeli')->logout();
-        return redirect('/login/pembeli')->with('status', 'Logout successful!');
+        // Dapatkan pengguna yang sedang login menggunakan guard 'pembeli'
+        $user = Helper::getLoggedInUser('pembeli');
+
+        // Pastikan pengguna ada (terautentikasi)
+        if (!$user) {
+            return redirect()->route('login.pembeli')->with('error', 'Anda harus login terlebih dahulu.');
+        }
+
+        // Validasi input
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'no_telp' => 'required|string|max:20',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Update nama dan nomor telepon
+        $user->nama_pembeli = $request->nama;
+        $user->no_telp = $request->no_telp;
+
+        // Jika ada foto baru
+        if ($request->hasFile('foto')) {
+            // Hapus foto lama jika ada
+            if ($user->profile_photo_path) {
+                Storage::delete('public/images/' . $user->profile_photo_path);
+            }
+
+            // Simpan foto baru
+            $file = $request->file('foto');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('public/images', $filename);
+            $user->profile_photo_path = $filename;
+        }
+
+        // Simpan perubahan
+        $user->save();
+
+        return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
     }
+
+
 }

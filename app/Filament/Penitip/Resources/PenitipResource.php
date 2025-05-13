@@ -31,7 +31,14 @@ class PenitipResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('id_penitip')
+                    ->label('ID Penitip')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('nama_penitip')
+                    ->label('Nama Penitip')
+                    ->sortable()
+                    ->searchable(),
             ])
             ->filters([
                 //

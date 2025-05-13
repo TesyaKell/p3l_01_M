@@ -7,13 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class KategoriBarang extends Model
 {
     protected $table = 'kategori_barang';
+    protected $keyType = 'string';
     protected $primaryKey = 'id_kategori';
 
-    // mengisi data secara massal (bukan hanya pada relasi)
     protected $fillable = ['nama_kategori'];
 
     public function barang()
     {
-        return $this->hasMany(Barang::class, 'kategori_id');
+        return $this->hasMany(Barang::class, 'id_kategori');
     }
+
+
 }

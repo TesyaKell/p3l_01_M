@@ -11,6 +11,7 @@ class Pegawai extends Authenticatable
     protected $table = 'pegawai';
     protected $primaryKey = 'id_pegawai';
     public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
         'id_pegawai',
