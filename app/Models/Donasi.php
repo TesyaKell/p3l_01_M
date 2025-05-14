@@ -28,7 +28,7 @@ class Donasi extends Model
 
     public function request()
     {
-        return $this->belongsTo(RequestDonasi::class, 'id_request', 'id_request');
+        return $this->belongsTo(RequestDonasi::class, 'id_request');
     }
 
     public function penitip()

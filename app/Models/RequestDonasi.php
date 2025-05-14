@@ -21,5 +21,15 @@ class RequestDonasi extends Model
     {
         return $this->belongsTo(Organisasi::class, 'id_organisasi');
     }
+    // App\Models\RequestDonasi.php
+    public function penitip()
+    {
+        return $this->belongsTo(\App\Models\Penitip::class, 'id_penitip');
+    }
+    public function donasi()
+    {
+        return $this->hasOne(\App\Models\Donasi::class, 'id_request', 'id_request');
+    }
+
 
 }
