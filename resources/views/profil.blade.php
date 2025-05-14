@@ -60,16 +60,17 @@ use App\Http\Helper\Helper;
                 <!-- Profile Card -->
                 <div class="col-md-8">
 
+
                     <div class="card card-custom h-100">
 
                         <div class="row g-0">
-                            @if ($guard === 'pembeli')
+                            {{-- @if ($guard === 'pembeli')
                                 <!-- Profile Image -->
                                 <div class="col-md-5 align-items-center d-flex justify-content-center">
                                     <img src="{{ $user->profile_photo_path ? asset('images/' . $user->profile_photo_path) : 'https://via.placeholder.com/200' }}"
                                         alt="Foto Profil" class="card-img-top profile-photo">
                                 </div>
-                            @endif
+                            @endif --}}
                             <!-- Profile Info -->
                             <div class="{{ $guard === 'pembeli' ? 'col-md-7' : 'col-md-12' }}">
 
@@ -101,26 +102,32 @@ use App\Http\Helper\Helper;
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card card-custom h-100">
+                    @if ($guard === 'penitip' || $guard === 'pembeli')
+                        <div class="card card-custom h-100">
 
-                        <div class="row g-0">
+                            <div class="row g-0">
 
-                            @if ($guard === 'penitip')
-                                <!-- Card Saldo dan Poin untuk Penitip -->
-                                <div class="col-md-12 mt-4">
-                                    <h5 class=" text-center mb-5 fw-bold">Saldo & Poin</h5>
-                                    <div class="ps-5 ms-2 position-relative">
-                                        <p><strong>Saldo:</strong> Rp
-                                            {{ number_format($user->saldo ?? 0, 0, ',', '.') }}</p>
-                                        <p><strong>Poin:</strong> {{ $user->poin ?? 0 }}</p>
-
-
+                                @if ($guard === 'penitip')
+                                    <div class="col-md-12 mt-4">
+                                        <h5 class=" text-center mb-5 fw-bold">Saldo & Poin</h5>
+                                        <div class="ps-5 ms-2 position-relative">
+                                            <p><strong>Saldo:</strong> Rp
+                                                {{ number_format($user->saldo ?? 0, 0, ',', '.') }}</p>
+                                            <p><strong>Poin:</strong> {{ $user->poin ?? 0 }}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            @endif
+                                @elseif ($guard === 'pembeli')
+                                    <div class="col-md-12 mt-4">
+                                        <h5 class=" text-center mb-5 fw-bold">Poin</h5>
+                                        <div class="ps-5 ms-2 position-relative">
+                                            <p><strong>Poin:</strong> {{ $user->poin ?? 0 }}</p>
+                                        </div>
+                                    </div>
+                                @endif
 
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 </div>
             </div>
         @endif

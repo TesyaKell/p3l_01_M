@@ -185,7 +185,6 @@ Route::get('/set-role/{role}', function ($role) {
         'Admin' => '/admin/login',
         'Hunter' => '/hunter/login',
         'Quality Control' => '/qc/login',
-        'Customer Service' => '/customerService/login',
         'Kurir' => '/kurir/login',
     ];
 
