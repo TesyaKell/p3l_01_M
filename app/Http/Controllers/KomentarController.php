@@ -26,7 +26,7 @@ class KomentarController extends Controller
             $data['id_pembeli'] = auth()->guard('pembeli')->user()->id_pembeli;
         } elseif (auth()->guard('pegawai')->check()) {
             $pegawai = auth()->guard('pegawai')->user();
-            if ($pegawai->jabatan === 'Customer Service') {
+            if ($pegawai->jabatan->nama_jabatan === 'Customer Service') {
                 $data['id_pegawai'] = $pegawai->id_pegawai;
             } else {
                 return back()->with('error', 'Hanya pembeli atau Customer Service yang dapat berkomentar.');

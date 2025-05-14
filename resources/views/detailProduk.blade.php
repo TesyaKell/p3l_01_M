@@ -1,3 +1,6 @@
+<?php
+use App\Http\Helper\Helper;
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -97,7 +100,6 @@
             <img src="{{ asset('images/' . $barang->foto_produk) }}" alt="{{ $barang->nama_barang }}" class="p-3">
             <div class="card-body ms-5">
                 <!-- konten produk lainnya -->
-                <h5 class="mb-3">Saldo & Poin</h5>
                 <p class="text-muted">{{ $barang->id_kategori ?? 'Tidak diketahui' }}</p>
                 <h2><strong>{{ $barang->nama_barang }}</strong></h2>
                 <h3 class="mt-3 text-pink"><strong>Rp{{ number_format($barang->harga, 0, ',', '.') }}</strong></h3>
@@ -150,8 +152,8 @@
         @endforelse
 
 
-        @if (auth()->guard('pembeli')->check() ||
-                (auth()->guard('pegawai')->check() && auth()->user()->jabatan === 'Customer Service'))
+        @if (Helper::isLoggedIn(['pegawai', 'pembeli']) ||
+                (Helper::isLoggedIn(['pegawai', 'pembeli']) && auth()->user()->jabatan === 'Customer Service'))
             <form action="{{ route('komentar.store') }}" method="POST" class="mt-4">
                 @csrf
                 <input type="hidden" name="kode_barang" value="{{ $barang->kode_barang }}">
