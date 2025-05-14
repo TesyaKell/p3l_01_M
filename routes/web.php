@@ -135,9 +135,9 @@ Route::post('/register/organisasi', [OrganisasiController::class, 'register'])->
 
 
 // Verification
-Route::get('/verify_organisasi/{key}', [OrganisasiController::class, 'verify'])->name('verify');
-Route::get('/verify_pembeli/{key}', [PembeliController::class, 'verify'])->name('verify');
-Route::get('/verify_penitip/{key}', [PenitipController::class, 'verify'])->name('verify');
+Route::get('/verify_organisasi/{key}', [OrganisasiController::class, 'verify'])->name('verify.organisasi');
+Route::get('/verify_pembeli/{key}', [PembeliController::class, 'verify'])->name('verify.pembeli');
+Route::get('/verify_penitip/{key}', [PenitipController::class, 'verify'])->name('verify.penitip');
 
 
 

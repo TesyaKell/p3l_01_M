@@ -221,14 +221,14 @@ use App\Http\Helper\Helper;
     <!-- Tabel Request & History -->
     @if (Helper::isLoggedIn(['organisasi']))
         <!-- Cek apakah yang login adalah organisasi -->
-        <div class="my-4 text-start mt-5">
+        <div class="my-4 ms-5 text-start mt-5">
             <a id="btnRequest" class="btn btn-primary me-2"
                 href={{ route('profil', ['akses' => 'request_donasi']) }}>Request Donasi</a>
             <a id="btnHistory" class="btn btn-secondary"
                 href={{ route('profil', ['akses' => 'history_donasi']) }}>History Donasi</a>
         </div>
 
-        <div id="tableRequest" class="table-responsive">
+        <div id="tableRequest" class="table-responsive ms-5">
             <h5>Daftar Request Donasi</h5>
             <table class="table table-bordered">
                 <thead class="table-light">
@@ -252,7 +252,7 @@ use App\Http\Helper\Helper;
             </table>
         </div>
 
-        <div id="tableHistory" class="table-responsive d-none">
+        <div id="tableHistory" class="table-responsive d-none ms-5">
             <h5>Riwayat Donasi</h5>
             <table class="table table-bordered">
                 <thead class="table-light">
