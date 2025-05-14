@@ -12,8 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pegawais', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->uuid('id_pegawai')->primary();
+            $table->foreignId('kode_jabatan')->constrained('jabatans')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('nama_pegawai');
+            $table->string('email');
+            $table->string('password');
+            // $table->string('no_telp');
+            $table->date('tanggal_lahir');
         });
     }
 

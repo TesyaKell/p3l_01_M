@@ -21,6 +21,10 @@ use App\Http\Controllers\KomentarController;
 
 Route::post('/komentar', [KomentarController::class, 'store'])->name('komentar.store');
 
+Route::get('/info-umum', function () {
+    return view('infoUmum');
+})->name('infoUmum');
+
 
 //ALAMAT
 Route::middleware('logged_in')->group(function () {
@@ -34,10 +38,12 @@ Route::middleware('logged_in')->group(function () {
 //History penjualan penitip
 Route::get('/penitip/history', [PenitipController::class, 'historyPenjualanPenitip'])->name('historyPenjualanPenitip');
 
+//History transaksi pembelian
+Route::get('/pembeli/history', [PembeliController::class, 'historyTransaksiPembelian'])->name('historyTransaksiPembelian');
 
 
 // Menangani permintaan POST ke route /
-Route::post('/', [ProfilController::class, 'logout'])->name('homeProduk');
+Route::post('/', [ProfilController::class, 'logout'])->name('logout');
 Route::post('/update-profil', [PembeliController::class, 'updateProfil'])->name('pembeli.updateProfil')->middleware('logged_in');
 Route::post('/update-profil/penitip', [PenitipController::class, 'updateProfil'])->name('penitip.updateProfil')->middleware('logged_in');
 Route::post('/update-profil/organisasi', [OrganisasiController::class, 'updateProfil'])->name('organisasi.updateProfil')->middleware('logged_in');
@@ -52,13 +58,13 @@ Route::get('/profil', [ProfilController::class, 'index'])->name('profil')->middl
 
 //home
 Route::get('/', [BarangController::class, 'showKatalog'])->name('homeProduk');
-Route::get('/homeProduk', [BarangController::class, 'showKatalog'])->name('homeProduk')->middleware('logged_in');
+Route::get('/homeProduk', [BarangController::class, 'showKatalog'])->name('homeProduk.logged_in')->middleware('logged_in');
 
 //BARANG
-Route::get('/katalogbarang', [BarangController::class, 'katalogbarang'])->name('katalogbarang')->middleware('logged_in');
+Route::get('/katalogbarang', [BarangController::class, 'katalogbarang'])->name('katalogbarang');
 Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('logged_in');
 Route::get('/detail-produk/{id}', [BarangController::class, 'detailProduk'])->name('detailProduk');
-Route::get('/produk', [BarangController::class, 'index'])->name('homeProduk');
+Route::get('/produk', [BarangController::class, 'index'])->name('produk');
 Route::get('/search', [BarangController::class, 'search'])->name('search');
 
 
