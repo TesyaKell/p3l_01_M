@@ -106,10 +106,17 @@ use App\Http\Helper\Helper;
                             @if ($guard === 'penitip' or $guard === 'pembeli' )
                                 <!-- Card Saldo dan Poin untuk Penitip -->
                                 <div class="col-md-12 mt-4">
-                                    <h5 class=" text-center mb-5 fw-bold">Saldo & Poin</h5>
+                                    @if($guard === 'penitip')
+                                        <h5 class=" text-center mb-5 fw-bold">Saldo & Poin</h5>
+                                    @elseif($guard === 'pembeli')
+                                        <h5 class=" text-center mb-5 fw-bold">Poin</h5>
+                                    @endif
                                     <div class="ps-5 ms-2 position-relative">
+                                        @if ($guard === 'penitip')
                                         <p><strong>Saldo:</strong> Rp
-                                            {{ number_format($user->saldo ?? 0, 0, ',', '.') }}</p>
+                                            {{ number_format($user->saldo ?? 0, 0, ',', '.') }}
+                                        </p>
+                                        @endif
                                         <p><strong>Poin:</strong> {{ $user->poin ?? 0 }}</p>
 
 
