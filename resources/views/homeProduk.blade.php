@@ -64,15 +64,25 @@ use App\Http\Helper\Helper;
 <body class="d-flex flex-column min-vh-100">
     @include('components.navbar')
 
+
+
+
     <div class="position-relative w-100 mt-2" style="max-height: 600px; overflow: hidden;">
         <img src="{{ asset('images/header.png') }}" alt="Header Image" class="img-fluid w-100"
             style="object-fit: cover; height: 100%;">
 
-        <!-- Tombol di atas gambar -->
+
+        <!-- Teks Navigasi di Atas Gambar -->
+        <div class="position-absolute top-0 start-50 translate-middle-x d-flex gap-4 mt-3 " style="z-index: 2;">
+            <a href="{{ route('homeProduk') }}" class="text-dark fw-semibold text-decoration-none">Beranda</a>
+            <a href="{{ route('infoUmum') }}" class="text-dark fw-semibold text-decoration-none">Tentang Kami</a>
+            <a href="{{ route('katalogbarang') }}" class="text-dark fw-semibold text-decoration-none">Produk</a>
+        </div>
+        {{-- <!-- Tombol di atas gambar -->
         <a href="{{ route('katalogbarang') }}" class="btn btn-dark position-absolute"
             style="bottom: 100px; left: 47%; z-index: 2;">
             Lihat Katalog Produk
-        </a>
+        </a> --}}
 
     </div>
 
