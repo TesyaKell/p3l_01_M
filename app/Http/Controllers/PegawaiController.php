@@ -42,11 +42,11 @@ class PegawaiController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'username' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255',
             'password' => 'required|string',
         ]);
 
-        if (Auth::guard('pegawai')->attempt($request->only('username', 'password'))) {
+        if (Auth::guard('pegawai')->attempt($request->only('email', 'password'))) {
             return redirect('/dashboard')->with('status', 'Login successful!');
         }
 
