@@ -17,19 +17,15 @@ use Str;
 
 class PembeliController extends Controller
 {
-
     private function generatePembeliId()
     {
-        $last = \App\Models\Organisasi::orderBy('id_organisasi', 'desc')->first();
+        do {
+            $last = \App\Models\Pembeli::orderBy('id_pembeli', 'desc')->first();
+            $nextNumber = $last ? ((int) substr($last->id_pembeli, 1)) + 1 : 1;
+            $id = 'C' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
+        } while (\App\Models\Pembeli::where('id_pembeli', $id)->exists());
 
-        if (!$last) {
-            $nextNumber = 1;
-        } else {
-            $lastNumber = (int) substr($last->id_organisasi, 3);
-            $nextNumber = $lastNumber + 1;
-        }
-
-        return 'C' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
+        return $id;
     }
 
     public function register(Request $request)

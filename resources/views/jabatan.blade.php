@@ -177,7 +177,7 @@
 
 
             <!-- Penitip Role -->
-            <a href="{{ route('set.role', ['role' => 'penitip']) }}" class="role-card">
+            <a href="{{ url('/login/penitip') }}" class="role-card">
                 <div class="role-icon">
                     <i class="fas fa-box"></i>
                 </div>
@@ -189,7 +189,7 @@
             </a>
 
             <!-- Pembeli Role -->
-            <a href="{{ route('set.role', ['role' => 'pembeli']) }}" class="role-card">
+            <a href="{{ url('/login/pembeli') }}" class="role-card">
                 <div class="role-icon">
                     <i class="fas fa-shopping-cart"></i>
                 </div>
@@ -201,7 +201,7 @@
             </a>
 
             <!-- Organisasi Role -->
-            <a href="{{ route('set.role', ['role' => 'organisasi']) }}" class="role-card">
+            <a href="{{ url('/login/organisasi') }}" class="role-card">
                 <div class="role-icon">
                     <i class="fas fa-building"></i>
                 </div>
