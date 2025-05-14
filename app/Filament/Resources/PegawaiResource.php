@@ -40,7 +40,8 @@ class PegawaiResource extends Resource
                 Forms\Components\TextInput::make('password')
                     ->password()
                     ->label('Password')
-                    ->dehydrateStateUsing(fn ($state) => bcrypt($state)),
+                    ->dehydrateStateUsing(fn ($state) => bcrypt($state))
+                    ->disabled(fn ($livewire) => $livewire->getRecord() !== null),
                 Forms\Components\DatePicker::make('tanggal_lahir')
                     ->label('Tanggal Lahir'),
             ]);

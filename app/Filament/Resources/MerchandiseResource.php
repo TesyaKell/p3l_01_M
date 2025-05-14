@@ -43,9 +43,9 @@ class MerchandiseResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id_merchandise')
-                    ->label('ID')
-                    ->sortable(),
+                // Tables\Columns\TextColumn::make('id_merchandise')
+                //     ->label('ID')
+                //     ->sortable(),
 
                 Tables\Columns\TextColumn::make('nama')
                     ->label('Nama')
