@@ -37,4 +37,10 @@ class Barang extends Model
     {
         return $this->belongsTo(KategoriBarang::class, 'id_kategori');
     }
+
+    public function penitip()
+    {
+        return $this->belongsTo(\App\Models\Penitip::class, 'id_penitip');
+    }
+
 }

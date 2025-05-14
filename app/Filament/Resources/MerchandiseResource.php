@@ -60,13 +60,13 @@ class MerchandiseResource extends Resource
                 Tables\Columns\ImageColumn::make('gambar')
                     ->label('Gambar'),
 
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Dibuat')
-                    ->dateTime(),
+                // Tables\Columns\TextColumn::make('created_at')
+                //     ->label('Dibuat')
+                //     ->dateTime(),
 
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Diperbarui')
-                    ->dateTime(),
+                // Tables\Columns\TextColumn::make('updated_at')
+                //     ->label('Diperbarui')
+                //     ->dateTime(),
             ])
             ->filters([])
 

@@ -37,13 +37,15 @@ class OrganisasiResource extends Resource
                 Forms\Components\TextInput::make('password')
                     ->password()
                     ->required()
-                    ->label('Password'),
-                Forms\Components\DateTimePicker::make('email_verified_at')
-                    ->nullable()
-                    ->label('Email Verified At'),
+                    ->label('Password')
+                    ->dehydrateStateUsing(fn ($state) => filled($state) ? Hash::make($state) : null)
+                    ->disabled(),
+                Forms\Components\Hidden::make('email_verified_at')
+                    ->default(now()),
+
 
                 Forms\Components\Hidden::make('remember_token')
-                    ->default(fn () => \Str::random(60)),
+                    ->default(fn () => Str::random(60)),
             ]);
     }
 
@@ -51,15 +53,27 @@ class OrganisasiResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id_organisasi')->label('ID')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('nama_organisasi')->label('Nama')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('id_organisasi')
+                    ->label('ID')
+                    ->sortable()
+                    ->searchable(),
 
-                Tables\Columns\TextColumn::make('no_telp')->label('Telepon'),
-                Tables\Columns\TextColumn::make('email')->label('Email'),
-                Tables\Columns\TextColumn::make('created_at')->label('Dibuat')->dateTime(),
+                Tables\Columns\TextColumn::make('nama_organisasi')
+                    ->label('Nama')
+                    ->sortable()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('no_telp')
+                    ->label('Telepon'),
+
+                Tables\Columns\TextColumn::make('email')
+                    ->label('Email'),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat')
+                    ->dateTime(),
             ])
             ->filters([])
-
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
