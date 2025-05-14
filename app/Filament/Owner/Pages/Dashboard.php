@@ -11,7 +11,7 @@ class Dashboard extends BaseDashboard
 
     protected static string $view = 'filament.owner.pages.dashboard';
 
-    protected static ?string $title = 'Dashboard 0wner';
+    protected static ?string $title = 'Dashboard Owner';
 
     protected function getFooterWidgets(): array
     {

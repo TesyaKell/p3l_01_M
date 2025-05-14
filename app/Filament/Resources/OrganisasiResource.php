@@ -13,6 +13,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Filament\Forms\ComponentContainer;
 
 class OrganisasiResource extends Resource
 {
@@ -24,42 +26,55 @@ class OrganisasiResource extends Resource
     {
         return $form
             ->schema([
-               Forms\Components\TextInput::make('nama_organisasi')
+                Forms\Components\TextInput::make('nama_organisasi')
                     ->required()
                     ->label('Nama Organisasi'),
+
                 Forms\Components\TextInput::make('no_telp')
                     ->required()
                     ->label('Nomor Telepon'),
+
                 Forms\Components\TextInput::make('email')
                     ->email()
                     ->required()
                     ->label('Email'),
+
                 Forms\Components\TextInput::make('password')
                     ->password()
-                    ->required()
-                    ->label('Password'),
-                Forms\Components\DateTimePicker::make('email_verified_at')
-                    ->nullable()
-                    ->label('Email Verified At'),
-
-                Forms\Components\Hidden::make('remember_token')
-                    ->default(fn () => \Str::random(60)),
+                    ->label('Password')
+                    ->dehydrateStateUsing(fn ($state) => bcrypt($state))
+                    ->disabled(fn ($livewire) => $livewire->getRecord() !== null),
+                Forms\Components\Hidden::make('email_verified_at')
+                    ->default(now()),
             ]);
     }
+
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id_organisasi')->label('ID')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('nama_organisasi')->label('Nama')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('id_organisasi')
+                    ->label('ID')
+                    ->sortable()
+                    ->searchable(),
 
-                Tables\Columns\TextColumn::make('no_telp')->label('Telepon'),
-                Tables\Columns\TextColumn::make('email')->label('Email'),
-                Tables\Columns\TextColumn::make('created_at')->label('Dibuat')->dateTime(),
+                Tables\Columns\TextColumn::make('nama_organisasi')
+                    ->label('Nama')
+                    ->sortable()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('no_telp')
+                    ->label('Telepon'),
+
+                Tables\Columns\TextColumn::make('email')
+                    ->label('Email'),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat')
+                    ->dateTime(),
             ])
             ->filters([])
-
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);

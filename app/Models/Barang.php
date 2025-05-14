@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Barang extends Model
 {
     protected $table = 'barang';
+    protected $primaryKey = 'kode_barang';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
         'kode_barang',
@@ -32,6 +35,12 @@ class Barang extends Model
 
     public function kategori()
     {
-        return $this->belongsTo(KategoriBarang::class, 'kategori_id');
+        return $this->belongsTo(KategoriBarang::class, 'id_kategori');
     }
+
+    public function penitip()
+    {
+        return $this->belongsTo(\App\Models\Penitip::class, 'id_penitip');
+    }
+
 }

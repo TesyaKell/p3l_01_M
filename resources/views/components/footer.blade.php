@@ -4,24 +4,21 @@
 
 <footer class="footer py-4" style="background: #e9c8ce">
     <div class="container">
-        <div class="row text-center text-md-start">
-            <!-- Kiri: Link Route -->
+        <div class="row text-center text-md-start mt-4">
+            <!-- Kiri: Kunjungi & Link -->
             <div class="col-md-4 mb-3 mb-md-0">
                 <div class="d-flex flex-column align-items-center align-items-md-start">
-                    <a href="{{ route('homeProduk') }}" class="text-dark text-decoration-none mb-2">Profil</a>
-                    <a href="{{ route('homeProduk') }}" class="text-dark text-decoration-none mb-2">Barang</a>
-                    <a href="{{ route('homeProduk') }}" class="text-dark text-decoration-none">Katalog Produk</a>
+                    <p class="fw-semibold mb-2">Kunjungi</p>
+                    <a href="{{ route('profil') }}" class="text-dark text-decoration-none mb-2">Profil</a>
+                    <a href="{{ route('katalogbarang') }}" class="text-dark text-decoration-none mb-2">Katalog
+                        Produk</a>
+                    <p class="fw-semibold mt-3 mb-2">Hubungi Kami</p>
+                    <p class="mb-2">📞 0812-3456-7890</p>
+                    <p class="mb-2">✉️ reusemart@email.com</p>
                 </div>
             </div>
 
-            <!-- Tengah: Kontak -->
-            <div class="col-md-4 mb-4">
-                <div class="d-flex flex-column align-items-center align-items-md-start">
-                    <p class="mb-2">📞 0812-3456-7890</p>
-                    <p class="mb-2">✉️ reusemart@email.com</p>
-                    <p class="mb-0">🏢 Jl. Merdeka No.123, Jakarta</p>
-                </div>
-            </div>
+
 
             <!-- Kanan: Sosial Media -->
             <div class="col-md-4 mb-4">
@@ -40,8 +37,23 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Tengah: Alamat -->
+            <div class="col-md-4 mb-4 d-flex flex-column align-items-center align-items-md-start">
+                <p class="fw-semibold mb-2">Alamat</p>
+                <p class="mb-0">Universitas Atma Jaya Yogyakarta - Kampus 3 Gedung Bonaventura Babarsari. Jl.
+                    Babarsari No.43, Janti, Caturtunggal, Kec. Depok, Kabupaten Sleman, Daerah Istimewa Yogyakarta 55281
+                </p>
+            </div>
         </div>
 
         <p class="text-center mt-4 mb-0">© {{ date('Y') }} ReUseMart. All rights reserved.</p>
     </div>
 </footer>
+
+<style>
+    .text-dark:hover {
+        color: #d99da7 !important;
+        text-decoration: underline;
+    }
+</style>

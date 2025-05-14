@@ -12,27 +12,27 @@
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 
-<body class = "d-flex justify-content-center">
-    <div class = "card" style="width: 18rem;">
+<body class="d-flex justify-content-center">
+    <div class="card" style="width: 18rem;">
         <div class="card-body">
-            @if (session('status'))
-                <div class="alert alert-success" role="alert">
-                    {{ session('status') }}
-                </div>
-            @endif
+            <form action="{{ route('password.email', $role) }}" method="POST">
+                @if (session('status'))
+                    <div class="alert alert-success" role="alert">
+                        {{ session('status') }}
+                    </div>
+                @endif
 
-            @if (session('error'))
-                <div class="alert alert-danger" role="alert">
-                    {{ session('error') }}
-                </div>
-            @endif
+                @if (session('error'))
+                    <div class="alert alert-danger" role="alert">
+                        {{ session('error') }}
+                    </div>
+                @endif
 
-            @if ($errors->any())
-                <div class="alert alert-danger" role="alert">
-                    {{ $errors->first() }}
-                </div>
-            @endif
-            <form method="post" action="{{ route('password.email') }}">
+                @if ($errors->any())
+                    <div class="alert alert-danger" role="alert">
+                        {{ $errors->first() }}
+                    </div>
+                @endif
                 @csrf
                 <div class="mb-3">
                     <label for="email" class="form-label">Email address</label>
