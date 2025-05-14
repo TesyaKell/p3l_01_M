@@ -110,23 +110,6 @@ Route::get('/login', function () {
 })->name('login');
 
 
-Route::post('/login', function (\Illuminate\Http\Request $request) {
-    $role = $request->input('role');
-
-    switch ($role) {
-        case 'pembeli':
-            return app(PembeliController::class)->login($request);
-        case 'organisasi':
-            return app(OrganisasiController::class)->login($request);
-        case 'pegawai':
-            return app(PegawaiController::class)->login($request);
-        case 'penitip':
-            return app(PenitipController::class)->login($request);
-        default:
-            return app(PembeliController::class)->login($request);
-    }
-})->name('login.post');
-
 // Login routes
 Route::post('/login/pembeli', [PembeliController::class, 'login'])->name('login.pembeli.post');
 Route::post('/login/organisasi', [OrganisasiController::class, 'login'])->name('login.organisasi.post');
@@ -172,6 +155,24 @@ Route::get('/jabatan-pegawai', function () {
 Route::middleware(['auth:penitip'])->group(function () {
     Route::get('/dashboard/penitip', [App\Http\Controllers\PenitipController::class, 'index'])->name('penitip.dashboard');
 });
+
+
+Route::post('/login', function (\Illuminate\Http\Request $request) {
+    $role = $request->input('role');
+
+    switch ($role) {
+        case 'pembeli':
+            return app(PembeliController::class)->login($request);
+        case 'organisasi':
+            return app(OrganisasiController::class)->login($request);
+        case 'pegawai':
+            return app(PegawaiController::class)->login($request);
+        case 'penitip':
+            return app(PenitipController::class)->login($request);
+        default:
+            return app(PembeliController::class)->login($request);
+    }
+})->name('login.post');
 
 
 Route::get('/set-role/{role}', function ($role) {

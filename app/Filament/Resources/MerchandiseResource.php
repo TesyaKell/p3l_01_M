@@ -43,9 +43,9 @@ class MerchandiseResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id_merchandise')
-                    ->label('ID')
-                    ->sortable(),
+                // Tables\Columns\TextColumn::make('id_merchandise')
+                //     ->label('ID')
+                //     ->sortable(),
 
                 Tables\Columns\TextColumn::make('nama')
                     ->label('Nama')
@@ -60,13 +60,13 @@ class MerchandiseResource extends Resource
                 Tables\Columns\ImageColumn::make('gambar')
                     ->label('Gambar'),
 
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Dibuat')
-                    ->dateTime(),
+                // Tables\Columns\TextColumn::make('created_at')
+                //     ->label('Dibuat')
+                //     ->dateTime(),
 
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Diperbarui')
-                    ->dateTime(),
+                // Tables\Columns\TextColumn::make('updated_at')
+                //     ->label('Diperbarui')
+                //     ->dateTime(),
             ])
             ->filters([])
 

@@ -20,11 +20,10 @@ class OwnerDonation extends StatsOverviewWidget
             ->descriptionIcon('heroicon-m-arrow-trending-up')
             ->color('success'),
 
-
-            Stat::make('Permintaan Donasi', DonationRequest::count())
-                ->description('Jumlah permintaan donasi yang masuk')
-                ->descriptionIcon('heroicon-m-arrow-trending-up')
-                ->color('warning'),
+            Stat::make('Permintaan Donasi', DonationRequest::where('status', 'Diproses')->count())
+            ->description('Jumlah permintaan donasi yang sedang diproses')
+            ->descriptionIcon('heroicon-m-arrow-trending-up')
+            ->color('warning'),
 
             Stat::make('Organisasi Terdaftar', Organisasi::count())
                 ->description('Organisasi yang bergabung dalam sistem')

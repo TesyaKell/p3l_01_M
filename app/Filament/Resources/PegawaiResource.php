@@ -40,7 +40,8 @@ class PegawaiResource extends Resource
                 Forms\Components\TextInput::make('password')
                     ->password()
                     ->label('Password')
-                    ->dehydrateStateUsing(fn ($state) => bcrypt($state)),
+                    ->dehydrateStateUsing(fn ($state) => bcrypt($state))
+                    ->disabled(fn ($livewire) => $livewire->getRecord() !== null),
                 Forms\Components\DatePicker::make('tanggal_lahir')
                     ->label('Tanggal Lahir'),
             ]);
@@ -50,12 +51,12 @@ class PegawaiResource extends Resource
     {
         return $table
             ->columns([
-                \Filament\Tables\Columns\TextColumn::make('id_pegawai')
-                    ->label('ID Pegawai')
-                    ->sortable()
-                    ->searchable(),
-                \Filament\Tables\Columns\TextColumn::make('kode_jabatan')
-                    ->label('Kode Jabatan')
+                // \Filament\Tables\Columns\TextColumn::make('id_pegawai')
+                //     ->label('ID Pegawai')
+                //     ->sortable()
+                //     ->searchable(),
+                \Filament\Tables\Columns\TextColumn::make('jabatan.nama_jabatan')
+                    ->label('Jabatan')
                     ->sortable()
                     ->searchable(),
                 \Filament\Tables\Columns\TextColumn::make('nama_pegawai')
