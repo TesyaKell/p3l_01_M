@@ -14,8 +14,8 @@
 
         .sidebar {
             height: 100vh;
-            background-color: #edd091;
-            border-right: 1px solid #c7a14e;
+            background-color: #ffffff;
+            border-right: 1px solid #e9c8ce;
             transition: all 0.3s ease;
         }
 
@@ -33,7 +33,7 @@
         }
 
         .sidebar .nav-link:hover {
-            background-color: #c7a14e;
+            background-color: #e9c8ce;
         }
 
         /* .content-area {
@@ -45,7 +45,7 @@
             height: 100%;
             border: none;
             /* border-radius: 0rem; */
-            background-color: #cf9651;
+            background-color: #e9c8ce;
         }
     </style>
 </head>
@@ -55,7 +55,7 @@
     <div class="d-flex">
         <!-- Sidebar -->
         <div id="sidebar" class="sidebar p-3" style="width: 220px;">
-            <button class="btn btn-warning w-100 mb-4" onclick="toggleSidebar()">☰ </button>
+            <button class="btn btn-primary w-100 mb-4" onclick="toggleSidebar()">☰ </button>
             <nav class="nav flex-column">
                 <a class="nav-link" href="{{ route('register.penitip') }}" target="cs-content">
                     <i class="me-1">📋</i><span>Register Penitip</span>
@@ -63,12 +63,18 @@
                 <a class="nav-link" href="{{ route('showalldata.penitip') }}" target="cs-content">
                     <i class="me-1">📋</i><span>Data Penitip</span>
                 </a>
-                <a class="nav-link" href="{{ route('jabatan') }}" target="cs-content">
-                    <i class="me-1">💬</i><span>Chat</span>
+                <a class="nav-link" href="{{ route('katalogbarang') }}" target="cs-content">
+                    <i class="me-1">💬</i><span>Komentar</span>
                 </a>
                 <a class="nav-link" href="/">
                     <i class="me-1">🏠</i><span>Beranda</span>
                 </a>
+
+                <form action="{{ route('logout') }}" method="POST" class="mt-4">
+                    @csrf
+                    <button type="submit" class="btn btn-danger w-100">Logout</button>
+                </form>
+
             </nav>
         </div>
 
@@ -84,6 +90,5 @@
         }
     </script>
 </body>
-</html>
 
-    
+</html>

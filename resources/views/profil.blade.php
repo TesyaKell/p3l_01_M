@@ -1,4 +1,5 @@
 <?php
+//$transaksi = [];
 use App\Http\Helper\Helper;
 ?>
 <!DOCTYPE html>
@@ -131,154 +132,154 @@ use App\Http\Helper\Helper;
                 </div>
             </div>
         @endif
-        <div class="container">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <table class="table table-bordered mt-3">
-                        <thead class="table-light">
+        {{-- <div class="container">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <table class="table table-bordered mt-3">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nomor Nota</th><!-- transaksi -->
+                            <th>Nama Produk</th><!-- detil -->
+                            <th>Tambah Poin</th><!-- transaksi -->
+                            <th>Tipe Pengiriman</th><!-- transaksi -->
+                            <th>Total Harga<br>(setelah diongkir)</th><!-- transaksi -->
+                            <th>Alamat Pengiriman</th><!-- transaksi -->
+                            <th>Status</th><!-- transaksi -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- @php
+                            $totalPendapatan = 0;
+                        @endphp -->
+                        @forelse ($transaksi as $item)
                             <tr>
-                                <th>Nomor Nota</th><!-- transaksi -->
-                                <th>Nama Produk</th><!-- detil -->
-                                <th>Tambah Poin</th><!-- transaksi -->
-                                <th>Tipe Pengiriman</th><!-- transaksi -->
-                                <th>Total Harga<br>(setelah diongkir)</th><!-- transaksi -->
-                                <th>Alamat Pengiriman</th><!-- transaksi -->
-                                <th>Status</th><!-- transaksi -->
+                                <td>{{ $item->no_nota }}</td>
+                                <td>{{ $item->nama_barang }}</td>
+                                <td>{{ $item->tambah_poin }}</td>
+                                <td>{{ $item->tipe_delivery }}</td>
+                                <td>{{ number_format($item->total_pembayaran, 0, ',', '.') }}</td>
+                                <td>{{ $item->alamat_pengiriman }}</td>
+                                <td>{{ $item->status }}</td>
                             </tr>
-                        </thead>
-                        <tbody>
                             <!-- @php
-                                $totalPendapatan = 0;
+                                $totalPendapatan += $item->pendapatan;
                             @endphp -->
-                            @forelse ($transaksi as $item)
-                                <tr>
-                                    <td>{{ $item->no_nota }}</td>
-                                    <td>{{ $item->nama_barang }}</td>
-                                    <td>{{ $item->tambah_poin }}</td>
-                                    <td>{{ $item->tipe_delivery }}</td>
-                                    <td>{{ number_format($item->total_pembayaran, 0, ',', '.') }}</td>
-                                    <td>{{ $item->alamat_pengiriman }}</td>
-                                    <td>{{ $item->status }}</td>
-                                </tr>
-                                <!-- @php
-                                    $totalPendapatan += $item->pendapatan;
-                                @endphp -->
-                            @empty
-                                <tr>
-                                    <td colspan="7">Tidak ada data transaksi pembelian.</td>
-                                </tr>
-                            @endforelse
-                            <!-- <tr class="fw-bold">
+                        @empty
+                            <tr>
+                                <td colspan="7">Tidak ada data transaksi pembelian.</td>
+                            </tr>
+                        @endforelse
+                        <!-- <tr class="fw-bold">
                                 <td colspan="6" class="text-center">TOTAL</td>
                                 <td>Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</td>
                             </tr> -->
-                        </tbody>
-                    </table>
-                </div>
+                    </tbody>
+                </table>
             </div>
-        </div>
-        <!-- Modal Update Profil -->
-        <div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="updateProfileModalLabel">Update Profil</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div> --}}
+    </div>
+    <!-- Modal Update Profil -->
+    <div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateProfileModalLabel">Update Profil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route($guard . '.updateProfil') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nama" class="form-label">Nama</label>
+                            <input type="text" class="form-control" id="nama" name="nama"
+                                value="{{ old('nama', $user->nama_pembeli ?? ($user->nama_organisasi ?? $user->nama_penitip)) }}"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="no_telp" class="form-label">Nomor Telepon</label>
+                            <input type="text" class="form-control" id="no_telp" name="no_telp"
+                                value="{{ old('no_telp', $user->no_telp) }}" required>
+                        </div>
+                        @if ($guard === 'pembeli')
+                            <div class="mb-3">
+                                <label for="foto" class="form-label">Foto Profil</label>
+                                <input type="file" class="form-control" id="foto" name="foto"
+                                    accept="image/*">
+                            </div>
+                        @endif
                     </div>
-                    <form action="{{ route($guard . '.updateProfil') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="nama" class="form-label">Nama</label>
-                                <input type="text" class="form-control" id="nama" name="nama"
-                                    value="{{ old('nama', $user->nama_pembeli ?? ($user->nama_organisasi ?? $user->nama_penitip)) }}"
-                                    required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="no_telp" class="form-label">Nomor Telepon</label>
-                                <input type="text" class="form-control" id="no_telp" name="no_telp"
-                                    value="{{ old('no_telp', $user->no_telp) }}" required>
-                            </div>
-                            @if ($guard === 'pembeli')
-                                <div class="mb-3">
-                                    <label for="foto" class="form-label">Foto Profil</label>
-                                    <input type="file" class="form-control" id="foto" name="foto"
-                                        accept="image/*">
-                                </div>
-                            @endif
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Update Profil</button>
-                        </div>
-                    </form>
-                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Update Profil</button>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
 
-        <!-- Tabel Request & History -->
-        @if (Helper::isLoggedIn(['organisasi']))
-            <!-- Cek apakah yang login adalah organisasi -->
-            <div class="my-4 text-start mt-5">
-                <a id="btnRequest" class="btn btn-primary me-2"
-                    href={{ route('profil', ['akses' => 'request_donasi']) }}>Request Donasi</a>
-                <a id="btnHistory" class="btn btn-secondary"
-                    href={{ route('profil', ['akses' => 'history_donasi']) }}>History Donasi</a>
-            </div>
+    <!-- Tabel Request & History -->
+    @if (Helper::isLoggedIn(['organisasi']))
+        <!-- Cek apakah yang login adalah organisasi -->
+        <div class="my-4 text-start mt-5">
+            <a id="btnRequest" class="btn btn-primary me-2"
+                href={{ route('profil', ['akses' => 'request_donasi']) }}>Request Donasi</a>
+            <a id="btnHistory" class="btn btn-secondary"
+                href={{ route('profil', ['akses' => 'history_donasi']) }}>History Donasi</a>
+        </div>
 
-            <div id="tableRequest" class="table-responsive">
-                <h5>Daftar Request Donasi</h5>
-                <table class="table table-bordered">
-                    <thead class="table-light">
+        <div id="tableRequest" class="table-responsive">
+            <h5>Daftar Request Donasi</h5>
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Deskripsi Request</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($requestDonasi as $request)
                         <tr>
-                            <th>Deskripsi Request</th>
-                            <th>Status</th>
+                            <td>{{ $request->desk_request }}</td>
+                            <td>{{ $request->status }}</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($requestDonasi as $request)
-                            <tr>
-                                <td>{{ $request->desk_request }}</td>
-                                <td>{{ $request->status }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="2">Belum ada request donasi.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            <div id="tableHistory" class="table-responsive d-none">
-                <h5>Riwayat Donasi</h5>
-                <table class="table table-bordered">
-                    <thead class="table-light">
+                    @empty
                         <tr>
-                            <th>Tanggal Donasi</th>
-                            <th>Nama Penerima</th>
-                            <th>Nama Penitip</th>
-                            <th>Nama Barang</th>
+                            <td colspan="2">Belum ada request donasi.</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($requestDonasi as $donasi)
-                            <tr>
-                                <td>{{ $donasi->tanggal_donasi }}</td>
-                                <td>{{ $donasi->nama_penerima }}</td>
-                                <td>{{ $donasi->nama_penitip ?? '-' }}</td>
-                                <td>{{ $donasi->barang->nama_barang ?? '-' }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4">Belum ada donasi yang tercatat.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        @endif
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <div id="tableHistory" class="table-responsive d-none">
+            <h5>Riwayat Donasi</h5>
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tanggal Donasi</th>
+                        <th>Nama Penerima</th>
+                        <th>Nama Penitip</th>
+                        <th>Nama Barang</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($requestDonasi as $donasi)
+                        <tr>
+                            <td>{{ $donasi->tanggal_donasi }}</td>
+                            <td>{{ $donasi->nama_penerima }}</td>
+                            <td>{{ $donasi->nama_penitip ?? '-' }}</td>
+                            <td>{{ $donasi->barang->nama_barang ?? '-' }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4">Belum ada donasi yang tercatat.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    @endif
 
     </div>
 

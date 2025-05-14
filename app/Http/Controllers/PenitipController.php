@@ -20,7 +20,7 @@ class PenitipController extends Controller
 {
     // app/Http/Controllers/PenitipController.php
 
-   private function generatePenitipId()
+    private function generatePenitipId()
     {
         $last = Penitip::orderByRaw('CAST(SUBSTRING(id_penitip, 2) AS UNSIGNED) DESC')->first();
 
@@ -39,7 +39,7 @@ class PenitipController extends Controller
         $request->validate([
             'nama_penitip' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:penitip',
-            'password' => 'required|string|min:2|confirmed',
+            'password' => 'required|string|min:2',
             'no_telp' => 'required|string|max:255|unique:penitip',
             'tanggal_lahir' => 'required|date',
             'nik' => 'required|string|max:255|unique:penitip',
@@ -56,7 +56,7 @@ class PenitipController extends Controller
             'no_telp' => $request->no_telp,
             'tanggal_lahir' => $request->tanggal_lahir,
             'nik' => $request->nik,
-            'foto_ktp' => $path,
+            'foto_nik' => $path,
             'poin' => 0,
             'saldo' => 0,
             'top_seller' => false,
@@ -147,7 +147,7 @@ class PenitipController extends Controller
         ]);
 
         // $penitip = Auth::guard('penitip')->user();
-        $penitip = Penitip::where('id_penitip',$id)->firstOrFail();
+        $penitip = Penitip::where('id_penitip', $id)->firstOrFail();
 
         $penitip->update([
             'nama_penitip' => $request->nama_penitip,
@@ -180,7 +180,7 @@ class PenitipController extends Controller
         ]);
 
         // $penitip = Auth::guard('penitip')->user();
-        $penitip = Penitip::where('id_penitip',$id)->firstOrFail();
+        $penitip = Penitip::where('id_penitip', $id)->firstOrFail();
         $penitip->update([
             'nama_penitip' => $request->nama_penitip,
             'email' => $request->email,
@@ -191,10 +191,11 @@ class PenitipController extends Controller
         return redirect()->back()->with('status', 'Profile updated successfully!');
     }
 
-    
-   
-    public function historyPenjualanPenitip(Request $request){
-        
+
+
+    public function historyPenjualanPenitip(Request $request)
+    {
+
         $user = Helper::getLoggedInUser('penitip');
 
         if (!$user) {
@@ -232,11 +233,12 @@ class PenitipController extends Controller
             'tanggal_cetak' => now()->format('d/m/Y'),
         ]);
     }
-    public function showAllPenitip(){
+    public function showAllPenitip()
+    {
         $table = Penitip::latest()->paginate(10);
         return view('katalogPenitip', compact('table'));
     }
-    
+
     // public function forgot_password(Request $request): RedirectResponse
     // {
     //     $user = Helper::getLoggedInUser('penitip');
@@ -277,21 +279,22 @@ class PenitipController extends Controller
     //     ]);
     // }
 
-    
-    public function destroy(string $id){
-        $penitip = Penitip::where('id_penitip',$id)->firstOrFail();
+
+    public function destroy(string $id)
+    {
+        $penitip = Penitip::where('id_penitip', $id)->firstOrFail();
         $penitip->delete();
         return redirect()->back()->with('status', 'Profile Deleted successfully!');
     }
-   
-        public function searchPenitip(Request $request)
+
+    public function searchPenitip(Request $request)
     {
         $query = $request->input('search');
-        
+
         $table = Penitip::when($query, function ($q) use ($query) {
             $q->where('nama_penitip', 'like', '%' . $query . '%');
         })->paginate(10);
-        
+
         return view('katalogPenitip', compact('table', 'query'));
     }
     public function logout()

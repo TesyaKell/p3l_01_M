@@ -127,42 +127,42 @@ use App\Http\Helper\Helper;
             </div>
         </div>
 
-        <hr class="my-4">
+        @if ($barang->status !== 'Terdonasi')
+            <hr class="my-4">
+            <h4 class="mb-3">Diskusi Produk</h4>
 
-        <h4 class="mb-3">Diskusi Produk</h4>
-
-        {{-- Menampilkan komentar --}}
-        @forelse ($komentar as $chat)
-            <div class="mb-3 p-3 rounded shadow-sm">
-
-                <small class="text-muted d-block mb-1">
-                    @if ($chat->pembeli)
-                        {{ $chat->pembeli->nama_pembeli }} (Pembeli)
-                    @elseif ($chat->pegawai)
-                        {{ $chat->pegawai->nama_pegawai }} (Customer Service)
-                    @else
-                        Pengguna tidak diketahui
-                    @endif
-                    - {{ \Carbon\Carbon::parse($chat->date_added)->format('d M Y H:i') }}
-                </small>
-                <p class="mb-0">{{ $chat->pesan }}</p>
-            </div>
-        @empty
-            <p>Belum ada komentar untuk produk ini.</p>
-        @endforelse
-
-
-        @if (Helper::isLoggedIn(['pegawai', 'pembeli']) ||
-                (Helper::isLoggedIn(['pegawai', 'pembeli']) && auth()->user()->jabatan === 'Customer Service'))
-            <form action="{{ route('komentar.store') }}" method="POST" class="mt-4">
-                @csrf
-                <input type="hidden" name="kode_barang" value="{{ $barang->kode_barang }}">
-                <div class="mb-3">
-                    <label for="pesan" class="form-label">Tulis Komentar</label>
-                    <textarea name="pesan" class="form-control" rows="3" required></textarea>
+            {{-- Menampilkan komentar --}}
+            @forelse ($komentar as $chat)
+                <div class="mb-3 p-3 rounded shadow-sm">
+                    <small class="text-muted d-block mb-1">
+                        @if ($chat->pembeli)
+                            {{ $chat->pembeli->nama_pembeli }} (Pembeli)
+                        @elseif ($chat->pegawai)
+                            {{ $chat->pegawai->nama_pegawai }} (Customer Service)
+                        @else
+                            Pengguna tidak diketahui
+                        @endif
+                        - {{ \Carbon\Carbon::parse($chat->date_added)->format('d M Y H:i') }}
+                    </small>
+                    <p class="mb-0">{{ $chat->pesan }}</p>
                 </div>
-                <button type="submit" class="btn btn-pink">Kirim</button>
-            </form>
+            @empty
+                <p>Belum ada komentar untuk produk ini.</p>
+            @endforelse
+
+            {{-- Form Komentar --}}
+            @if (Helper::isLoggedIn(['pegawai', 'pembeli']) ||
+                    (Helper::isLoggedIn(['pegawai', 'pembeli']) && auth()->user()->jabatan === 'Customer Service'))
+                <form action="{{ route('komentar.store') }}" method="POST" class="mt-4">
+                    @csrf
+                    <input type="hidden" name="kode_barang" value="{{ $barang->kode_barang }}">
+                    <div class="mb-3">
+                        <label for="pesan" class="form-label">Tulis Komentar</label>
+                        <textarea name="pesan" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-pink">Kirim</button>
+                </form>
+            @endif
         @endif
 
     </main>
