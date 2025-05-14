@@ -159,7 +159,7 @@ class PenitipController extends Controller
             'tanggal_cetak' => now()->format('d/m/Y'),
         ]);
     }
-    }
+
     public function update(Request $request, string $id)
     {
         $request->validate([
@@ -277,4 +277,5 @@ class PenitipController extends Controller
             $q->where('nama_penitip', 'like', '%' . $query . '%');
         })->paginate(10);
 
+    }
 }
