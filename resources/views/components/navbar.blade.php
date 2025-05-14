@@ -106,7 +106,7 @@ use App\Http\Helper\Helper;
 
 
                             @if (Helper::getLoggedInUser() && Helper::getLoggedInUser()->nama_penitip)
-                                <li><a class="dropdown-item" href="{{ route('historyPenjualanPenitip') }}">History
+                                <li><a class="dropdown-item" href="{{ route('historyTransaksiPembelian') }}">History
                                         Penjualan</a></li>
                             @endif
 

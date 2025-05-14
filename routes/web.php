@@ -38,6 +38,8 @@ Route::middleware('logged_in')->group(function () {
 //History penjualan penitip
 Route::get('/penitip/history', [PenitipController::class, 'historyPenjualanPenitip'])->name('historyPenjualanPenitip');
 
+//History transaksi pembelian
+Route::get('/pembeli/history', [PembeliController::class, 'historyTransaksiPembelian'])->name('historyTransaksiPembelian');
 
 
 // Menangani permintaan POST ke route /
