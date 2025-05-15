@@ -71,7 +71,10 @@
         </tbody>
     </table>
     <div class="d-flex">
-        <a href="{{ route( 'create.requestdonasi',['id_organisasi' => $requestDonasi->id_organisasi]) }}" class="btn btn-success ms-auto mx-2">Tambah Request Donasi</a>
+        @php
+            $orgUser = Auth::guard('organisasi')->user();
+        @endphp
+        <a href="{{ route( 'create.requestdonasi',['id_organisasi' => $orgUser->id_organisasi]) }}" class="btn btn-success ms-auto mx-2">Tambah Request Donasi</a>
     </div>
     <div class="d-flex justify-content-center mt-4 mx-1">
         {{ $data->links('pagination::bootstrap-5') }}

@@ -132,6 +132,7 @@ use App\Http\Helper\Helper;
                 </div>
             </div>
         @endif
+<<<<<<< cadangan-tesya
         {{-- <div class="container">
         <div class="card shadow-sm">
             <div class="card-body">
@@ -195,6 +196,38 @@ use App\Http\Helper\Helper;
                             <input type="text" class="form-control" id="nama" name="nama"
                                 value="{{ old('nama', $user->nama_pembeli ?? ($user->nama_organisasi ?? $user->nama_penitip)) }}"
                                 required>
+=======
+        <!-- Modal Update Profil -->
+        <div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updateProfileModalLabel">Update Profil</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route($guard . '.updateProfil') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="nama" class="form-label">Nama</label>
+                                <input type="text" class="form-control" id="nama" name="nama"
+                                    value="{{ old('nama', $user->nama_pembeli ?? ($user->nama_organisasi ?? $user->nama_penitip)) }}"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="no_telp" class="form-label">Nomor Telepon</label>
+                                <input type="text" class="form-control" id="no_telp" name="no_telp"
+                                    value="{{ old('no_telp', $user->no_telp) }}" required>
+                            </div>
+                            @if ($guard === 'pembeli')
+                                <div class="mb-3">
+                                    <label for="foto" class="form-label">Foto Profil</label>
+                                    <input type="file" class="form-control" id="foto" name="foto"
+                                        accept="image/*">
+                                </div>
+                            @endif
+>>>>>>> tinker-Gentry
                         </div>
                         <div class="mb-3">
                             <label for="no_telp" class="form-label">Nomor Telepon</label>
