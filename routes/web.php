@@ -172,8 +172,6 @@ Route::get('/jabatan-pegawai', function () {
 Route::middleware(['auth:penitip'])->group(function () {
     Route::get('/dashboard/penitip', [App\Http\Controllers\PenitipController::class, 'index'])->name('penitip.dashboard');
 });
-
-
 Route::post('/login', function (\Illuminate\Http\Request $request) {
     $role = $request->input('role');
 
@@ -190,7 +188,6 @@ Route::post('/login', function (\Illuminate\Http\Request $request) {
             return app(PembeliController::class)->login($request);
     }
 })->name('login.post');
-
 
 Route::get('/set-role/{role}', function ($role) {
     $loginRoutes = [

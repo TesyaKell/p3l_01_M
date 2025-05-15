@@ -482,15 +482,16 @@
 
         <!-- Products Grid -->
         <div id="merchandiseContainer">
-            @if (count($merchandises ?? []) > 0)
-
+            @if (count($merchandises) > 0)
                 <div class="row">
                     @foreach ($merchandises as $merchandise)
                         <div class="col-6 col-md-4 col-lg-3 merchandise-item"
                             data-id="{{ $merchandise->id_merchandise }}" data-name="{{ $merchandise->nama }}"
                             data-points="{{ $merchandise->poin }}">
                             <div class="card h-100">
-
+                                @if ($merchandise->stok < 5 && $merchandise->stok > 0)
+                                    <div class="flash-sale-badge">Limited Stock!</div>
+                                @endif
 
                                 <div class="image-container">
                                     @if ($merchandise->gambar)
@@ -563,8 +564,12 @@
         </div>
     </div>
 
-    @include('components.footer')
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <!-- Footer -->
+    </footer>
 
+    <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Initialize cart data
@@ -673,14 +678,17 @@
             const cartDropdownToggle = document.getElementById('cartDropdownToggle');
             const cartDropdown = document.getElementById('cartDropdown');
 
-            cartDropdownToggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                cartDropdown.classList.toggle('show');
-            });
+            if (cartDropdownToggle) {
+                cartDropdownToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    cartDropdown.classList.toggle('show');
+                });
+            }
 
             // Hide cart dropdown when clicking outside
             document.addEventListener('click', function(e) {
-                if (!cartDropdownToggle.contains(e.target) && !cartDropdown.contains(e.target)) {
+                if (cartDropdownToggle && cartDropdown && !cartDropdownToggle.contains(e.target) && !
+                    cartDropdown.contains(e.target)) {
                     cartDropdown.classList.remove('show');
                 }
             });
@@ -701,6 +709,8 @@
                         return;
                     }
 
+                    console.log('Sending redeem request for merchandise ID:', id);
+
                     // Make AJAX request to reduce stock and add to cart
                     fetch('/redeem-merchandise', {
                             method: 'POST',
@@ -712,8 +722,13 @@
                                 merchandise_id: id
                             })
                         })
-                        .then(response => response.json())
+                        .then(response => {
+                            console.log('Response status:', response.status);
+                            return response.json();
+                        })
                         .then(data => {
+                            console.log('Response data:', data);
+
                             if (data.success) {
                                 // Update stock display
                                 updateStockDisplay(id, data.new_stock);
@@ -723,7 +738,11 @@
 
                                 // Show success notification
                                 showSuccessNotification('Item added to cart successfully!');
+
+                                console.log('Stock updated successfully. New stock:', data
+                                    .new_stock);
                             } else {
+                                console.error('Failed to redeem:', data.message);
                                 showErrorNotification(data.message ||
                                     'Failed to redeem merchandise');
                             }
@@ -737,27 +756,42 @@
 
             // Function to update stock display
             function updateStockDisplay(id, newStock) {
+                console.log('Updating stock display for ID:', id, 'New stock:', newStock);
+
+                // Konversi newStock ke integer untuk memastikan perbandingan yang benar
+                newStock = parseInt(newStock);
+
                 // Find the merchandise item
                 const merchandiseItem = document.querySelector(`.merchandise-item[data-id="${id}"]`);
-                if (!merchandiseItem) return;
+                if (!merchandiseItem) {
+                    console.error('Merchandise item not found in DOM:', id);
+                    return;
+                }
 
+                // Update stock count
                 const stockElement = merchandiseItem.querySelector('.stock-count');
                 if (stockElement) {
+                    console.log('Updating stock element from', stockElement.textContent, 'to', newStock);
                     stockElement.textContent = newStock;
 
                     // Add low stock class if needed
                     if (newStock < 5) {
                         stockElement.classList.add('stock-low');
                     }
+                } else {
+                    console.error('Stock element not found in merchandise item');
                 }
 
                 // Update redeem button
                 const redeemButton = merchandiseItem.querySelector('.redeem-btn');
                 if (redeemButton) {
+                    console.log('Updating redeem button data-stock attribute from', redeemButton.getAttribute(
+                        'data-stock'), 'to', newStock);
                     redeemButton.setAttribute('data-stock', newStock);
 
                     // If stock is now 0, disable the button
                     if (newStock === 0) {
+                        console.log('Stock is 0, replacing redeem button with disabled button');
                         redeemButton.outerHTML = `
                             <button class="btn btn-secondary w-100 py-2" disabled>
                                 <i class="fas fa-times-circle me-1"></i>
@@ -765,6 +799,8 @@
                             </button>
                         `;
                     }
+                } else {
+                    console.error('Redeem button not found in merchandise item');
                 }
             }
 
@@ -796,6 +832,11 @@
                 const cartItems = document.getElementById('cartItems');
                 const cartCount = document.getElementById('cartCount');
                 const cartTotalElement = document.getElementById('cartTotal');
+
+                if (!cartItems || !cartCount || !cartTotalElement) {
+                    console.error('Cart UI elements not found');
+                    return;
+                }
 
                 // Update cart count
                 cartCount.textContent = cart.reduce((total, item) => total + item.quantity, 0);

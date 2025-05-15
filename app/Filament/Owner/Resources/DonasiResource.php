@@ -2,7 +2,7 @@
 
 namespace App\Filament\Owner\Resources;
 
-use App\Filament\Owner\Resources\DonasiResource\Pages;
+use App\Models\Barang;
 use App\Models\Donasi;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -10,96 +10,73 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Owner\Resources\DonasiResource\Pages\ListDonasis;
 
 class DonasiResource extends Resource
 {
     protected static ?string $model = Donasi::class;
+    protected static ?string $navigationIcon = 'heroicon-o-heart';
+    protected static ?string $navigationGroup = 'Donasi Management';
+    protected static ?string $navigationLabel = 'Donasi';
+    protected static ?int $navigationSort = 2;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-
+    public static function form(Form $form): Form
+    {
+        return $form->schema([]); // kosong karena tidak digunakan
+    }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id_donasi')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('request.desk_request')->searchable(),
+                Tables\Columns\TextColumn::make('barang.nama_barang')->searchable(),
+                Tables\Columns\TextColumn::make('penitip.nama_penitip')->searchable(),
+                Tables\Columns\TextColumn::make('tanggal_donasi')->date()->sortable(),
+                Tables\Columns\TextColumn::make('nama_penerima')->searchable(),
                 Tables\Columns\TextColumn::make('request.organisasi.nama_organisasi')
-                    ->label('Nama Organisasi')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('request.desk_request')
-                    ->label('Deskripsi Request Donasi')
-                    ->searchable(),
-                // Tables\Columns\TextColumn::make('nama_penitip')
-                //     ->label('Nama Penitip')
-                //     ->searchable(),
-                // Tables\Columns\TextColumn::make('tanggal_donasi')
-                //     ->label('Tanggal Donasi')
-                //     ->searchable(),
-                Tables\Columns\BadgeColumn::make('request.status')  // Mengakses status melalui relasi request
-                    ->label('Status')
-
+                    ->label('Organisasi')
                     ->searchable(),
             ])
-            ->paginationPageOptions([10, 25, 50, 100])
             ->filters([
-
+                Tables\Filters\SelectFilter::make('organisasi')
+                    ->relationship('request.organisasi', 'nama_organisasi'),
+                Tables\Filters\Filter::make('tanggal_donasi')
+                    ->form([
+                        Forms\Components\DatePicker::make('dari_tanggal'),
+                        Forms\Components\DatePicker::make('sampai_tanggal'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['dari_tanggal'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('tanggal_donasi', '>=', $date),
+                            )
+                            ->when(
+                                $data['sampai_tanggal'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('tanggal_donasi', '<=', $date),
+                            );
+                    }),
             ])
-        ->actions([
-        Tables\Actions\Action::make('Kirim Donasi')
-    ->label('Kirim Donasi')
-    ->color('success')
-    ->icon('heroicon-o-truck')
-    ->visible(fn ($record) => $record->request->status === 'Diproses')
-    ->form([
-        Forms\Components\TextInput::make('nama_penerima')
-            ->label('Nama Penerima')
-            ->required(),
-    ])
-    ->requiresConfirmation()
-    ->action(function ($record, array $data) {
-        // Update status pada relasi request
-        $record->request->update(['status' => 'Diterima']);
-
-        // Simpan tanggal donasi dan nama penerima
-        $record->update([
-            'tanggal_donasi' => now(),
-            'nama_penerima' => $data['nama_penerima'],
-        ]);
-
-        // Update poin & saldo penitip
-        $penitip = $record->penitip;
-        if ($penitip) {
-            $penitip->poin += 1;
-            $penitip->saldo += 10000;
-            $penitip->save();
-        }
-    }),
-
-])
-
-            ->bulkActions([
-            Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-            ]),
-        ]);
+            ->actions([]) // semua aksi dinonaktifkan
+            ->bulkActions([]); // bulk delete juga dimatikan
     }
 
-    public static function canCreate(): bool
+    public static function getRelations(): array
     {
-        return false;
+        return [];
     }
 
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->whereHas('request', function ($query) {
-                $query->where('status', 'Diproses');
-            });
-    }
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListDonasis::route('/'),
+            'index' => ListDonasis::route('/'),
         ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [];
     }
 }
