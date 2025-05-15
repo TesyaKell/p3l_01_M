@@ -129,52 +129,6 @@ use App\Http\Helper\Helper;
                 </div>
             </div>
         @endif
-        <div class="container">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <table class="table table-bordered mt-3">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Nomor Nota</th><!-- transaksi -->
-                                <th>Nama Produk</th><!-- detil -->
-                                <th>Tambah Poin</th><!-- transaksi -->
-                                <th>Tipe Pengiriman</th><!-- transaksi -->
-                                <th>Total Harga<br>(setelah diongkir)</th><!-- transaksi -->
-                                <th>Alamat Pengiriman</th><!-- transaksi -->
-                                <th>Status</th><!-- transaksi -->
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- @php
-                                $totalPendapatan = 0;
-                            @endphp -->
-                            @forelse ($transaksi as $item)
-                                <tr>
-                                    <td>{{ $item->no_nota }}</td>
-                                    <td>{{ $item->nama_barang }}</td>
-                                    <td>{{ $item->tambah_poin }}</td>
-                                    <td>{{ $item->tipe_delivery}}</td>
-                                    <td>{{ number_format($item->total_pembayaran, 0, ',', '.') }}</td>
-                                    <td>{{ $item->alamat_pengiriman}}</td>
-                                    <td>{{ $item->status}}</td>
-                                </tr>
-                                <!-- @php
-                                    $totalPendapatan += $item->pendapatan;
-                                @endphp -->
-                            @empty
-                                <tr>
-                                    <td colspan="7">Tidak ada data transaksi pembelian.</td>
-                                </tr>
-                            @endforelse
-                            <!-- <tr class="fw-bold">
-                                <td colspan="6" class="text-center">TOTAL</td>
-                                <td>Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</td>
-                            </tr> -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
         <!-- Modal Update Profil -->
         <div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileModalLabel"
             aria-hidden="true">

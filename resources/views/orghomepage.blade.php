@@ -51,13 +51,16 @@
 </head>
 
 <body>
-
+    @include('components.navbar')
     <div class="d-flex">
         <!-- Sidebar -->
         <div id="sidebar" class="sidebar p-3" style="width: 220px;">
             <button class="btn btn-warning w-100 mb-4" onclick="toggleSidebar()">☰ </button>
             <nav class="nav flex-column">
-                <a class="nav-link" href="{{ route('request.katalog', ['id_organisasi' => Auth::user()->id_organisasi ?? 'ORG01']) }}" target="org-content">
+                @php
+                    $orgUser = Auth::guard('organisasi')->user();
+                @endphp
+                <a class="nav-link" href="{{ route('request.katalog', ['id_organisasi' => $orgUser->id_organisasi ?? 'ORG01']) }}" target="org-content">
 
                     <i class="me-1">📋</i><span>Request Donasi</span>
                 </a>
@@ -72,7 +75,7 @@
             <iframe name="org-content" title="ORG Content Frame"></iframe>
         </div>
     </div>
-
+    @include('components.footer')
     <script>
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('collapsed');

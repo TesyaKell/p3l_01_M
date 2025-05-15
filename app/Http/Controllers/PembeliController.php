@@ -177,8 +177,6 @@ class PembeliController extends Controller
         $transaksi = DB::table('detail_transaksi')
             ->join('transaksi', 'detail_transaksi.no_nota', '=', 'transaksi.no_nota')
             ->where('transaksi.id_pembeli', $id_pembeli)
-            ->whereMonth('transaksi.tanggal_lunas', $bulan)
-            ->whereYear('transaksi.tanggal_lunas', $tahun)
             ->select(
                 'transaksi.no_nota',
                 'detail_transaksi.nama_barang',

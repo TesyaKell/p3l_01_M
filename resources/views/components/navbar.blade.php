@@ -109,6 +109,9 @@ use App\Http\Helper\Helper;
                                 <li><a class="dropdown-item" href="{{ route('historyTransaksiPembelian') }}">History
                                         Penjualan</a></li>
                             @endif
+                            @if (Helper::getLoggedInUser() && Helper::getLoggedInUser()->nama_organisasi)
+                                <li><a class="dropdown-item" href="{{ route('homepage.organisasi') }}">Request Donasi panel</a></li>
+                            @endif
 
                             <li>
                                 <hr class="dropdown-divider">
