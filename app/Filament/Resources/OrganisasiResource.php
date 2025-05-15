@@ -84,7 +84,7 @@ class OrganisasiResource extends Resource
     {
         return [
             'index' => Pages\ListOrganisasis::route('/'),
-            'create' => Pages\CreateOrganisasi::route('/create'),
+            //'create' => Pages\CreateOrganisasi::route('/create'),
             'edit' => Pages\EditOrganisasi::route('/{record}/edit'),
         ];
     }
