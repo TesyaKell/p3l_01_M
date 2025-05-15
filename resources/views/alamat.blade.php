@@ -157,6 +157,34 @@
             </form>
         </div>
     </div>
+    {{--
+    <h3 class="mb-4 text-start mt-4"><strong>Pilih Alamat</strong></h3>
+
+    @if ($alamatList->count())
+        <form action="{{ route('keranjang.pilihAlamat') }}" method="POST">
+            @csrf
+            @foreach ($alamatList as $alamat)
+                <div class="card mb-2 shadow-sm">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1">
+                                <input type="radio" name="alamat_id" value="{{ $alamat->id_alamat }}"
+                                    {{ $selectedAlamatId == $alamat->id_alamat ? 'checked' : '' }}>
+                                {{ $alamat->nama_lengkap }}
+                            </h5>
+                            <p class="mb-0">{{ $alamat->no_telp }} | {{ $alamat->lokasi }}</p>
+                            <span class="badge bg-secondary">{{ $alamat->jenis }}</span>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+
+            <button type="submit" class="btn btn-outline-primary">Gunakan Alamat Ini</button>
+        </form>
+    @else
+        <div class="alert alert-warning">Belum ada alamat. Silakan tambahkan terlebih dahulu.</div>
+    @endif --}}
+
 
     <!-- Tambahkan script JS jika diperlukan -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

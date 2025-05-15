@@ -19,6 +19,10 @@ use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\KomentarController;
 
+
+//Route::post('/keranjang/pilih-alamat', [KeranjangController::class, 'pilihAlamat'])->name('keranjang.pilihAlamat');
+
+
 Route::post('/komentar', [KomentarController::class, 'store'])->name('komentar.store');
 
 Route::get('/info-umum', function () {
