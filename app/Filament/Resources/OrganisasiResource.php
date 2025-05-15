@@ -22,6 +22,14 @@ class OrganisasiResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -54,29 +62,19 @@ class OrganisasiResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id_organisasi')
-                    ->label('ID')
-                    ->sortable()
-                    ->searchable(),
-
-                Tables\Columns\TextColumn::make('nama_organisasi')
-                    ->label('Nama')
-                    ->sortable()
-                    ->searchable(),
-
-                Tables\Columns\TextColumn::make('no_telp')
-                    ->label('Telepon'),
-
-                Tables\Columns\TextColumn::make('email')
-                    ->label('Email'),
-
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Dibuat')
-                    ->dateTime(),
+                Tables\Columns\TextColumn::make('id_organisasi')->label('ID')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('nama_organisasi')->label('Nama')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('no_telp')->label('Telepon'),
+                Tables\Columns\TextColumn::make('email')->label('Email'),
+                Tables\Columns\TextColumn::make('created_at')->label('Dibuat')->dateTime(),
             ])
-            ->filters([])
+            ->filters([
+                Tables\Filters\TrashedFilter::make(),
+            ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\RestoreBulkAction::make(),
+                Tables\Actions\ForceDeleteBulkAction::make(),
             ]);
     }
 
@@ -84,7 +82,7 @@ class OrganisasiResource extends Resource
     {
         return [
             'index' => Pages\ListOrganisasis::route('/'),
-            //'create' => Pages\CreateOrganisasi::route('/create'),
+            'create' => Pages\CreateOrganisasi::route('/create'),
             'edit' => Pages\EditOrganisasi::route('/{record}/edit'),
         ];
     }
