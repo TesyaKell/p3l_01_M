@@ -39,7 +39,7 @@ class PenitipController extends Controller
         $request->validate([
             'nama_penitip' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:penitip',
-            'password' => 'required|string|min:2',
+            'password' => 'required|string|min:7',
             'no_telp' => 'required|string|max:255|unique:penitip',
             'tanggal_lahir' => 'required|date',
             'nik' => 'required|string|max:255|unique:penitip',

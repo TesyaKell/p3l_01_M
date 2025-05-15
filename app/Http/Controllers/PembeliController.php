@@ -34,7 +34,7 @@ class PembeliController extends Controller
             'nama_pembeli' => 'required|string|max:255',
             'no_telp' => 'required|string|max:255|unique:pembeli',
             'email' => 'required|string|email|max:255|unique:pembeli',
-            'password' => 'required|string|min:2|confirmed',
+            'password' => 'required|string|min:7|confirmed',
             'tanggal_lahir' => 'required|date',
         ]);
 

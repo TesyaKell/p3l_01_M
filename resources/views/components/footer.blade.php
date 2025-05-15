@@ -12,6 +12,7 @@
                     <a href="{{ route('profil') }}" class="text-dark text-decoration-none mb-2">Profil</a>
                     <a href="{{ route('katalogbarang') }}" class="text-dark text-decoration-none mb-2">Katalog
                         Produk</a>
+                    <a href="{{ route('infoUmum') }}" class="text-dark text-decoration-none mb-2">Tentang Kami</a>
                     <p class="fw-semibold mt-3 mb-2">Hubungi Kami</p>
                     <p class="mb-2">📞 0812-3456-7890</p>
                     <p class="mb-2">✉️ reusemart@email.com</p>
