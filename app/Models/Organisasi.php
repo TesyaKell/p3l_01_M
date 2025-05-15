@@ -66,4 +66,22 @@ class Organisasi extends Authenticatable
     {
         return $this->nama_organisasi;
     }
+
+    // Add these relationship methods
+    public function requestDonasis()
+    {
+        return $this->hasMany(RequestDonasi::class, 'id_organisasi', 'id_organisasi');
+    }
+
+    public function donasis()
+    {
+        return $this->hasManyThrough(
+            Donasi::class,
+            RequestDonasi::class,
+            'id_organisasi', // Foreign key on RequestDonasi table
+            'id_request', // Foreign key on Donasi table
+            'id_organisasi', // Local key on Organisasi table
+            'id_request' // Local key on RequestDonasi table
+        );
+    }
 }

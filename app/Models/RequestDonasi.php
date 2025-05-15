@@ -21,7 +21,6 @@ class RequestDonasi extends Model
     {
         return $this->belongsTo(Organisasi::class, 'id_organisasi');
     }
-    // App\Models\RequestDonasi.php
     public function penitip()
     {
         return $this->belongsTo(\App\Models\Penitip::class, 'id_penitip');
