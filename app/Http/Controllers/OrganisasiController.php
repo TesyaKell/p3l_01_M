@@ -34,7 +34,6 @@ class OrganisasiController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'id_organisasi' => 'required|string|max:10|unique:organisasi,id_organisasi',
             'nama_organisasi' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:organisasi',
             'password' => 'required|string|min:2|confirmed',
@@ -56,7 +55,9 @@ class OrganisasiController extends Controller
             'name' => $request->nama_organisasi,
             'email' => $request->email,
             'datetime' => now(),
+            'url' => '/verify_organisasi/' . $verify_key,
         ];
+
 
         Notification::route('mail', $request->email)->notify(new VerifyEmail($details));
 

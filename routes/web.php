@@ -21,6 +21,10 @@ use App\Http\Controllers\KomentarController;
 
 Route::post('/komentar', [KomentarController::class, 'store'])->name('komentar.store');
 
+Route::get('/info-umum', function () {
+    return view('infoUmum');
+})->name('infoUmum');
+
 
 //ALAMAT
 Route::middleware('logged_in')->group(function () {
@@ -34,10 +38,12 @@ Route::middleware('logged_in')->group(function () {
 //History penjualan penitip
 Route::get('/penitip/history', [PenitipController::class, 'historyPenjualanPenitip'])->name('historyPenjualanPenitip');
 
+//History transaksi pembelian
+Route::get('/pembeli/history', [PembeliController::class, 'historyTransaksiPembelian'])->name('historyTransaksiPembelian');
 
 
 // Menangani permintaan POST ke route /
-Route::post('/', [ProfilController::class, 'logout'])->name('homeProduk');
+Route::post('/', [ProfilController::class, 'logout'])->name('logout');
 Route::post('/update-profil', [PembeliController::class, 'updateProfil'])->name('pembeli.updateProfil')->middleware('logged_in');
 Route::post('/update-profil/penitip', [PenitipController::class, 'updateProfil'])->name('penitip.updateProfil')->middleware('logged_in');
 Route::post('/update-profil/organisasi', [OrganisasiController::class, 'updateProfil'])->name('organisasi.updateProfil')->middleware('logged_in');
@@ -52,13 +58,14 @@ Route::get('/profil', [ProfilController::class, 'index'])->name('profil')->middl
 
 //home
 Route::get('/', [BarangController::class, 'showKatalog'])->name('homeProduk');
-Route::get('/homeProduk', [BarangController::class, 'showKatalog'])->name('homeProduk')->middleware('logged_in');
+Route::get('/homeProduk', [BarangController::class, 'showKatalog'])->name('homeProduk.logged_in')->middleware('logged_in');
+
 
 //BARANG
-Route::get('/katalogbarang', [BarangController::class, 'katalogbarang'])->name('katalogbarang')->middleware('logged_in');
+Route::get('/katalogbarang', [BarangController::class, 'katalogbarang'])->name('katalogbarang');
 Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('logged_in');
 Route::get('/detail-produk/{id}', [BarangController::class, 'detailProduk'])->name('detailProduk');
-Route::get('/produk', [BarangController::class, 'index'])->name('homeProduk');
+Route::get('/produk', [BarangController::class, 'index'])->name('produk');
 Route::get('/search', [BarangController::class, 'search'])->name('search');
 
 
@@ -94,10 +101,15 @@ Route::get('/register/organisasi', function () {
 
 Route::get('/set-role/{role}', [JabatanController::class, 'setRole'])->name('set.role');
 
+
+
 // Pegawai
 Route::get('/login/pegawai', function () {
     return view('login_noEmail', ['role' => session('selected_role', 'pegawai')]);
 })->name('login.pegawai');
+
+
+
 
 // Penitip
 Route::get('/login/penitip', function () {
@@ -123,9 +135,9 @@ Route::post('/register/organisasi', [OrganisasiController::class, 'register'])->
 
 
 // Verification
-Route::get('/verify_organisasi/{key}', [OrganisasiController::class, 'verify'])->name('verify');
-Route::get('/verify_pembeli/{key}', [PembeliController::class, 'verify'])->name('verify');
-Route::get('/verify_penitip/{key}', [PenitipController::class, 'verify'])->name('verify');
+Route::get('/verify_organisasi/{key}', [OrganisasiController::class, 'verify'])->name('verify.organisasi');
+Route::get('/verify_pembeli/{key}', [PembeliController::class, 'verify'])->name('verify.pembeli');
+Route::get('/verify_penitip/{key}', [PenitipController::class, 'verify'])->name('verify.penitip');
 
 
 
@@ -140,6 +152,7 @@ Route::get('/resetPassword/{role}/{token}', function (string $role, string $toke
 
 Route::post('/forgot_password/{role}', [UserController::class, 'forgot_password'])->name('password.email');
 Route::post('/reset_password/{role}', [UserController::class, 'reset_password'])->name('password.update');
+
 
 // Optional View Route for Jabatan
 Route::get('/jabatan', function () {
@@ -163,7 +176,6 @@ Route::get('/set-role/{role}', function ($role) {
         'Admin' => '/admin/login',
         'Hunter' => '/hunter/login',
         'Quality Control' => '/qc/login',
-        'Customer Service' => '/customerService/login',
         'Kurir' => '/kurir/login',
     ];
 
@@ -180,6 +192,8 @@ Route::post('/logout', function () {
     request()->session()->regenerateToken();
     return redirect()->route('jabatan.pegawai');
 })->name('logout');
+
+Route::post('/logout', [ProfilController::class, 'logout'])->name('logout.custom');
 
 
 
@@ -198,3 +212,45 @@ Route::post('/redeem-merchandise', function (Request $request) {
 
     return response()->json(['success' => true, 'new_stock' => $merchandise->stok]);
 });
+
+//Route to jabatan - Pegawai - CS
+Route::get('/cshomepage', function () {
+    return view('cshomepage');
+})->name('homepage.cs');
+
+
+//Register Penitip
+Route::get('/register/penitip', function () {
+    return view('register_penitip', ['role' => session('selected_role', 'penitip')]);
+})->name('register.penitip');
+
+Route::get('/alldata/penitip', [PenitipController::class, 'showAllPenitip'])->name('showalldata.penitip');
+
+Route::post('/register/penitip', [PenitipController::class, 'register'])->name('register.penitip.post');
+
+Route::put('/update/penitip/{id}', [PenitipController::class, 'update'])->name('update.penitip');
+Route::get('/edit/penitip/{id}', [PenitipController::class, 'edit'])->name('edit.penitip');
+
+Route::get('/penitip/search', [PenitipController::class, 'searchPenitip'])->name('search.penitip');
+
+
+Route::delete('/delete/penitip/{id}', [PenitipController::class, 'destroy'])->name('destroy.penitip');
+
+//Route to jabatan - Pegawai - CS
+Route::get('/orghomepage', function () {
+    return view('orghomepage');
+})->name('homepage.organisasi');
+
+//Route Request Donasi
+Route::get('/requestdonasi/{id_organisasi}', [RequestDonasiController::class, 'indexByOrg'])->name('request.katalog');
+
+Route::get('/create/requestdonasi/{id_organisasi}', function ($id_organisasi) {
+    return view('register_requestDonasi', compact('id_organisasi'));
+})->name('create.requestdonasi');
+
+Route::post('/create/requestdonasi', [RequestDonasiController::class, 'create'])->name('create.requestdonasi.post');
+
+Route::put('/update/requestdonasi/{id}', [RequestDonasiController::class, 'update'])->name('update.requestdonasi');
+Route::get('/edit/requestdonasi/{id}', [RequestDonasiController::class, 'edit'])->name('edit.requestdonasi');
+Route::delete('/delete/requestdonasi/{id}', [RequestDonasiController::class, 'destroy'])->name('destroy.requestdonasi');
+Route::get('/search/requestdonasi', [RequestDonasiController::class, 'search'])->name('search.requestdonasi');

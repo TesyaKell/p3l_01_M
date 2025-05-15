@@ -29,6 +29,7 @@ class Penitip extends Authenticatable
         'saldo',
         'top_seller',
         'verify_key',
+        'foto_nik',
     ];
 
     protected $hidden = [

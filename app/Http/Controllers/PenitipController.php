@@ -14,11 +14,22 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Notification;
 use Str;
+use Password;
 
 class PenitipController extends Controller
 {
     // app/Http/Controllers/PenitipController.php
 
+    private function generatePenitipId()
+    {
+        $last = Penitip::orderByRaw('CAST(SUBSTRING(id_penitip, 2) AS UNSIGNED) DESC')->first();
+
+        $nextNumber = $last
+            ? ((int) substr($last->id_penitip, 1)) + 1
+            : 1;
+
+        return 'T' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
+    }
     public function index()
     {
         return view('penitip.dashboard');
@@ -28,22 +39,24 @@ class PenitipController extends Controller
         $request->validate([
             'nama_penitip' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:penitip',
-            'password' => 'required|string|min:2|confirmed',
+            'password' => 'required|string|min:2',
             'no_telp' => 'required|string|max:255|unique:penitip',
             'tanggal_lahir' => 'required|date',
             'nik' => 'required|string|max:255|unique:penitip',
+            'foto_ktp' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $verify_key = Str::random(75);
-
+        $path = $request->file('foto_ktp')->store('ktp_images', 'public');
         Penitip::create([
-            'id_penitip' => (string) Str::uuid(),
+            'id_penitip' => $this->generatePenitipId(),
             'nama_penitip' => $request->nama_penitip,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'no_telp' => $request->no_telp,
             'tanggal_lahir' => $request->tanggal_lahir,
             'nik' => $request->nik,
+            'foto_nik' => $path,
             'poin' => 0,
             'saldo' => 0,
             'top_seller' => false,
@@ -119,9 +132,70 @@ class PenitipController extends Controller
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
     }
+    public function update(Request $request, string $id)
+    {
+        $request->validate([
+            'nama_penitip' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255',
+            'no_telp' => 'required|string|max:255',
+            'tanggal_lahir' => 'required|date',
+            'nik' => 'required|string|max:255',
+            'foto_ktp' => 'required|string|max:255',
+            'poin' => 'required|integer',
+            'saldo' => 'required|numeric',
+            'top_seller' => 'required|boolean',
+        ]);
+
+        // $penitip = Auth::guard('penitip')->user();
+        $penitip = Penitip::where('id_penitip', $id)->firstOrFail();
+
+        $penitip->update([
+            'nama_penitip' => $request->nama_penitip,
+            'email' => $request->email,
+            'no_telp' => $request->no_telp,
+            'tanggal_lahir' => $request->tanggal_lahir,
+            'nik' => $request->nik,
+            'foto_ktp' => $request->foto_ktp,
+            'poin' => $request->poin,
+            'saldo' => $request->saldo,
+            'top_seller' => $request->top_seller,
+        ]);
+
+        return redirect()->route('showalldata.penitip')->with('status', 'Data penitip berhasil diperbarui!');
+
+        // return redirect()->back()->with('status', 'Profile updated successfully!');
+    }
+    public function edit($id)
+    {
+        $penitip = Penitip::where('id_penitip', $id)->firstOrFail();
+        return view('updatepenitipcs', compact('penitip'));
+    }
+    public function updatefrompenitip(Request $request, string $id)
+    {
+        $request->validate([
+            'nama_penitip' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255',
+            'no_telp' => 'required|string|max:255',
+            'tanggal_lahir' => 'required|date',
+        ]);
+
+        // $penitip = Auth::guard('penitip')->user();
+        $penitip = Penitip::where('id_penitip', $id)->firstOrFail();
+        $penitip->update([
+            'nama_penitip' => $request->nama_penitip,
+            'email' => $request->email,
+            'no_telp' => $request->no_telp,
+            'tanggal_lahir' => $request->tanggal_lahir,
+        ]);
+
+        return redirect()->back()->with('status', 'Profile updated successfully!');
+    }
+
+
 
     public function historyPenjualanPenitip(Request $request)
     {
+
         $user = Helper::getLoggedInUser('penitip');
 
         if (!$user) {
@@ -159,5 +233,73 @@ class PenitipController extends Controller
             'tanggal_cetak' => now()->format('d/m/Y'),
         ]);
     }
+    public function showAllPenitip()
+    {
+        $table = Penitip::latest()->paginate(10);
+        return view('katalogPenitip', compact('table'));
+    }
 
+    // public function forgot_password(Request $request): RedirectResponse
+    // {
+    //     $user = Helper::getLoggedInUser('penitip');
+
+    //     if (!$user) {
+    //         return redirect()->route('login.penitip')->with('error', 'Anda harus login terlebih dahulu.');
+    //     }
+
+    //     $bulan = $request->input('bulan', now()->month);
+    //     $tahun = $request->input('tahun', now()->year);
+
+    //     $penitip = Penitip::findOrFail($user->id_penitip);
+    //     $id_penitip = $penitip->id_penitip;
+
+    //     $transaksi = DB::table('barang')
+    //         ->join('detail_transaksi', 'barang.kode_barang', '=', 'detail_transaksi.kode_barang')
+    //         ->join('transaksi', 'detail_transaksi.no_nota', '=', 'transaksi.no_nota')
+    //         ->where('barang.id_penitip', $id_penitip)
+    //         ->whereMonth('transaksi.tanggal_lunas', $bulan)
+    //         ->whereYear('transaksi.tanggal_lunas', $tahun)
+    //         ->select(
+    //             'barang.kode_barang',
+    //             'barang.nama_barang',
+    //             'barang.tanggal_masuk',
+    //             'transaksi.tanggal_lunas as tanggal_laku',
+    //             'detail_transaksi.harga_jual_bersih',
+    //             'detail_transaksi.bonus',
+    //             DB::raw('(detail_transaksi.harga_jual_bersih + detail_transaksi.bonus) as pendapatan')
+    //         )
+    //         ->get();
+
+    //     return view('historyPenjualanPenitip', [
+    //         'penitip' => $penitip,
+    //         'transaksi' => $transaksi,
+    //         'bulan' => (int) $bulan,
+    //         'tahun' => (int) $tahun,
+    //         'tanggal_cetak' => now()->format('d/m/Y'),
+    //     ]);
+    // }
+
+
+    public function destroy(string $id)
+    {
+        $penitip = Penitip::where('id_penitip', $id)->firstOrFail();
+        $penitip->delete();
+        return redirect()->back()->with('status', 'Profile Deleted successfully!');
+    }
+
+    public function searchPenitip(Request $request)
+    {
+        $query = $request->input('search');
+
+        $table = Penitip::when($query, function ($q) use ($query) {
+            $q->where('nama_penitip', 'like', '%' . $query . '%');
+        })->paginate(10);
+
+        return view('katalogPenitip', compact('table', 'query'));
+    }
+    public function logout()
+    {
+        Auth::guard('penitip')->logout();
+        return redirect('/login/penitip')->with('status', 'Logout successful!');
+    }
 }

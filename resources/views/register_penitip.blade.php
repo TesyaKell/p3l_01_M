@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Login {{ isset($role) ? ucfirst($role) : '' }}</title>
+    <title>Register {{ isset($role) ? ucfirst($role) : '' }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -23,6 +23,7 @@
             align-items: center;
             justify-content: center;
             font-family: 'Quicksand', sans-serif;
+            overflow-y: auto;
         }
 
         .wrapper {
@@ -36,29 +37,33 @@
         .image-card {
             flex: 1;
             overflow: hidden;
+            height: auto;
             background-color: #f8f9fa;
+            background-color: #e9c8ce;
+
         }
 
-        .login-card {
+        .register-card {
             flex: 1;
-            max-width: 400px;
-            max-height: 500px;
+            max-width: 600px;
+            height: 800px;
             border-radius: 15px;
-            overflow: hidden;
+            overflow: visible;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             background-color: white;
+            padding-top: 2rem;
             padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
+
 
         .image-card img {
             width: 100%;
-            height: 100%;
+            height: auto;
             object-fit: cover;
             display: block;
-        }
-
-        .login-card {
-            padding: 2rem;
         }
 
         .form-label {
@@ -73,7 +78,7 @@
         }
 
         .form-control:focus {
-            border-color: #070607;
+            border-color: #282728;
             box-shadow: 0 0 0 0.25rem rgba(76, 202, 163, 0.25);
         }
 
@@ -92,15 +97,14 @@
             box-shadow: 0 5px 15px rgba(232, 67, 147, 0.4);
         }
 
-
         .link-opacity-10 {
-            color: #070607;
+            color: #282728;
             text-decoration: none;
             transition: all 0.3s ease;
         }
 
         .link-opacity-10:hover {
-            color: #070607;
+            color: #282728;
             text-decoration: underline;
         }
 
@@ -148,12 +152,12 @@
     <div class="wrapper">
 
         <!-- Image Card -->
-        <div class="image-card">
-            <img src="/images/imm.png" alt="Login Image">
-        </div>
+        <!-- <div class="image-card">
+            <img src="/images/bck3.png" alt="Register Image">
+        </div> -->
 
-        <!-- Login Card -->
-        <div class="login-card">
+        <!-- Register Card -->
+        <div class="register-card">
             @if (session('status'))
                 <div class="alert alert-success" role="alert">
                     {{ session('status') }}
@@ -172,34 +176,54 @@
                 </div>
             @endif
 
-            <h3 class="text-center mb-4 fw-bold" style="color: #504f4f;">
-                {{ isset($role) ? 'Login as ' . ucfirst($role) : 'Welcome to ReUsMart' }}
+            <h3 class="text-center mb-2 mt-1 fw-bold" style="color: #504f4f;">
+                {{ isset($role) ? 'Register ' . ucfirst($role) : 'Welcome to ReUseMart' }}
             </h3>
 
-            <form method="post" action="{{ route('login.post', ['role' => $role ?? null]) }}">
+            <form method="post" action="{{ route('register.penitip.post') }}" enctype="multipart/form-data">
                 @csrf
-                <input type="hidden" name="role" value="{{ $role ?? '' }}">
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email Address</label>
-                    <input type="text" class="form-control" id="email" name="email"
+                <div class="mb-2">
+                    <label for="nama_penitip" class="form-label">Nama Lengkap</label>
+                    <input type="text" class="form-control" id="nama_penitip" name="nama_penitip"
+                        placeholder="Enter your full name">
+                </div>
+                <div class="mb-2">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email"
                         placeholder="Enter your email">
                 </div>
-                <div class="mb-4">
+                <div class="mb-2">
+                    <label for="no_telp" class="form-label">Nomor Telepon</label>
+                    <input type="text" class="form-control" id="no_telp" name="no_telp"
+                        placeholder="Enter phone number">
+                </div>
+                <div class="mb-2">
+                    <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
+                    <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir">
+                </div>
+                <div class="mb-2">
+                    <label for="nik" class="form-label">nik</label>
+                    <input type="text" class="form-control" id="nik" name="nik">
+                </div>
+                <div class="mb-2">
+                    <label for="foto_ktp" class="form-label">Foto KTP</label>
+                    <input type="file" class="form-control" id="foto_ktp" name="foto_ktp">
+                </div>
+                <!-- untuk password dan password_confirmation di kirim via email -->
+                <div class="mb-2">
                     <label for="password" class="form-label">Password</label>
                     <input type="password" class="form-control" id="password" name="password"
                         placeholder="Enter your password">
                 </div>
+                <!-- <div>
+                    <label for="password_confirmation" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation"
+                        placeholder="Confirm your password">
+                </div> -->
 
                 <div class="d-grid gap-2 mb-4">
-                    <button type="submit" class="btn btn-primary mt-3">Sign In</button>
+                    <button type="submit" class="btn btn-primary mt-3">Register</button>
                 </div>
-
-                @if ($role !== 'pegawai')
-                    <div class="text-center">
-                        <p><a class="link-opacity-10" href="{{ route('password.request', $role) }}">Forgot Password?</a>
-                        </p>
-                    </div>
-                @endif
             </form>
         </div>
     </div>

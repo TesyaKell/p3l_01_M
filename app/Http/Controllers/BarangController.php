@@ -14,9 +14,16 @@ class BarangController extends Controller
 {
     public function index()
     {
-        $barang = Barang::all();
-        return view('katalogbarang', compact('barang'));
+        $barang = Barang::where('status', 'tersedia')->get();
+        $kategoriList = \App\Models\KategoriBarang::all(); // optional kalau dibutuhkan
+
+        return view('katalogbarang', [
+            'barangTersedia' => $barang,
+            'kategoriList' => $kategoriList,
+            'activeStatus' => 'tersedia', // Default atau sesuai kebutuhan
+        ]);
     }
+
 
     public function create()
     {
