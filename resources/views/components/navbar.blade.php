@@ -77,12 +77,17 @@ use App\Http\Helper\Helper;
 
                 {{-- Sudah Login --}}
                 @if (Helper::isLoggedIn())
-                    
+
 
                     @if (Helper::isLoggedIn() &&
                             (Helper::getLoggedInUser()->nama_pembeli ||
                                 Helper::getLoggedInUser()->nama_penitip ||
                                 Helper::getLoggedInUser()->nama_organisasi))
+                        @if (Helper::getLoggedInUser() && Helper::getLoggedInUser()->nama_pembeli)
+                            <li class="nav-item me-3">
+                                <a class="nav-link" href="{{ route('keranjang') }}"> 🛒 </a>
+                            </li>
+                        @endif
                         <li class="nav-item me-3">
                             <a class="nav-link" href="{{ route('homeProduk') }}"> {{-- notifications --}}
                                 🔔
@@ -104,7 +109,8 @@ use App\Http\Helper\Helper;
                                     </li>
                                 @endif
                                 @if (Helper::getLoggedInUser() && Helper::getLoggedInUser()->nama_organisasi)
-                                    <li><a class="dropdown-item" href="{{ route('homepage.organisasi') }}">Request Donasi panel</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('homepage.organisasi') }}">Request
+                                            Donasi panel</a></li>
                                 @endif
 
                                 <li>

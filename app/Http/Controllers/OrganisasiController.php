@@ -17,6 +17,7 @@ use Str;
 
 class OrganisasiController extends Controller
 {
+
     private function generateOrganisasiId()
     {
         $last = \App\Models\Organisasi::orderBy('id_organisasi', 'desc')->first();
@@ -117,4 +118,27 @@ class OrganisasiController extends Controller
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
     }
+
+
+    //live code
+    public function index()
+    {
+        $organisasis = Organisasi::all();
+        return view('organisasi.index', compact('organisasis'));
+    }
+
+    public function destroy($id)
+    {
+        $organisasi = Organisasi::findOrFail($id);
+        $organisasi->delete();
+
+        return redirect()->route('organisasi.index')->with('success', 'Organisasi berhasil dihapus.');
+    }
+
+    public function trash()
+    {
+        $deletedOrganisasi = Organisasi::onlyTrashed()->get();
+        return view('organisasi.trash', compact('deletedOrganisasi'));
+    }
+
 }

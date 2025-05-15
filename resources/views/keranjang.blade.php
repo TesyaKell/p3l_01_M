@@ -168,7 +168,7 @@
         <!-- Total Harga dan Checkout -->
         <div class="mt-4 d-flex justify-content-between align-items-center">
             <h4>Total: <span class="text-primary">Rp{{ number_format($totalHarga, 0, ',', '.') }}</span></h4>
-            <a href="{{ route('transaksi') }}" class="btn btn-success btn-lg">Checkout</a>
+            <a href="{{ route('homeProduk') }}" class="btn btn-success btn-lg">Checkout</a>
         </div>
     @endif
 
