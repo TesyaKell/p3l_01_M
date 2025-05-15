@@ -52,31 +52,26 @@ class PegawaiController extends Controller
             'email' => 'required|string|email|max:255',
             'password' => 'required|string',
         ]);
-        
-        // if (Auth::guard('pegawai')->attempt($request->only('email', 'password'))) {
-        //     return redirect('/dashboard')->with('status', 'Login successful!');
-        // }
-
         if (Auth::guard('pegawai')->attempt($request->only('email', 'password'))) {
             $user = Auth::guard('pegawai')->user();
             $jabatan = Jabatan::where('kode_jabatan',$user->kode_jabatan)->first();
             if($jabatan->nama_jabatan == "Owner"){
-                return redirect('/jabatanPegawai')->with('status', 'Login successful!');
+                return redirect('/dash')->with('status', 'Login successful!');
 
             }else if($jabatan->nama_jabatan == "Admin"){
-                return redirect('/jabatanPegawai')->with('status', 'Login successful!');
+                return redirect('/board')->with('status', 'Login successful!');
 
             }else if($jabatan->nama_jabatan == "Hunter"){
-                return redirect('/jabatanPegawai')->with('status', 'Login successful!');
+                return redirect('/dboard')->with('status', 'Login successful!');
 
             }else if($jabatan->nama_jabatan == "Quality Control"){
-                return redirect('/jabatanPegawai')->with('status', 'Login successful!');
+                return redirect('/dddboard')->with('status', 'Login successful!');
 
             }else if($jabatan->nama_jabatan == "Customer Service"){
                 return redirect()->route('homepage.cs')->with('status', 'Login successful!');
 
             }else if($jabatan->nama_jabatan == "Kurir"){
-                return redirect('/jabatanPegawai')->with('status', 'Login successful!');
+                return redirect('/dasboard')->with('status', 'Login successful!');
 
             }else{
                 return redirect('/login/pegawai')->with('status', 'Login Failed!');

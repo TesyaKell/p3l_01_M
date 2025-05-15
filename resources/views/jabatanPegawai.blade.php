@@ -200,7 +200,7 @@
                 <i class="fas fa-chevron-right arrow-icon"></i>
             </a>
 
-            <a href="{{ url ('/customerService/login')}}" class="role-card">
+            <a href="{{ route ('login.pegawai')}}" class="role-card">
                 <div class="role-icon"><i class="fas fa-building"></i></div>
                 <div class="role-text">
                     <div class="role-name">Customer Service</div>
