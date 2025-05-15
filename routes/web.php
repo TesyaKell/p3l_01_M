@@ -169,23 +169,6 @@ Route::middleware(['auth:penitip'])->group(function () {
     Route::get('/dashboard/penitip', [App\Http\Controllers\PenitipController::class, 'index'])->name('penitip.dashboard');
 });
 
-Route::post('/login', function (\Illuminate\Http\Request $request) {
-    $role = $request->input('role');
-
-    switch ($role) {
-        case 'pembeli':
-            return app(PembeliController::class)->login($request);
-        case 'organisasi':
-            return app(OrganisasiController::class)->login($request);
-        case 'pegawai':
-            return app(PegawaiController::class)->login($request);
-        case 'penitip':
-            return app(PenitipController::class)->login($request);
-        default:
-            return app(PembeliController::class)->login($request);
-    }
-})->name('login.post');
-
 
 Route::get('/set-role/{role}', function ($role) {
     $loginRoutes = [
@@ -214,21 +197,11 @@ Route::post('/logout', [ProfilController::class, 'logout'])->name('logout.custom
 
 
 
+
 Route::get('/merchandise', [MerchandiseController::class, 'index'])->name('merchandise.index');
 
-Route::post('/redeem-merchandise', function (Request $request) {
-    $merchandise = Merchandise::find($request->merchandise_id);
+Route::post('/redeem-merchandise', [MerchandiseController::class, 'redeem']);
 
-    if (!$merchandise || $merchandise->stok <= 0) {
-        return response()->json(['success' => false, 'message' => 'Merchandise not available or out of stock']);
-    }
-
-    $merchandise->stok -= 1;
-    $merchandise->save();
-
-
-    return response()->json(['success' => true, 'new_stock' => $merchandise->stok]);
-});
 
 //Route to jabatan - Pegawai - CS
 Route::get('/cshomepage', function () {
