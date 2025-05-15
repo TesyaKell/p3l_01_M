@@ -135,9 +135,9 @@ Route::post('/register/organisasi', [OrganisasiController::class, 'register'])->
 
 
 // Verification
-Route::get('/verify_organisasi/{key}', [OrganisasiController::class, 'verify'])->name('verify');
-Route::get('/verify_pembeli/{key}', [PembeliController::class, 'verify'])->name('verify');
-Route::get('/verify_penitip/{key}', [PenitipController::class, 'verify'])->name('verify');
+Route::get('/verify_organisasi/{key}', [OrganisasiController::class, 'verify'])->name('verify.organisasi');
+Route::get('/verify_pembeli/{key}', [PembeliController::class, 'verify'])->name('verify.pembeli');
+Route::get('/verify_penitip/{key}', [PenitipController::class, 'verify'])->name('verify.penitip');
 
 
 
@@ -194,7 +194,6 @@ Route::get('/set-role/{role}', function ($role) {
         'Admin' => '/admin/login',
         'Hunter' => '/hunter/login',
         'Quality Control' => '/qc/login',
-        'Customer Service' => '/customerService/login',
         'Kurir' => '/kurir/login',
     ];
 
@@ -211,6 +210,8 @@ Route::post('/logout', function () {
     request()->session()->regenerateToken();
     return redirect()->route('jabatan.pegawai');
 })->name('logout');
+
+Route::post('/logout', [ProfilController::class, 'logout'])->name('logout.custom');
 
 
 
@@ -231,14 +232,14 @@ Route::post('/redeem-merchandise', function (Request $request) {
 });
 
 //Route to jabatan - Pegawai - CS
-Route::get('/cshomepage', function(){
+Route::get('/cshomepage', function () {
     return view('cshomepage');
 })->name('homepage.cs');
 
 
 //Register Penitip
-Route::get('/register/penitip', function(){
-    return view('register_penitip',['role' => session('selected_role', 'penitip')]);
+Route::get('/register/penitip', function () {
+    return view('register_penitip', ['role' => session('selected_role', 'penitip')]);
 })->name('register.penitip');
 
 Route::get('/alldata/penitip', [PenitipController::class, 'showAllPenitip'])->name('showalldata.penitip');
@@ -254,14 +255,14 @@ Route::get('/penitip/search', [PenitipController::class, 'searchPenitip'])->name
 Route::delete('/delete/penitip/{id}', [PenitipController::class, 'destroy'])->name('destroy.penitip');
 
 //Route to jabatan - Pegawai - CS
-Route::get('/orghomepage', function(){
+Route::get('/orghomepage', function () {
     return view('orghomepage');
 })->name('homepage.organisasi');
 
 //Route Request Donasi
 Route::get('/requestdonasi/{id_organisasi}', [RequestDonasiController::class, 'indexByOrg'])->name('request.katalog');
 
-Route::get('/create/requestdonasi/{id_organisasi}', function($id_organisasi){
+Route::get('/create/requestdonasi/{id_organisasi}', function ($id_organisasi) {
     return view('register_requestDonasi', compact('id_organisasi'));
 })->name('create.requestdonasi');
 

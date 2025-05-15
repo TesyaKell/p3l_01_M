@@ -84,7 +84,6 @@ use App\Http\Helper\Helper;
                         </li>
                     @endif
 
-
                     <li class="nav-item me-3">
                         <a class="nav-link" href="{{ route('homeProduk') }}"> {{-- notifications --}}
                             🔔
@@ -124,7 +123,44 @@ use App\Http\Helper\Helper;
                             </li>
                         </ul>
 
-                    </li>
+                    @if (Helper::isLoggedIn() &&
+                            (Helper::getLoggedInUser()->nama_pembeli ||
+                                Helper::getLoggedInUser()->nama_penitip ||
+                                Helper::getLoggedInUser()->nama_organisasi))
+                        <li class="nav-item me-3">
+                            <a class="nav-link" href="{{ route('homeProduk') }}"> {{-- notifications --}}
+                                🔔
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
+                                id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ Helper::getLoggedInUser()->nama_organisasi }}
+                                {{ Helper::getLoggedInUser()->nama_pembeli }}
+                                {{ Helper::getLoggedInUser()->nama_penitip }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                                <li><a class="dropdown-item" href="{{ route('profil') }}">Profil Saya</a></li>
+
+                                @if (Helper::getLoggedInUser()->nama_penitip)
+                                    <li><a class="dropdown-item" href="{{ route('historyPenjualanPenitip') }}">History
+                                            Penjualan</a>
+                                    </li>
+                                @endif
+
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <form action="{{ url('/') }}" method="POST">
+                                        @csrf
+                                        <button class="dropdown-item" type="submit">Keluar</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    @endif
+
                 @endif
             </ul>
         </div>

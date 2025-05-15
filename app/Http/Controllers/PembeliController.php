@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use DB;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Helper\Helper;
 use App\Models\Pembeli;
@@ -35,7 +34,7 @@ class PembeliController extends Controller
             'nama_pembeli' => 'required|string|max:255',
             'no_telp' => 'required|string|max:255|unique:pembeli',
             'email' => 'required|string|email|max:255|unique:pembeli',
-            'password' => 'required|string|min:2|confirmed',
+            'password' => 'required|string|min:7|confirmed',
             'tanggal_lahir' => 'required|date',
         ]);
 
@@ -159,41 +158,6 @@ class PembeliController extends Controller
         $user->save();
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
-    }
-    public function historyTransaksiPembelian(Request $request)
-    {
-        $user = Helper::getLoggedInUser('pembeli');
-
-        if (!$user) {
-            return redirect()->route('login.pembeli')->with('error', 'Anda harus login terlebih dahulu.');
-        }
-
-        $bulan = $request->input('bulan', now()->month);
-        $tahun = $request->input('tahun', now()->year);
-
-        $pembeli = Pembeli::findOrFail($user->id_pembeli);
-        $id_pembeli = $pembeli->id_pembeli;
-
-        $transaksi = DB::table('detail_transaksi')
-            ->join('transaksi', 'detail_transaksi.no_nota', '=', 'transaksi.no_nota')
-            ->where('transaksi.id_pembeli', $id_pembeli)
-            ->select(
-                'transaksi.no_nota',
-                'detail_transaksi.nama_barang',
-                'transaksi.tambah_poin',
-                'transaksi.tipe_delivery',
-                'transaksi.total_pembayaran',
-                'transaksi.alamat_pengiriman',
-                'transaksi.status',
-            )
-            ->get();
-
-        return view('profil', [
-            'transaksi' => $transaksi,
-            'bulan' => (int) $bulan,
-            'tahun' => (int) $tahun,
-            'tanggal_cetak' => now()->format('d/m/Y'),
-        ]);
     }
 
 }
