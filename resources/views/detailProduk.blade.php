@@ -44,11 +44,11 @@ use App\Http\Helper\Helper;
         }
 
         .btn-pink {
-            background-color: #d99da7;
+            background-color: #d87ca7;
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 0;
+            border-radius: 10px;
             transition: background-color 0.3s;
         }
 
@@ -65,7 +65,6 @@ use App\Http\Helper\Helper;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-
         @media (max-width: 770px) {
             .card {
                 flex-direction: column;
@@ -77,6 +76,24 @@ use App\Http\Helper\Helper;
                 max-width: 100%;
             }
         }
+
+        /* Floating alert di tengah atas */
+        .floating-alert {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: 250px;
+            max-width: 400px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 1050;
+            font-size: 0.9rem;
+            pointer-events: none;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -84,17 +101,6 @@ use App\Http\Helper\Helper;
     @include('components.navbar')
 
     <main class="container-sm my-5 flex-fill">
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
 
         <div class="card mb-4">
             <img src="{{ asset('images/' . $barang->foto_produk) }}" alt="{{ $barang->nama_barang }}" class="p-3">
@@ -117,11 +123,16 @@ use App\Http\Helper\Helper;
 
                 <!-- Cek apakah user yang login adalah Pembeli -->
                 @if (auth()->guard('pembeli')->check())
-                    <form action="{{ route('keranjang') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="kode_barang" value="{{ $barang->kode_barang }}">
-                        <button type="submit" class="btn btn-pink mt-4 mb-3">Masukkan Ke Keranjang</button>
-                    </form>
+                    @if ($barang->status == 'Tersedia')
+                        <form id="form-keranjang-detail" class="tambah-keranjang-form" action="{{ route('keranjang') }}"
+                            method="POST">
+                            @csrf
+                            <input type="hidden" name="kode_barang" value="{{ $barang->kode_barang }}">
+                            <button type="submit" class="btn btn-pink mt-4 mb-3">Masukkan Ke Keranjang</button>
+                        </form>
+                    @else
+                        <button class="btn btn-secondary w-50" disabled>Masukkan Ke Keranjang</button>
+                    @endif
                 @endif
 
             </div>
@@ -166,6 +177,51 @@ use App\Http\Helper\Helper;
         @endif
 
     </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.querySelector('#form-keranjang-detail');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(form);
+
+                    fetch(form.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRF-TOKEN': form.querySelector('[name="_token"]').value
+                            }
+                        })
+                        .then(async response => {
+                            const data = await response.json();
+                            if (response.ok) {
+                                showFloatingAlert(data.message ||
+                                    'Berhasil menambahkan ke keranjang!', 'success');
+                            } else {
+                                showFloatingAlert(data.message || 'Gagal menambahkan produk!',
+                                    'danger');
+                            }
+                        })
+                        .catch(() => {
+                            showFloatingAlert('Terjadi kesalahan saat menambahkan produk.', 'danger');
+                        });
+                });
+            }
+
+            function showFloatingAlert(message, type) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type} floating-alert shadow`;
+                alertDiv.textContent = message;
+                document.body.appendChild(alertDiv);
+                setTimeout(() => alertDiv.style.opacity = '1', 100);
+                setTimeout(() => {
+                    alertDiv.style.opacity = '0';
+                    setTimeout(() => alertDiv.remove(), 500);
+                }, 3000);
+            }
+        });
+    </script>
 
 </body>
 

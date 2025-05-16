@@ -21,6 +21,7 @@ use App\Http\Controllers\KomentarController;
 
 
 //Route::post('/keranjang/pilih-alamat', [KeranjangController::class, 'pilihAlamat'])->name('keranjang.pilihAlamat');
+Route::delete('/keranjang/{id}', [KeranjangController::class, 'destroy'])->name('keranjang.destroy');
 
 
 Route::post('/komentar', [KomentarController::class, 'store'])->name('komentar.store');
@@ -37,6 +38,10 @@ Route::middleware('logged_in')->group(function () {
     Route::put('/alamat/{id}', [AlamatController::class, 'update'])->name('alamat.update');
     Route::delete('/alamat/{id}', [AlamatController::class, 'destroy'])->name('alamat.destroy');
 })->name('alamat');
+
+// PILIH ALAMAT DI KERANJANG
+Route::post('/keranjang/pilih-alamat', [KeranjangController::class, 'pilihAlamat'])->name('keranjang.pilihAlamat')->middleware('logged_in');
+
 
 
 //History penjualan penitip

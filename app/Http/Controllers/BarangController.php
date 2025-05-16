@@ -115,31 +115,29 @@ class BarangController extends Controller
         $user = Helper::getLoggedInUser('pembeli');
 
         if (!$user) {
-            return redirect()->route('jabatan')->with('error', 'Silakan login terlebih dahulu sebagai pembeli.');
+            return response()->json(['message' => 'Silakan login terlebih dahulu sebagai pembeli.'], 401);
         }
 
         $request->validate([
             'kode_barang' => 'required|exists:barang,kode_barang',
         ]);
 
-        // Cek apakah barang sudah ada di keranjang pembeli
         $exists = \App\Models\Keranjang::where('id_pembeli', $user->id_pembeli)
             ->where('kode_barang', $request->kode_barang)
             ->exists();
 
         if ($exists) {
-            return redirect()->back()->with('error', 'Barang ini sudah ada di keranjang Anda.');
+            return response()->json(['message' => 'Barang ini sudah ada di keranjang Anda.'], 409);
         }
 
-        // Jika belum ada, tambahkan ke keranjang
         \App\Models\Keranjang::create([
             'id_pembeli' => $user->id_pembeli,
             'kode_barang' => $request->kode_barang,
         ]);
 
-        return redirect()->route('detailProduk', ['id' => $request->kode_barang])
-            ->with('success', 'Barang berhasil dimasukkan ke keranjang!');
+        return response()->json(['message' => 'Barang berhasil dimasukkan ke keranjang!'], 200);
     }
+
 
 
     public function search(Request $request)
