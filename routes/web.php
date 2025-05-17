@@ -262,6 +262,7 @@ Route::get('/orghomepage', function () {
 
 //Route Request Donasi
 Route::get('/requestdonasi/{id_organisasi}', [RequestDonasiController::class, 'indexByOrg'])->name('request.katalog');
+Route::get('/requestdonasi/all/{id_organisasi}', [RequestDonasiController::class, 'allIndexByOrg'])->name('request.katalog.all');
 
 Route::get('/create/requestdonasi/{id_organisasi}', function ($id_organisasi) {
     return view('register_requestDonasi', compact('id_organisasi'));
@@ -271,5 +272,10 @@ Route::post('/create/requestdonasi', [RequestDonasiController::class, 'create'])
 
 Route::put('/update/requestdonasi/{id}', [RequestDonasiController::class, 'update'])->name('update.requestdonasi');
 Route::get('/edit/requestdonasi/{id}', [RequestDonasiController::class, 'edit'])->name('edit.requestdonasi');
-Route::delete('/delete/requestdonasi/{id}', [RequestDonasiController::class, 'destroy'])->name('destroy.requestdonasi');
-Route::get('/search/requestdonasi', [RequestDonasiController::class, 'search'])->name('search.requestdonasi');
+Route::delete('/delete/requestdonasi/{id}', [RequestDonasiController::class, 'delete'])->name('destroy.requestdonasi');
+Route::get('/search/requestdonasi/all', [RequestDonasiController::class, 'search'])->name('search.requestdonasi.fall');
+Route::get('/search/requestdonasi', [RequestDonasiController::class, 'searchById'])->name('search.requestdonasi');
+
+
+Route::get('/pembeli/transaksi', [PembeliController::class, 'historyTransaksiPembelian'])
+    ->name('pembeli.transaksi');

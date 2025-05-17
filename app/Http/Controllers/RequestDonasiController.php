@@ -29,6 +29,12 @@ class RequestDonasiController extends Controller
         $data = RequestDonasi::where('id_organisasi', $id_organisasi)->where('status', '!=', 'Diterima')->paginate(10);
         return view('katalogrequestdonasi', compact('id_organisasi','data'));
     }
+
+    public function allIndexByOrg($id_organisasi)
+    {
+        $data = RequestDonasi::where('status', '!=', 'Null')->paginate(10);
+        return view('allkatalogrequestdonasi', compact('id_organisasi','data'));
+    }
     // public function history($id_organisasi)
     // {
     //     $data = RequestDonasi::where('id_organisasi', $id_organisasi)->where('status',  'Diterima')->paginate(10);
@@ -47,8 +53,8 @@ class RequestDonasiController extends Controller
             'status' => 'Diproses',
         ]);
 
-        return redirect()->route('request.katalog', ['id_organisasi' => $request->id_organisasi])
-        ->with('status', 'Request Donasi berhasil ditambahkan!');
+        return redirect()->route('create.requestdonasi', ['id_organisasi' => $request->id_organisasi])->with('status', 'Request Donasi berhasil ditambahkan!');
+
     }
     public function update(Request $request, $id){
         $request->validate([
@@ -77,6 +83,18 @@ class RequestDonasiController extends Controller
         return redirect()->back()->with('status', 'Profile Deleted successfully!');
     }
     public function search(Request $request)
+    {
+        $query = $request->input('search');
+        $id_organisasi = $request->input('id_organisasi');
+    
+        $data = RequestDonasi::when($query, function ($q) use ($query) {
+                $q->where('desk_request', 'like', '%' . $query . '%');
+            })
+            ->paginate(10);
+
+        return view('allkatalogrequestdonasi', compact('data', 'query', 'id_organisasi'));
+    }
+    public function searchById(Request $request)
     {
         $query = $request->input('search');
         $id_organisasi = $request->input('id_organisasi');

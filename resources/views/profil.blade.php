@@ -129,6 +129,9 @@ use App\Http\Helper\Helper;
                             </div>
                         </div>
                     @endif
+                    @if (@$guard === 'pembeli')
+                        <a href="{{ route('pembeli.transaksi') }}" class="btn btn-outline-primary">Lihat Riwayat Pembelian</a>
+                    @endif
                 </div>
             </div>
         @endif
