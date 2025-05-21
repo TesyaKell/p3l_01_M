@@ -60,9 +60,23 @@ class transaksiController extends Controller
         DB::beginTransaction();
 
         try {
-            // Buat no_nota unik
-            $noNota = 'NT' . now()->format('YmdHis') . rand(100, 999);
+            // Buat no_nota dengan format YY.MM.NNN
+            $tahun = now()->format('y');
+            $bulan = now()->format('m');
 
+            $lastNota = Transaksi::orderByDesc('created_at')->value('no_nota');
+
+            if ($lastNota) {
+                $parts = explode('.', $lastNota);
+                $lastUrutan = isset($parts[2]) ? (int) $parts[2] : 99;
+            } else {
+                $lastUrutan = 99;
+            }
+
+            $nextUrutan = $lastUrutan + 1;
+            $noNota = $tahun . '.' . $bulan . '.' . $nextUrutan;
+
+            // Perhitungan total & bonus
             $totalHarga = 0;
             $totalBonus = 0;
             $detailTransaksiData = [];
@@ -74,7 +88,6 @@ class transaksiController extends Controller
                 $komisiHunter = $barang->id_hunter_pegawai ? $hargaBarang * 0.05 : 0;
                 $hargaJualBersih = $hargaBarang - $komisiReusmart - $komisiHunter;
 
-                // Hitung bonus penitip jika barang laku < 7 hari
                 $tanggalMasuk = Carbon::parse($barang->tanggal_masuk);
                 $tanggalLaku = Carbon::parse($barang->tanggal_laku);
                 $selisihHari = $tanggalMasuk->diffInDays($tanggalLaku, false);
@@ -102,13 +115,9 @@ class transaksiController extends Controller
 
             // Ongkir
             $tipeDelivery = $request->input('metode_pengiriman');
-            $ongkir = ($tipeDelivery === 'kurir')
-                ? ($totalHarga >= 1500000 ? 100000 : 0)
-                : 0;
+            $ongkir = ($tipeDelivery === 'kurir') ? ($totalHarga >= 1500000 ? 100000 : 0) : 0;
 
             $totalPembayaran = $totalHarga + $ongkir;
-
-            //dd($request->all());
 
             // Simpan transaksi
             $transaksi = Transaksi::create([
@@ -128,7 +137,7 @@ class transaksiController extends Controller
                 'komisi_penitip' => array_sum(array_column($detailTransaksiData, 'harga_jual_bersih')) + $totalBonus,
                 'status' => 'diproses',
             ]);
-
+            //dd($transaksi);
             // Simpan detail transaksi
             foreach ($detailTransaksiData as $data) {
                 DetailTransaksi::create($data);
