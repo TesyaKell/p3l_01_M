@@ -15,9 +15,15 @@ use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\RequestDonasiController;
 use App\Http\Controllers\KeranjangController;
-use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\transaksiController;
 use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\KomentarController;
+
+
+Route::post('/checkout', [transaksiController::class, 'prosesCheckout'])->name('checkout');
+Route::get('/transaksi', [transaksiController::class, 'index'])->name('transaksi.index');
+Route::get('/transaksi/{no_nota}', [transaksiController::class, 'show'])->name('transaksi.show');
+
 
 
 //Route::post('/keranjang/pilih-alamat', [KeranjangController::class, 'pilihAlamat'])->name('keranjang.pilihAlamat');

@@ -61,7 +61,7 @@ use App\Http\Helper\Helper;
             <div class="col-md-12">
                 <h3 class="mb-4 text-start mt-5"><strong>Alamat</strong></h3>
 
-                @if ($alamatPembeli && $alamatPembeli->pembeli)
+                @if ($alamatPembeli)
                     <a href="{{ route('alamat.index') }}" class="text-decoration-none text-dark">
                         <div class="card mb-4 shadow-sm alamat-item">
                             <div class="card-body position-relative">
@@ -208,7 +208,7 @@ use App\Http\Helper\Helper;
 
                     {{-- hitung ongkir --}}
                     @php
-                        $ongkir = 100000;
+                        $ongkir = 0;
                         $totalPembayaran = $totalHarga + $ongkir;
                         $poinPembeli = Helper::getLoggedInUser()->poin ?? 0;
 
@@ -237,17 +237,29 @@ use App\Http\Helper\Helper;
                             <span id="ongkir">Rp{{ number_format($ongkir, 0, ',', '.') }}</span>
                         </div>
                         <div class="d-flex justify-content-between mb-3">
-                            <h5>Total:</h5>
-                            <span class="text-primary fw-bold"
-                                id="totalPembayaran">Rp{{ number_format($totalPembayaran, 0, ',', '.') }}</span>
+                            @if ($totalHarga > 1500000)
+                                <h5>Total:</h5>
+                                <span class="text-primary fw-bold"
+                                    id="totalPembayaran">Rp{{ number_format($totalPembayaran, 0, ',', '.') }}</span>
+                            @elseif ($totalHarga < 1500000)
+                                <h5>Total:</h5>
+                                <span class="text-primary fw-bold"
+                                    id="totalPembayaran">Rp{{ number_format($totalPembayaran, 0, ',', '.') }}</span>
+                            @endif
                         </div>
                         <div class="d-flex justify-content-between mb-3">
                             <p>Poin dari Pesanan ini:</p>
                             <span class="text-success fw-bold">{{ $totalPoin }} poin</span>
                         </div>
-                        <div class="text-end">
-                            <a href="{{ route('homeProduk') }}" class="btn btn-success btn-lg">Checkout</a>
-                        </div>
+                        <form method="POST" action="{{ route('checkout') }}" id="formCheckout">
+                            @csrf
+                            <input type="hidden" name="alamat_pengiriman" id="inputAlamatPengiriman"
+                                value="">
+                            <input type="hidden" name="metode_pengiriman" id="inputMetodePengiriman"
+                                value="">
+                            <button type="submit" class="btn btn-success btn-lg">Checkout</button>
+                        </form>
+
                     </div>
 
                 @endif
@@ -281,41 +293,74 @@ use App\Http\Helper\Helper;
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const metodeSelect = document.getElementById("metodePengiriman");
+            const inputMetode = document.getElementById("inputMetodePengiriman");
+            const inputAlamat = document.getElementById("inputAlamatPengiriman");
             const alamatBox = document.getElementById("alamatTerpilih");
             const tukarPoinInput = document.getElementById("tukarPoin");
             const poinTersedia = parseInt(document.getElementById("poinTersedia").innerText);
             const subtotalEl = document.getElementById("subtotal");
             const ongkirEl = document.getElementById("ongkir");
             const totalEl = document.getElementById("totalPembayaran");
+            const checkoutForm = document.getElementById("formCheckout");
+
 
             const subtotalValue = {{ $totalHarga }};
-            const ongkirValue = {{ $ongkir }};
+            let ongkirValue = 0;
 
             function formatRupiah(angka) {
                 return 'Rp' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
             }
 
+            function ambilAlamatTerpilih() {
+                if (alamatBox && !alamatBox.classList.contains("d-none")) {
+                    const nama = alamatBox.querySelector("h5").innerText.trim();
+                    const lokasi = alamatBox.querySelector("p").innerText.trim();
+                    return `${nama} - ${lokasi}`;
+                }
+                return '';
+            }
+
             function updateTotal() {
                 let tukarPoin = parseInt(tukarPoinInput.value) || 0;
+                let totalSetelahDiskon = subtotalValue + ongkirValue;
 
-                // Batas maksimal adalah poin tersedia atau subtotal + ongkir
-                const maxPoinBolehTukar = Math.min(poinTersedia, subtotalValue + ongkirValue);
+                const maxPoinBolehTukar = Math.min(poinTersedia, totalSetelahDiskon);
                 if (tukarPoin > maxPoinBolehTukar) {
                     tukarPoin = maxPoinBolehTukar;
                     tukarPoinInput.value = tukarPoin;
                 }
 
-                const totalSetelahDiskon = subtotalValue + ongkirValue - tukarPoin;
+                totalSetelahDiskon -= tukarPoin;
                 totalEl.innerText = formatRupiah(totalSetelahDiskon);
             }
 
             if (metodeSelect && alamatBox) {
                 metodeSelect.addEventListener("change", function() {
-                    alamatBox.classList.toggle("d-none", this.value !== "kurir");
+                    const metode = this.value;
+                    inputMetode.value = metode;
+
+                    if (metode === "kurir") {
+                        alamatBox.classList.remove("d-none");
+                        ongkirValue = subtotalValue >= 1500000 ? 100000 : 0;
+                    } else {
+                        alamatBox.classList.add("d-none");
+                        ongkirValue = 0;
+                    }
+
+                    ongkirEl.innerText = formatRupiah(ongkirValue);
+                    updateTotal();
                 });
             }
 
             tukarPoinInput.addEventListener("input", updateTotal);
+
+            // 🟩 Tangani submit form untuk isi input hidden
+            if (checkoutForm) {
+                checkoutForm.addEventListener("submit", function() {
+                    inputMetode.value = metodeSelect.value;
+                    inputAlamat.value = ambilAlamatTerpilih();
+                });
+            }
         });
     </script>
 

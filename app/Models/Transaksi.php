@@ -13,7 +13,7 @@ class Transaksi extends Model
 
     protected $fillable = [
         'no_nota',
-        'id_kurir_pegawai ',
+        'id_kurir_pegawai',
         'id_pembeli',
         'tanggal_pesan',
         'tanggal_lunas',
