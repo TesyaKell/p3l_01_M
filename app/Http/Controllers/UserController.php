@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pegawai;
+use App\Models\Pembeli;
+use App\Models\Penitip;
 use App\Models\User;
+use App\Notifications\MobileNotif;
 use App\Notifications\VerifyEmail;
 use Auth;
 use Hash;
@@ -123,5 +127,64 @@ class UserController extends Controller
             : back()->withErrors(['email' => [__($status)]]);
     }
 
+    public function loginApi(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string',
+            'fcm_token' => 'required|string',
+        ]);
 
+        $pembeli = Pembeli::where('email', $request->email)->first();
+        $pegawai = Pegawai::where('email', $request->email)->first();
+
+        if ($pegawai) {
+            $jabatan = $pegawai->jabatan()->get()[0]->kode_jabatan;
+            if ($jabatan != "J03" && $jabatan != "J06") {
+                return response()->json(['message' => 'Bukan kurir atau hunter'], 401);
+            }
+        }
+
+        $penitip = Penitip::where('email', $request->email)->first();
+
+        if ($pembeli && Hash::check($request->password, $pembeli->password)) {
+            if (Auth::guard('pembeli')->attempt($request->only('email', 'password'))) {
+                $user = Auth::guard('pembeli')->user();
+                $token = $user->createToken('token', ['pembeli'])->plainTextToken;
+                $pembeli->fcm_token = $request->fcm_token;
+                $pembeli->save();
+                return response()->json(['message' => 'Login successful', 'user' => $pembeli, 'token' => $token, 'role' => 'pembeli'], 200);
+            }
+        } elseif ($pegawai && Hash::check($request->password, $pegawai->password)) {
+            $jabatan = $pegawai->jabatan()->get()[0]->kode_jabatan;
+            if ($jabatan != "J03" && $jabatan != "J06") {
+                return response()->json(['message' => 'Bukan kurir atau hunter'], 401);
+            }
+
+            if ($jabatan === "JO3") {
+                $jabatan = "hunter";
+            }
+
+            if ($jabatan === "J06") {
+                $jabatan = "kurir";
+            }
+            if (Auth::guard($jabatan)->attempt($request->only('email', 'password'))) {
+                $user = Auth::guard($jabatan)->user();
+                $token = $user->createToken('token', [$jabatan])->plainTextToken;
+                $pegawai->fcm_token = $request->fcm_token;
+                $pegawai->save();
+                return response()->json(['message' => 'Login successful', 'user' => $pegawai, 'token' => $token, "role" => $jabatan], 200);
+            }
+        } elseif ($penitip && Hash::check($request->password, $penitip->password)) {
+            if (Auth::guard('penitip')->attempt($request->only('email', 'password'))) {
+                $user = Auth::guard('penitip')->user();
+                $token = $user->createToken('token', ['penitip'])->plainTextToken;
+                $penitip->fcm_token = $request->fcm_token;
+                $penitip->save();
+                return response()->json(['message' => 'Login successful', 'user' => $penitip, 'token' => $token, 'role' => "penitip"], 200);
+            }
+        }
+
+        return response()->json(['message' => 'Invalid credentials'], 401);
+    }
 }

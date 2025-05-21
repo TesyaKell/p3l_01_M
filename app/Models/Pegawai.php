@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
 class Pegawai extends Authenticatable
 {
-    use HasRoles;
+    use HasRoles, Notifiable, HasApiTokens;
     protected $table = 'pegawai';
     protected $primaryKey = 'id_pegawai';
     public $incrementing = false;
@@ -21,6 +23,7 @@ class Pegawai extends Authenticatable
         'password',
         'no_telp',
         'tanggal_lahir',
+        'fcm_token',
     ];
 
     protected static function boot()
@@ -49,5 +52,10 @@ class Pegawai extends Authenticatable
     public function jabatan()
     {
         return $this->belongsTo(Jabatan::class, 'kode_jabatan');
+    }
+
+    public function routeNotificationForFcm()
+    {
+        return $this->fcm_token;
     }
 }
