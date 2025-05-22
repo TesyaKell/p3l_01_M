@@ -18,6 +18,7 @@ use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\KomentarController;
+use App\Http\Controllers\CetakNotaTitipanController;
 
 Route::post('/komentar', [KomentarController::class, 'store'])->name('komentar.store');
 
@@ -269,3 +270,6 @@ Route::put('/update/requestdonasi/{id}', [RequestDonasiController::class, 'updat
 Route::get('/edit/requestdonasi/{id}', [RequestDonasiController::class, 'edit'])->name('edit.requestdonasi');
 Route::delete('/delete/requestdonasi/{id}', [RequestDonasiController::class, 'destroy'])->name('destroy.requestdonasi');
 Route::get('/search/requestdonasi', [RequestDonasiController::class, 'search'])->name('search.requestdonasi');
+
+Route::get('/cetak-nota-titipan/{barang}', [CetakNotaTitipanController::class, 'cetak'])
+    ->name('cetak-nota-titipan');

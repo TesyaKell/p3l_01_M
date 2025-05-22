@@ -37,8 +37,7 @@ class QCPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/QC/Widgets'), for: 'App\\Filament\\QC\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+
             ])
             ->middleware([
                 EncryptCookies::class,

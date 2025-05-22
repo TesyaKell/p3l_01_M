@@ -8,7 +8,7 @@ class Barang extends Model
 {
     protected $table = 'barang';
     protected $primaryKey = 'kode_barang';
-    public $timestamps = false;
+    public $timestamps = true;
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -34,14 +34,71 @@ class Barang extends Model
         'foto_produk'
     ];
 
+    // protected $casts = [
+    //     'foto_produk' => 'array',
+    // ];
+
     public function kategori()
     {
         return $this->belongsTo(KategoriBarang::class, 'id_kategori');
     }
 
-    public function penitip()
+    public function hunter()
     {
-        return $this->belongsTo(\App\Models\Penitip::class, 'id_penitip');
+        return $this->belongsTo(Pegawai::class, 'id_hunter_pegawai');
     }
 
+    public function qcPegawai()
+    {
+        return $this->belongsTo(Pegawai::class, 'id_qc_pegawai');
+    }
+
+
+    public function penitip()
+    {
+        return $this->belongsTo(Penitip::class, 'id_penitip');
+    }
+    public function transaksi()
+    {
+        return $this->hasMany(detail_transaksi::class, 'kode_barang');
+    }
+    public function hitungDurasi(): int
+    {
+        $tanggalMasuk = $this->tanggal_masuk ? \Carbon\Carbon::parse($this->tanggal_masuk) : null;
+        $tanggalAmbil = $this->tanggal_ambil ? \Carbon\Carbon::parse($this->tanggal_ambil) : now();
+
+        if (!$tanggalMasuk) {
+            return 0;
+        }
+
+        return $tanggalMasuk->diffInDays($tanggalAmbil);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($barang) {
+            if (empty($barang->kode_barang)) {
+                $last = self::orderBy('kode_barang', 'desc')->first();
+
+                if (!$last) {
+                    $nextNumber = 1;
+                } else {
+                    $lastNumber = (int) substr($last->kode_barang, 1);
+                    $nextNumber = $lastNumber + 1;
+                }
+
+                $barang->kode_barang = 'B' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+            }
+        });
+    }
+
+
+
+
+    public function getNamaBarangSafeAttribute()
+    {
+        return $this->nama_barang ?? '-';
+    }
 }
