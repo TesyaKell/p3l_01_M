@@ -199,6 +199,15 @@ class BarangResource extends Resource
                 ])
 
                     ->searchable(),
+                Tables\Columns\TextColumn::make('durasi_penitipan')
+                    ->label('Durasi Penitipan')
+                    ->getStateUsing(function ($record) {
+                        $start = Carbon::parse($record->tanggal_masuk);
+                        $end = Carbon::parse($record->tanggal_akhir);
+                        $diff = $start->diffInDays($end);
+                        return "{$diff} hari";
+                    }),
+
                 Tables\Columns\TextColumn::make('opsi')->label('Opsi'),
                 Tables\Columns\TextColumn::make('harga')->label('Harga (Rp)')->money('IDR'),
                 Tables\Columns\BooleanColumn::make('garansi')->label('Garansi'),
@@ -214,9 +223,10 @@ class BarangResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
-                        'aktif' => 'Aktif',
-                        'diambil' => 'Diambil',
-                        'kadaluarsa' => 'Kadaluarsa',
+                        'Tersedia' => 'Tersedia',
+                        'Diambil' => 'Diambil',
+                        'Terdonasi' => 'Terdonasi',
+                        'Terjual' => 'Terjual',
                     ]),
                 Tables\Filters\Filter::make('tanggal_masuk')
                     ->form([
@@ -282,11 +292,25 @@ class BarangResource extends Resource
                                 ->label('Status')
                                 ->badge()
                                 ->color(fn (string $state): string => match ($state) {
-                                    'aktif' => 'success',
-                                    'diambil' => 'primary',
-                                    'kadaluarsa' => 'danger',
+                                    'Terdonasi' => 'danger',
+                                    'Terjual' => 'success',
+                                    'Diambil' => 'primary',
+                                    'Tersedia' => 'info',
                                     default => 'gray',
                                 }),
+                            Infolists\Components\TextEntry::make('durasi_penitipan')
+                                ->label('Durasi Penitipan')
+                                ->getStateUsing(function ($record) {
+                                    if (!$record->tanggal_masuk || !$record->tanggal_akhir) {
+                                        return '-';
+                                    }
+                                    $start = Carbon::parse($record->tanggal_masuk);
+                                    $end = Carbon::parse($record->tanggal_akhir);
+                                    $days = $start->diffInDays($end);
+                                    return "{$days} hari";
+                                })
+                                ->icon('heroicon-m-clock'),
+
                             Infolists\Components\TextEntry::make('tanggal_masuk')
                                 ->label('Tanggal Masuk')
                                 ->icon('heroicon-m-calendar-days')

@@ -69,6 +69,10 @@
                 <a class="nav-link" href="/">
                     <i class="me-1">🏠</i><span>Beranda</span>
                 </a>
+                <a class="nav-link" href="{{ route('claimMerc') }}" target="cs-content">
+                    <i class="me-1">💬</i><span>Claim Merchandise</span>
+                </a>
+
 
                 <form action="{{ route('logout') }}" method="POST" class="mt-4">
                     @csrf
