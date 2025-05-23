@@ -39,8 +39,6 @@ use App\Http\Helper\Helper;
 <body class="d-flex flex-column min-vh-100">
     @include('components.navbar')
 
-    <!-- ... (head dan navbar tetap sama) -->
-
     <main class="container my-4 flex-fill">
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -48,6 +46,12 @@ use App\Http\Helper\Helper;
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
             </div>
         @endif
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
 
         <!-- Menu navigasi -->
         <div class="d-flex justify-content-center gap-4 mb-4 mt-1" style="margin-top: -10px;">
@@ -257,7 +261,14 @@ use App\Http\Helper\Helper;
                                 value="">
                             <input type="hidden" name="metode_pengiriman" id="inputMetodePengiriman"
                                 value="">
+                            <input type="hidden" id="hiddenTukarPoin" name="tukar_poin" value="0">
+
                             <button type="submit" class="btn btn-success btn-lg">Checkout</button>
+
+                            @if (session('error'))
+                                <div class="alert alert-danger">{{ session('error') }}</div>
+                            @endif
+
                         </form>
 
                     </div>
@@ -286,10 +297,9 @@ use App\Http\Helper\Helper;
         </div>
     </main>
 
-    <!-- JavaScript Bootstrap + Script tambahan -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Script untuk tampilkan alamat saat pilih Kurir -->
+    <!-- tampilkan alamat saat pilih Kurir -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const metodeSelect = document.getElementById("metodePengiriman");
@@ -341,7 +351,7 @@ use App\Http\Helper\Helper;
 
                     if (metode === "kurir") {
                         alamatBox.classList.remove("d-none");
-                        ongkirValue = subtotalValue >= 1500000 ? 100000 : 0;
+                        ongkirValue = subtotalValue < 1500000 ? 100000 : 0;
                     } else {
                         alamatBox.classList.add("d-none");
                         ongkirValue = 0;
@@ -354,9 +364,10 @@ use App\Http\Helper\Helper;
 
             tukarPoinInput.addEventListener("input", updateTotal);
 
-            // 🟩 Tangani submit form untuk isi input hidden
+            // submit form untuk isi input hidden
             if (checkoutForm) {
                 checkoutForm.addEventListener("submit", function() {
+                    document.getElementById("hiddenTukarPoin").value = tukarPoinInput.value;
                     inputMetode.value = metodeSelect.value;
                     inputAlamat.value = ambilAlamatTerpilih();
                 });

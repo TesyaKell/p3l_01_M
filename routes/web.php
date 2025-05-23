@@ -20,10 +20,16 @@ use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\KomentarController;
 
 
-Route::post('/checkout', [transaksiController::class, 'prosesCheckout'])->name('checkout');
-Route::get('/transaksi', [transaksiController::class, 'index'])->name('transaksi.index');
-Route::get('/transaksi/{no_nota}', [transaksiController::class, 'show'])->name('transaksi.show');
 
+//transaksi verifikasi cs
+Route::get('/verifikasi-pembayaran', [TransaksiController::class, 'halamanVerifikasi'])->name('verifikasi.pembayaran');
+Route::put('/transaksi/{no_nota}/verifikasi', [TransaksiController::class, 'verifikasi'])->name('transaksi.verifikasi');
+
+
+Route::get('/transaksi/riwayat', [transaksiController::class, 'riwayatTransaksi'])->name('riwayat.transaksi');
+Route::post('/transaksi/upload/{id}', [transaksiController::class, 'uploadBuktiPembayaran'])->name('upload.bukti');
+Route::post('/checkout', [transaksiController::class, 'prosesCheckout'])->name('checkout');
+Route::get('/transaksi/{no_nota}', [transaksiController::class, 'show'])->name('transaksi.show');
 
 
 //Route::post('/keranjang/pilih-alamat', [KeranjangController::class, 'pilihAlamat'])->name('keranjang.pilihAlamat');
@@ -90,7 +96,7 @@ Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang
 
 
 //TRANSAKSI
-Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi');
+Route::get('/transaksi', [transaksiController::class, 'index'])->name('transaksi');
 
 
 //Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('logged_in:organisasi,pembeli');

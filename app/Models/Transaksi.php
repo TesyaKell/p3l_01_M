@@ -18,7 +18,6 @@ class Transaksi extends Model
         'tanggal_pesan',
         'tanggal_lunas',
         'tanggal_ambil_kirim',
-        'penggunaan_poin',
         'tambah_poin',
         'poin_sebelum',
         'poin_setelah',
@@ -28,10 +27,9 @@ class Transaksi extends Model
         'total_harga_jual_bersih',
         'bukti_pembayaran',
         'status',
-        'komisi_reusmart',
-        'komisi_hunter',
         'komisi_penitip',
         'total_pembayaran',
+        'tukar_poin',
     ];
 
     public function pembeli()
@@ -43,4 +41,10 @@ class Transaksi extends Model
     {
         return $this->belongsTo(Pegawai::class, 'id_kurir_pegawai');
     }
+
+    public function detailTransaksi()
+    {
+        return $this->hasMany(DetailTransaksi::class, 'no_nota', 'no_nota');
+    }
+
 }
