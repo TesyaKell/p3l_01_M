@@ -34,9 +34,9 @@ class Barang extends Model
         'foto_produk'
     ];
 
-    // protected $casts = [
-    //     'foto_produk' => 'array',
-    // ];
+    protected $casts = [
+        'foto_produk' => 'array',
+    ];
 
     public function kategori()
     {

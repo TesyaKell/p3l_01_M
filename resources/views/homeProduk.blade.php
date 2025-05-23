@@ -223,10 +223,6 @@ use App\Http\Helper\Helper;
                 </button>
             </div>
         </div>
-
-
-
-
         <div class="mb-4 mt-5">
             <h3>Product</h3>
         </div>
@@ -238,14 +234,15 @@ use App\Http\Helper\Helper;
                         class="text-decoration-none text-dark">
 
                         <div class="card h-100" style="cursor:pointer;">
-                            @if ($barang->foto_produk)
-                                <img src="{{ asset('images/' . $barang->foto_produk) }}"
+                            @if (!empty($barang->foto_produk) && isset($barang->foto_produk[0]))
+                                <img src="{{ asset('storage/' . $barang->foto_produk[0]) }}"
                                     class="card-img-top p-2 rounded" alt="{{ $barang->nama_barang }}"
                                     style="height: 200px; object-fit: contain;">
                             @else
                                 <img src="{{ asset('images/no-image.png') }}" class="card-img-top p-2 rounded"
                                     alt="No image" style="height: 200px; object-fit: contain;">
                             @endif
+
 
                             <div class="card-body">
                                 <h5 class="card-title">{{ $barang->nama_barang }}</h5>
