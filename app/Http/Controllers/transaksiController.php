@@ -253,12 +253,18 @@ class transaksiController extends Controller
     public function halamanVerifikasi()
     {
         $transaksiMenunggu = Transaksi::with('pembeli')
-            ->where('status', 'Menunggu Konfirmasi')->get();
+            ->where('status', 'Menunggu Konfirmasi')
+            ->get();
 
         $transaksiDisiapkan = Transaksi::with('pembeli')
-            ->where('status', 'Disiapkan')->get();
+            ->where('status', 'Disiapkan')
+            ->get();
 
-        return view('verifikasiPembayaran', compact('transaksiMenunggu', 'transaksiDisiapkan'));
+        $transaksiTidakDiverifikasi = Transaksi::with('pembeli')
+            ->where('status', 'Batal')
+            ->get();
+
+        return view('verifikasiPembayaran', compact('transaksiMenunggu', 'transaksiDisiapkan', 'transaksiTidakDiverifikasi'));
     }
 
     public function verifikasi(Request $request, $no_nota)
@@ -275,6 +281,40 @@ class transaksiController extends Controller
         ]);
 
         return redirect()->route('verifikasi.pembayaran')->with('success', 'Transaksi berhasil diverifikasi.');
+    }
+
+    public function tidakDiverifikasi(Request $request, $no_nota)
+    {
+        $transaksi = Transaksi::with('detailTransaksi.barang', 'pembeli')->where('no_nota', $no_nota)->firstOrFail();
+
+        if ($transaksi->status !== 'Menunggu Konfirmasi') {
+            return redirect()->back()->with('error', 'Transaksi tidak valid untuk ditandai sebagai "Tidak Diverifikasi".');
+        }
+
+        // Update status transaksi
+        $transaksi->update([
+            'status' => 'Batal',
+        ]);
+
+        // Kembalikan status barang dan tanggal_laku
+        foreach ($transaksi->detailTransaksi as $detail) {
+            if ($detail->barang) {
+                $detail->barang->update([
+                    'status' => 'Tersedia',
+                    'tanggal_laku' => null,
+                ]);
+            }
+        }
+
+        // Kembalikan poin pembeli
+        $pembeli = $transaksi->pembeli;
+        if ($pembeli) {
+            $pembeli->update([
+                'poin' => $pembeli->poin + $transaksi->tukar_poin - $transaksi->tambah_poin,
+            ]);
+        }
+
+        return redirect()->route('verifikasi.pembayaran')->with('success', 'Transaksi berhasil ditandai sebagai "Tidak Diverifikasi".');
     }
 
 }

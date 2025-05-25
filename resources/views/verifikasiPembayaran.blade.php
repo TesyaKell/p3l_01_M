@@ -62,6 +62,7 @@
                         <th>Nama Pembeli</th>
                         <th>Tanggal Verifikasi</th>
                         <th>Total Pembayaran</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -71,6 +72,17 @@
                             <td>{{ $transaksi->pembeli->nama_pembeli ?? '-' }}</td>
                             <td>{{ $transaksi->tanggal_lunas }}</td>
                             <td>Rp {{ number_format($transaksi->total_pembayaran, 0, ',', '.') }}</td>
+                            <td><span class="badge bg-success">Diverifikasi</span></td>
+                        </tr>
+                    @endforeach
+
+                    @foreach ($transaksiTidakDiverifikasi as $transaksi)
+                        <tr class="transaksi-row" data-json='@json($transaksi)'>
+                            <td>{{ $transaksi->no_nota }}</td>
+                            <td>{{ $transaksi->pembeli->nama_pembeli ?? '-' }}</td>
+                            <td>{{ $transaksi->tanggal_lunas ?? '-' }}</td>
+                            <td>Rp {{ number_format($transaksi->total_pembayaran, 0, ',', '.') }}</td>
+                            <td><span class="badge bg-danger">Tidak Diverifikasi</span></td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -116,6 +128,26 @@
         </div>
     </div>
 
+    <!-- Modal Konfirmasi Tidak Diverifikasi -->
+    <div class="modal fade" id="modalTidakDiverifikasi" tabindex="-1" aria-labelledby="modalTidakDiverifikasiLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Konfirmasi Tidak Diverifikasi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Apakah Anda yakin ingin menandai transaksi ini sebagai "Tidak Diverifikasi"?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger" id="btnSubmitTidakDiverifikasi">Kirim</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -124,6 +156,7 @@
             const riwayatSection = document.getElementById('riwayatSection');
             const modalDetail = new bootstrap.Modal(document.getElementById('modalDetail'));
             const modalKonfirmasi = new bootstrap.Modal(document.getElementById('modalKonfirmasiVerifikasi'));
+            const modalTidakDiverifikasi = new bootstrap.Modal(document.getElementById('modalTidakDiverifikasi'));
 
             let currentForm = null;
 
@@ -164,6 +197,7 @@
                             @csrf
                             @method('PUT')
                             <button type="button" class="btn btn-success" id="btnKonfirmasiVerifikasi">Verifikasi</button>
+                            <button type="button" class="btn btn-danger" id="btnTidakDiverifikasi">Tidak Diverifikasi</button>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                         </form>
                     `;
@@ -173,10 +207,19 @@
                     setTimeout(() => {
                         const btnKonfirmasi = document.getElementById(
                             'btnKonfirmasiVerifikasi');
+                        const btnTidakDiverifikasi = document.getElementById(
+                            'btnTidakDiverifikasi');
                         currentForm = document.getElementById('verifikasiForm');
+
                         if (btnKonfirmasi) {
                             btnKonfirmasi.addEventListener('click', function() {
                                 modalKonfirmasi.show();
+                            });
+                        }
+
+                        if (btnTidakDiverifikasi) {
+                            btnTidakDiverifikasi.addEventListener('click', function() {
+                                modalTidakDiverifikasi.show();
                             });
                         }
                     }, 100);
@@ -185,7 +228,15 @@
                 });
             });
 
-            // Saat tombol submit diklik dalam modal konfirmasi
+            // Saat tombol submit diklik dalam modal konfirmasi tidak diverifikasi
+            document.getElementById('btnSubmitTidakDiverifikasi').addEventListener('click', function() {
+                if (currentForm) {
+                    currentForm.action = currentForm.action.replace('/verifikasi', '/tidak-diverifikasi');
+                    currentForm.submit();
+                }
+            });
+
+            // Saat tombol submit diklik dalam modal konfirmasi verifikasi
             document.getElementById('btnSubmitVerifikasi').addEventListener('click', function() {
                 if (currentForm) currentForm.submit();
             });
