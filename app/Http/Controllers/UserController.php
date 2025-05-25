@@ -161,7 +161,7 @@ class UserController extends Controller
                 return response()->json(['message' => 'Bukan kurir atau hunter'], 401);
             }
 
-            if ($jabatan === "JO3") {
+            if ($jabatan === "J03") {
                 $jabatan = "hunter";
             }
 
