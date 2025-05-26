@@ -18,6 +18,13 @@ use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\transaksiController;
 use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\KomentarController;
+use App\Http\Controllers\CetakNotaTitipanController;
+use App\Http\Controllers\ClaimMerchController;
+
+//TRANSAKSI
+Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi');
+
+Route::post('/rate-product', [TransaksiController::class, 'rateProduct'])->name('pembeli.rateProduct');
 
 
 Route::post('/checkout', [transaksiController::class, 'prosesCheckout'])->name('checkout');
@@ -83,14 +90,11 @@ Route::get('/detail-produk/{id}', [BarangController::class, 'detailProduk'])->na
 Route::get('/produk', [BarangController::class, 'index'])->name('produk');
 Route::get('/search', [BarangController::class, 'search'])->name('search');
 
-
 //KERANJANG
 Route::post('/keranjang', [BarangController::class, 'tambahKeKeranjang'])->name('keranjang')->middleware('logged_in');
 Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang')->middleware('logged_in');
 
 
-//TRANSAKSI
-Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi');
 
 
 //Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('logged_in:organisasi,pembeli');
@@ -284,3 +288,8 @@ Route::put('/update/requestdonasi/{id}', [RequestDonasiController::class, 'updat
 Route::get('/edit/requestdonasi/{id}', [RequestDonasiController::class, 'edit'])->name('edit.requestdonasi');
 Route::delete('/delete/requestdonasi/{id}', [RequestDonasiController::class, 'destroy'])->name('destroy.requestdonasi');
 Route::get('/search/requestdonasi', [RequestDonasiController::class, 'search'])->name('search.requestdonasi');
+
+Route::get('/cetak-nota-titipan/{barang}', [CetakNotaTitipanController::class, 'cetak'])
+    ->name('cetak-nota-titipan');
+
+Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerc');
