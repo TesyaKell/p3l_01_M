@@ -15,13 +15,18 @@ use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\RequestDonasiController;
 use App\Http\Controllers\KeranjangController;
-use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\KomentarController;
+use App\Http\Controllers\CetakNotaTitipanController;
+use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\ClaimMerchController;
 
+//TRANSAKSI
+Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi');
+
+Route::post('/rate-product', [TransaksiController::class, 'rateProduct'])->name('pembeli.rateProduct');
 
 //Route::post('/keranjang/pilih-alamat', [KeranjangController::class, 'pilihAlamat'])->name('keranjang.pilihAlamat');
-
 
 Route::post('/komentar', [KomentarController::class, 'store'])->name('komentar.store');
 
@@ -82,8 +87,6 @@ Route::post('/keranjang', [BarangController::class, 'tambahKeKeranjang'])->name(
 Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang')->middleware('logged_in');
 
 
-//TRANSAKSI
-Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi');
 
 
 //Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('logged_in:organisasi,pembeli');
@@ -276,6 +279,15 @@ Route::post('/create/requestdonasi', [RequestDonasiController::class, 'create'])
 
 Route::put('/update/requestdonasi/{id}', [RequestDonasiController::class, 'update'])->name('update.requestdonasi');
 Route::get('/edit/requestdonasi/{id}', [RequestDonasiController::class, 'edit'])->name('edit.requestdonasi');
+
+Route::delete('/delete/requestdonasi/{id}', [RequestDonasiController::class, 'destroy'])->name('destroy.requestdonasi');
+Route::get('/search/requestdonasi', [RequestDonasiController::class, 'search'])->name('search.requestdonasi');
+
+Route::get('/cetak-nota-titipan/{barang}', [CetakNotaTitipanController::class, 'cetak'])
+    ->name('cetak-nota-titipan');
+
+Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerc');
+
 Route::delete('/delete/requestdonasi/{id}', [RequestDonasiController::class, 'delete'])->name('destroy.requestdonasi');
 Route::get('/search/requestdonasi/all', [RequestDonasiController::class, 'search'])->name('search.requestdonasi.fall');
 Route::get('/search/requestdonasi', [RequestDonasiController::class, 'searchById'])->name('search.requestdonasi');
@@ -283,3 +295,4 @@ Route::get('/search/requestdonasi', [RequestDonasiController::class, 'searchById
 
 Route::get('/pembeli/transaksi', [PembeliController::class, 'historyTransaksiPembelian'])
     ->name('pembeli.transaksi');
+

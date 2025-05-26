@@ -142,9 +142,11 @@
                     <div class="row g-0 align-items-center">
                         <!-- Gambar Produk -->
                         <div class="col-md-3">
-                            <img src="{{ asset('images/' . $item->barang->foto_produk) }}"
-                                class="img-fluid rounded-start p-3" alt="{{ $item->barang->nama_barang }}"
+                            <img src="{{ asset('storage/' . ($item->barang?->foto_produk[0] ?? 'images/default.png')) }}"
+                                class="img-fluid rounded-start p-3"
+                                alt="{{ $item->barang->nama_barang ?? 'Tanpa nama' }}"
                                 style="height: 150px; object-fit: contain;">
+
                         </div>
 
                         <!-- Nama Barang -->

@@ -36,6 +36,7 @@ class BarangDonasiResource extends Resource
                     ->maxLength(255)
                     ->disabled(),
                 Forms\Components\TextInput::make('nama_barang')
+                    ->default('-')
                     ->required()
                     ->maxLength(255)
                     ->disabled(),
@@ -93,6 +94,7 @@ class BarangDonasiResource extends Resource
                 Tables\Columns\TextColumn::make('kode_barang')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nama_barang')
+                    ->getStateUsing(fn ($record) => $record->nama_barang ?? '-')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('penitip.nama_penitip')
                     ->searchable(),

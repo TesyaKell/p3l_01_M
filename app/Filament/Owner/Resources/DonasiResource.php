@@ -22,7 +22,7 @@ class DonasiResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form->schema([]); // kosong karena tidak digunakan
+        return $form->schema([]);
     }
 
     public static function table(Table $table): Table
