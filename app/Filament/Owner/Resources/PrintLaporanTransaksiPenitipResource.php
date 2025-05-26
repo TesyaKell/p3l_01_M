@@ -24,8 +24,12 @@ class PrintLaporanTransaksiPenitipResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('kode_barang')->label('Kode Barang')->sortable(),
                 TextColumn::make('penitip.nama_penitip')->label('Nama Penitip')->default('-'),
+                TextColumn::make('kode_barang')->label('Kode Barang')->sortable(),
+                TextColumn::make('nama_barang')->label('Nama Barang')->default('-'),
+                TextColumn::make('detailTransaksi.harga_jual_bersih')->label('Harga Bersih')->default('-'),
+                TextColumn::make('detailTransaksi.bonus')->label('Bonus')->default('-'),
+                TextColumn::make('detailTransaksi.total')->label('Total')->default('-'),
                 TextColumn::make('tanggal_laku')->label('Tanggal Laku')->date(),
             ])
             ->actions([]); // hapus tombol aksi di baris tabel

@@ -44,4 +44,10 @@ class Barang extends Model
         return $this->belongsTo(\App\Models\Penitip::class, 'id_penitip');
     }
 
+
+    public function detailTransaksi()
+    {
+        return $this->hasOne(\App\Models\DetailTransaksi::class, 'kode_barang', 'kode_barang');
+    }
+
 }

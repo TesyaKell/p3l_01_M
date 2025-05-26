@@ -178,6 +178,11 @@ class transaksiController extends Controller
             $pembeli->update(['poin' => $poinSetelah]);
             $barang->update(['tanggal_laku' => now()]);
 
+
+            //CEK DULU
+            // $detailTransaksiData->update(['komisi_reusmart' => $komisiReusmart]);
+            // $detailTransaksiData->update(['komisi_hunter' => $komisiHunter]);
+
             // Hapus semua item keranjang
             Keranjang::where('id_pembeli', $pembeli->id_pembeli)->delete();
 
