@@ -18,6 +18,16 @@ use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\transaksiController;
 use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\KomentarController;
+use App\Http\Controllers\LaporanOwnerController;
+
+Route::prefix('owner')->middleware(['auth:owner'])->group(function () {
+    Route::get('/laporan/donasi', [LaporanOwnerController::class, 'donasi'])->name('owner.laporan.donasi');
+    Route::get('/laporan/donasi/pdf', [LaporanOwnerController::class, 'donasiPdf'])->name('owner.laporan.donasi.pdf');
+
+    Route::get('/laporan/request', [LaporanOwnerController::class, 'request'])->name('owner.laporan.request');
+    Route::get('/laporan/request/pdf', [LaporanOwnerController::class, 'requestPdf'])->name('owner.laporan.request.pdf');
+});
+
 
 
 //transaksi verifikasi cs
