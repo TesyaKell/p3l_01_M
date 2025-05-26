@@ -27,6 +27,7 @@ class Organisasi extends Authenticatable
         'verify_key',
         'no_telp',
         'email_verified_at',
+        'alamat',
     ];
 
     protected $hidden = [

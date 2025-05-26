@@ -1,68 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
+<x-filament::page>
+    <h2 class="text-xl font-bold mb-4">Laporan Donasi</h2>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Laporan Donasi Barang</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
+    <x-filament::button tag="a" href="{{ route('owner.laporan.donasi.pdf') }}" target="_blank" color="primary"
+        class="mb-4">
+        Unduh PDF
+    </x-filament::button>
 
-        th,
-        td {
-            border: 1px solid #333;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #eee;
-        }
-
-        a.button {
-            display: inline-block;
-            padding: 8px 16px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
-
-        a.button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-
-<body>
-    <h2>Laporan Donasi Barang</h2>
-    <a href="{{ route('owner.laporan.donasi.pdf') }}" class="button">Unduh PDF</a>
-    <table>
-        <thead>
+    <table class="w-full border border-gray-300">
+        <thead class="bg-gray-100">
             <tr>
-                <th>Nama Donatur</th>
-                <th>Nama Barang</th>
-                <th>Tanggal Donasi</th>
+                <th class="border border-gray-300 p-2 text-left">Kode Produk</th>
+                <th class="border border-gray-300 p-2 text-left">Nama Produk</th>
+                <th class="border border-gray-300 p-2 text-left">ID Penitip</th>
+                <th class="border border-gray-300 p-2 text-left">Nama Penitip</th>
+                <th class="border border-gray-300 p-2 text-left">Tanggal Donasi</th>
+                <th class="border border-gray-300 p-2 text-left">Nama Organisasi</th>
+                <th class="border border-gray-300 p-2 text-left">Nama Penerima</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($data as $donasi)
+            @forelse ($data as $item)
                 <tr>
-                    <td>{{ $donasi->nama_penitip }}</td>
-                    <td>{{ $donasi->barang->nama ?? '-' }}</td>
-                    <td>{{ $donasi->tanggal_donasi }}</td>
+                    <td class="border border-gray-300 p-2">{{ $item->kode_barang }}</td>
+                    <td class="border border-gray-300 p-2">{{ $item->barang->nama_barang ?? '-' }}</td>
+                    <td class="border border-gray-300 p-2">{{ $item->id_penitip }}</td>
+                    <td class="border border-gray-300 p-2">{{ $item->penitip->nama_penitip ?? '-' }}</td>
+                    <td class="border border-gray-300 p-2">{{ $item->tanggal_donasi }}</td>
+                    <td class="border border-gray-300 p-2">
+                        {{ $item->requestDonasi->organisasi->nama_organisasi ?? '-' }}</td>
+                    <td class="border border-gray-300 p-2">{{ $item->nama_penerima }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="3">Data donasi tidak ditemukan.</td>
+                    <td colspan="7" class="border border-gray-300 p-2 text-center">Tidak ada data donasi.</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
-</body>
-
-</html>
+</x-filament::page>

@@ -40,10 +40,11 @@
 
 <body>
     <h2>Laporan Request Donasi</h2>
-    <a href="{{ route('owner.laporan.request.pdf') }}" class="button">Unduh PDF</a>
+    <a href="{{ route('laporan.request.pdf') }}" class="button">Unduh PDF</a>
     <table>
         <thead>
             <tr>
+                <th>Organisasi</th>
                 <th>Deskripsi Request</th>
                 <th>Status</th>
             </tr>
@@ -51,12 +52,13 @@
         <tbody>
             @forelse($data as $request)
                 <tr>
+                    <td>{{ $request->organisasi->nama_organisasi ?? '-' }}</td>
                     <td>{{ $request->desk_request }}</td>
                     <td>{{ $request->status }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="2">Data request donasi tidak ditemukan.</td>
+                    <td colspan="3">Data request donasi tidak ditemukan.</td>
                 </tr>
             @endforelse
         </tbody>

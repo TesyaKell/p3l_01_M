@@ -5,51 +5,55 @@ namespace App\Http\Controllers;
 use App\Models\Donasi;
 use App\Models\RequestDonasi;
 use Illuminate\Http\Request;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanOwnerController extends Controller
 {
+    private function isOwner()
+    {
+        $user = auth('pegawai')->user();
+
+        // Cek apakah login dan memiliki role owner
+        if (!$user || $user->kode_jabatan !== 'J01') {
+            abort(403, 'Akses hanya untuk owner');
+        }
+
+        return $user;
+    }
+
     public function donasi()
     {
-        $user = auth('owner')->user();
-        $data = Donasi::with(['barang', 'penitip'])
-            ->whereIn('id_request', function ($query) use ($user) {
-                $query->select('id_request')
-                    ->from('request_donasi')
-                    ->where('id_organisasi', $user->id);
-            })->get();
-
+        $this->isOwner();
+        $data = Donasi::with(['barang', 'penitip', 'requestDonasi.organisasi'])->get();
         return view('laporan.donasi', compact('data'));
     }
 
     public function donasiPdf()
     {
-        $user = auth('owner')->user();
-        $data = Donasi::with(['barang', 'penitip'])
-            ->whereIn('id_request', function ($query) use ($user) {
-                $query->select('id_request')
-                    ->from('request_donasi')
-                    ->where('id_organisasi', $user->id);
-            })->get();
-
-        $pdf = PDF::loadView('laporan.donasi_pdf', compact('data'));
+        $this->isOwner();
+        $data = Donasi::with(['barang', 'penitip', 'requestDonasi.organisasi'])->get();
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('laporan.donasi_pdf', compact('data'));
         return $pdf->download('laporan_donasi_barang.pdf');
     }
 
     public function request()
     {
-        $user = auth('owner')->user();
-        $data = RequestDonasi::where('id_organisasi', $user->id)->get();
+        $this->isOwner();
+
+        // Ambil semua request donasi dengan status 'Diproses'
+        $data = RequestDonasi::where('status', 'Diproses')->get();
 
         return view('laporan.request', compact('data'));
     }
 
-    public function requestPdf()
+    public function requestPdf(Request $request)
     {
-        $user = auth('owner')->user();
-        $data = RequestDonasi::where('id_organisasi', $user->id)->get();
+        $this->isOwner();
 
-        $pdf = PDF::loadView('laporan.request_pdf', compact('data'));
-        return $pdf->download('laporan_request_donasi.pdf');
+        $status = $request->query('status', 'Diproses'); // Default ke 'Diproses'
+        $data = RequestDonasi::where('status', $status)->with('organisasi')->get();
+
+        $pdf = Pdf::loadView('laporan.request_pdf', compact('data'));
+        return $pdf->download("laporan_request_donasi_{$status}.pdf");
     }
 }

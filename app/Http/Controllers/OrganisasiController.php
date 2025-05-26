@@ -39,6 +39,7 @@ class OrganisasiController extends Controller
             'email' => 'required|string|email|max:255|unique:organisasi',
             'password' => 'required|string|min:2|confirmed',
             'no_telp' => 'required|string|max:20',
+            'alamat' => 'required|string|max:255',
         ]);
 
         $verify_key = Str::random(75);
@@ -50,6 +51,7 @@ class OrganisasiController extends Controller
             'password' => Hash::make($request->password),
             'verify_key' => $verify_key,
             'no_telp' => $request->no_telp,
+            'alamat' => $request->alamat,
         ]);
 
         $details = [
@@ -110,6 +112,7 @@ class OrganisasiController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'no_telp' => 'required|string|max:20',
+            'alamat' => 'required|string|max:255',
         ]);
 
         $user->nama_organisasi = $request->nama;

@@ -2,59 +2,93 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <title>Laporan Donasi Barang (PDF)</title>
+    <meta charset="UTF-8">
+    <title>Laporan Donasi</title>
     <style>
         body {
             font-family: DejaVu Sans, sans-serif;
+            font-size: 12px;
         }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
+        .header {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .header p {
+            margin: 2px 0 10px 0;
+        }
+
+        .title {
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .date {
+            font-size: 11px;
+            margin-bottom: 15px;
         }
 
         table {
             border-collapse: collapse;
             width: 100%;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         th,
         td {
-            border: 1px solid #333;
+            border: 1px solid #000;
             padding: 6px;
             text-align: left;
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #eee;
         }
     </style>
 </head>
 
 <body>
-    <h2>Laporan Donasi Barang</h2>
+    <div class="header">
+        <h1>ReUse Mart</h1>
+        <p>Jl. Green Eco Park No. 456 Yogyakarta</p>
+    </div>
+
+    <div class="title">Laporan Donasi</div>
+    <div class="date">
+        Tanggal cetak: {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
+    </div>
+
     <table>
         <thead>
             <tr>
-                <th>Nama Donatur</th>
-                <th>Nama Barang</th>
+                <th>Kode Produk</th>
+                <th>Nama Produk</th>
+                <th>Id Penitip</th>
+                <th>Nama Penitip</th>
                 <th>Tanggal Donasi</th>
+                <th>Nama Organisasi</th>
+                <th>Nama Penerima</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($data as $donasi)
+            @foreach ($data as $item)
                 <tr>
-                    <td>{{ $donasi->nama_penitip }}</td>
-                    <td>{{ $donasi->barang->nama ?? '-' }}</td>
-                    <td>{{ $donasi->tanggal_donasi }}</td>
+                    <td>{{ $item->kode_barang }}</td>
+                    <td>{{ $item->barang->nama_barang ?? '-' }}</td>
+                    <td>{{ $item->id_penitip }}</td>
+                    <td>{{ $item->penitip->nama_penitip ?? '-' }}</td>
+                    <td>{{ \Carbon\Carbon::parse($item->tanggal_donasi)->format('d-m-Y') }}</td>
+                    <td>{{ $item->requestDonasi->organisasi->nama_organisasi ?? '-' }}</td>
+                    <td>{{ $item->nama_penerima }}</td>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="3" style="text-align:center;">Data donasi tidak ditemukan.</td>
-                </tr>
-            @endforelse
+            @endforeach
         </tbody>
     </table>
 </body>
