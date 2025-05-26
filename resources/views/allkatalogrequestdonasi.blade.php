@@ -24,9 +24,9 @@
     }
 </style>
 <body>
-    <h4>Daftar Request Donasi - Organisasi {{ $id_organisasi }}</h4>
+    <h4>Daftar Request Donasi - Semua Organisasi</h4>
     <div class="container mt-4 mb-3">
-        <form method="GET" action="{{ route('search.requestdonasi') }}">
+        <form method="GET" action="{{ route('search.requestdonasi.fall') }}">
             <input type="hidden" name="id_organisasi" value="{{ $id_organisasi }}">
             <div class="input-group">
                 <input type="text" name="search" class="form-control" placeholder="Cari deskripsi request..." value="{{ $query ?? '' }}">

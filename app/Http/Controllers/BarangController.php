@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Barang;
 use App\Http\Helper\Helper;
@@ -158,5 +159,76 @@ class BarangController extends Controller
         return view('search', compact('results', 'query'));
     }
 
+    public function barangPenitipAll(Request $request, $id_penitip){
+        $status = $request->get('status', 'x');
+        if($status == 'x'){
+            $barangUser = Barang::where('id_penitip', $id_penitip)->get();
+        }else{
+            $barangUser = Barang::where('id_penitip', $id_penitip)->where('status' ,'=', $status)->get();
+        }
+        $condition = 'show';
+        $query = '';
+        $activeStatus = $request->get('status', 'x');
+        //barang yang ditampilkan semua atau yang belum terbeli/didonasikan?
+        return view('historyPenitipanBarang',compact('barangUser', 'id_penitip', 'condition', 'query', 'activeStatus'));
+    }
+    public function barangPenitipByStatus($id_penitip, string $status){
+        $barangUser = Barang::where('id_penitip', $id_penitip)->where('status', '=', $status )->get();
+        //barang yang ditampilkan semua atau yang belum terbeli/didonasikan?
+        return view('historyPenitipanBarang',compact('barangUser'));
+    }
+
+    public function updatePerpanjangan(Request $request, $id){
+        $barang = Barang::where('kode_barang', $id)->firstOrFail();
+        $barang->update([
+            'tanggal_akhir' => Carbon::parse($barang->tanggal_akhir)->addDays(60),
+            'tanggal_batas' => Carbon::parse($barang->tanggal_)->addDays(60),
+            'opsi' => 'Diperpanjang']);
+        $id_penitip = $barang->id_penitip;
+            return redirect()->route('historyBarang', ['id_penitip' => $id_penitip])->with('status', 'Data penitip berhasil diperbarui!');
+
+        //barang yang ditampilkan semua atau yang belum terbeli/didonasikan?
+        
+    }
+    public function updateBarangDiambil(Request $request, $id){
+        $barang = Barang::where('kode_barang', $id)->firstOrFail();
+        $barang->update([
+            // 'tanggal_ambil' => now(),
+            'status' => 'Diambil']);
+        $id_penitip = $barang->id_penitip;
+
+        return redirect()->route('historyBarang', ['id_penitip' => $id_penitip])->with('status', 'Data penitip berhasil diperbarui!');
+
+        //barang yang ditampilkan semua atau yang belum terbeli/didonasikan?
+        
+    }
+    public function confirmBarangDiambil(Request $request, $id){
+        //ini untuk pemrosesan dari sisi gudang
+        $barang = Barang::where('kode_barang', $id)->firstOrFail();
+        $barang->update([
+            'tanggal_ambil' => now()]);
+        $id_penitip = $barang->id_penitip;
+
+        // return redirect()->route('historyBarang', ['id_penitip' => $id_penitip])->with('status', 'Data penitip berhasil diperbarui!');
+
+        //barang yang ditampilkan semua atau yang belum terbeli/didonasikan?
+        
+    }
+  
+    public function searchBarangTitipan(Request $request, $id_penitip){
+        $query = $request->input('query');
+
+        $barangUser = Barang::with('kategori')
+            ->where('nama_barang', 'like', "%{$query}%")
+            ->orWhereHas('kategori', 
+            function ($q) use ($query) {
+                        $q->where('nama_kategori', 'like', "%{$query}%");
+                    }
+            )
+            ->where('id_penitip', $id_penitip)
+            ->get();
+        $condition = 'search';
+        return view('historyPenitipanBarang', compact('barangUser',  'query', 'condition'));
+    }
 
 }

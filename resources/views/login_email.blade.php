@@ -206,7 +206,9 @@
 
                     <p><a class="link-opacity-10" href="{{ route('password.request', $role) }}">Forgot
                             Password?</a></p>
+                    <button><a href="{{ url('/jabatan') }}"><i class="fas fa-arrow-left"></i> Kembali ke halaman utama</a></button>
                 </div>
+
             </form>
         </div>
     </div>

@@ -25,6 +25,9 @@ use App\Http\Controllers\ClaimMerchController;
 Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi');
 
 Route::post('/rate-product', [TransaksiController::class, 'rateProduct'])->name('pembeli.rateProduct');
+
+//Route::post('/keranjang/pilih-alamat', [KeranjangController::class, 'pilihAlamat'])->name('keranjang.pilihAlamat');
+
 Route::post('/komentar', [KomentarController::class, 'store'])->name('komentar.store');
 
 Route::get('/info-umum', function () {
@@ -73,6 +76,11 @@ Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->n
 Route::get('/detail-produk/{id}', [BarangController::class, 'detailProduk'])->name('detailProduk');
 Route::get('/produk', [BarangController::class, 'index'])->name('produk');
 Route::get('/search', [BarangController::class, 'search'])->name('search');
+
+Route::get('/barang/{id_penitip}', [BarangController::class, 'barangPenitipAll'])->name('historyBarang');
+Route::get('/barang/updateA/{id}', [BarangController::class, 'updateBarangDiambil'])->name('barangDiambil');
+Route::get('/barang/updateB/{id}', [BarangController::class, 'updatePerpanjangan'])->name('barangDiperpanjang');
+Route::get('/search/{id_penitip}', [BarangController::class, 'searchBarangTitipan'])->name('searchBarangTitipan');
 
 //KERANJANG
 Route::post('/keranjang', [BarangController::class, 'tambahKeKeranjang'])->name('keranjang')->middleware('logged_in');
@@ -261,6 +269,7 @@ Route::get('/orghomepage', function () {
 
 //Route Request Donasi
 Route::get('/requestdonasi/{id_organisasi}', [RequestDonasiController::class, 'indexByOrg'])->name('request.katalog');
+Route::get('/requestdonasi/all/{id_organisasi}', [RequestDonasiController::class, 'allIndexByOrg'])->name('request.katalog.all');
 
 Route::get('/create/requestdonasi/{id_organisasi}', function ($id_organisasi) {
     return view('register_requestDonasi', compact('id_organisasi'));
@@ -270,6 +279,7 @@ Route::post('/create/requestdonasi', [RequestDonasiController::class, 'create'])
 
 Route::put('/update/requestdonasi/{id}', [RequestDonasiController::class, 'update'])->name('update.requestdonasi');
 Route::get('/edit/requestdonasi/{id}', [RequestDonasiController::class, 'edit'])->name('edit.requestdonasi');
+
 Route::delete('/delete/requestdonasi/{id}', [RequestDonasiController::class, 'destroy'])->name('destroy.requestdonasi');
 Route::get('/search/requestdonasi', [RequestDonasiController::class, 'search'])->name('search.requestdonasi');
 
@@ -277,3 +287,12 @@ Route::get('/cetak-nota-titipan/{barang}', [CetakNotaTitipanController::class, '
     ->name('cetak-nota-titipan');
 
 Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerc');
+
+Route::delete('/delete/requestdonasi/{id}', [RequestDonasiController::class, 'delete'])->name('destroy.requestdonasi');
+Route::get('/search/requestdonasi/all', [RequestDonasiController::class, 'search'])->name('search.requestdonasi.fall');
+Route::get('/search/requestdonasi', [RequestDonasiController::class, 'searchById'])->name('search.requestdonasi');
+
+
+Route::get('/pembeli/transaksi', [PembeliController::class, 'historyTransaksiPembelian'])
+    ->name('pembeli.transaksi');
+

@@ -77,19 +77,17 @@ use App\Http\Helper\Helper;
 
                 {{-- Sudah Login --}}
                 @if (Helper::isLoggedIn())
-                    {{-- Tampilkan ikon keranjang hanya jika yang login adalah Pembeli --}}
-                    @if (Helper::getLoggedInUser() && Helper::getLoggedInUser()->nama_pembeli)
-                        <li class="nav-item me-3">
-                            <a class="nav-link" href="{{ route('keranjang') }}"> 🛒 </a>
-                        </li>
-                    @endif
-
 
 
                     @if (Helper::isLoggedIn() &&
                             (Helper::getLoggedInUser()->nama_pembeli ||
                                 Helper::getLoggedInUser()->nama_penitip ||
                                 Helper::getLoggedInUser()->nama_organisasi))
+                        @if (Helper::getLoggedInUser() && Helper::getLoggedInUser()->nama_pembeli)
+                            <li class="nav-item me-3">
+                                <a class="nav-link" href="{{ route('keranjang') }}"> 🛒 </a>
+                            </li>
+                        @endif
                         <li class="nav-item me-3">
                             <a class="nav-link" href="{{ route('homeProduk') }}"> {{-- notifications --}}
                                 🔔
@@ -106,9 +104,19 @@ use App\Http\Helper\Helper;
                                 <li><a class="dropdown-item" href="{{ route('profil') }}">Profil Saya</a></li>
 
                                 @if (Helper::getLoggedInUser()->nama_penitip)
+                                    @php
+                                        $penitipCurrent = Auth::guard('penitip')->user();
+                                    @endphp
+                                    <li><a class="dropdown-item" href="{{ route('historyBarang', ['id_penitip' => Helper::getLoggedInUser()->id_penitip ]) }}">History
+                                            Barang</a>
+                                    </li>
                                     <li><a class="dropdown-item" href="{{ route('historyPenjualanPenitip') }}">History
                                             Penjualan</a>
                                     </li>
+                                @endif
+                                @if (Helper::getLoggedInUser() && Helper::getLoggedInUser()->nama_organisasi)
+                                    <li><a class="dropdown-item" href="{{ route('homepage.organisasi') }}">Request
+                                            Donasi panel</a></li>
                                 @endif
 
                                 <li>

@@ -129,72 +129,42 @@ use App\Http\Helper\Helper;
                             </div>
                         </div>
                     @endif
+                    @if (@$guard === 'pembeli')
+                        <a href="{{ route('pembeli.transaksi') }}" class="btn btn-outline-primary">Lihat Riwayat Pembelian</a>
+                    @endif
                 </div>
             </div>
         @endif
-        {{-- <div class="container">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <table class="table table-bordered mt-3">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Nomor Nota</th><!-- transaksi -->
-                            <th>Nama Produk</th><!-- detil -->
-                            <th>Tambah Poin</th><!-- transaksi -->
-                            <th>Tipe Pengiriman</th><!-- transaksi -->
-                            <th>Total Harga<br>(setelah diongkir)</th><!-- transaksi -->
-                            <th>Alamat Pengiriman</th><!-- transaksi -->
-                            <th>Status</th><!-- transaksi -->
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- @php
-                            $totalPendapatan = 0;
-                        @endphp -->
-                        @forelse ($transaksi as $item)
-                            <tr>
-                                <td>{{ $item->no_nota }}</td>
-                                <td>{{ $item->nama_barang }}</td>
-                                <td>{{ $item->tambah_poin }}</td>
-                                <td>{{ $item->tipe_delivery }}</td>
-                                <td>{{ number_format($item->total_pembayaran, 0, ',', '.') }}</td>
-                                <td>{{ $item->alamat_pengiriman }}</td>
-                                <td>{{ $item->status }}</td>
-                            </tr>
-                            <!-- @php
-                                $totalPendapatan += $item->pendapatan;
-                            @endphp -->
-                        @empty
-                            <tr>
-                                <td colspan="7">Tidak ada data transaksi pembelian.</td>
-                            </tr>
-                        @endforelse
-                        <!-- <tr class="fw-bold">
-                                <td colspan="6" class="text-center">TOTAL</td>
-                                <td>Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</td>
-                            </tr> -->
-                    </tbody>
-                </table>
-            </div>
-        </div> --}}
-    </div>
-    <!-- Modal Update Profil -->
-    <div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="updateProfileModalLabel">Update Profil</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form action="{{ route($guard . '.updateProfil') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="nama" class="form-label">Nama</label>
-                            <input type="text" class="form-control" id="nama" name="nama"
-                                value="{{ old('nama', $user->nama_pembeli ?? ($user->nama_organisasi ?? $user->nama_penitip)) }}"
-                                required>
+        <!-- Modal Update Profil -->
+        <div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updateProfileModalLabel">Update Profil</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route($guard . '.updateProfil') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="nama" class="form-label">Nama</label>
+                                <input type="text" class="form-control" id="nama" name="nama"
+                                    value="{{ old('nama', $user->nama_pembeli ?? ($user->nama_organisasi ?? $user->nama_penitip)) }}"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="no_telp" class="form-label">Nomor Telepon</label>
+                                <input type="text" class="form-control" id="no_telp" name="no_telp"
+                                    value="{{ old('no_telp', $user->no_telp) }}" required>
+                            </div>
+                            @if ($guard === 'pembeli')
+                                <div class="mb-3">
+                                    <label for="foto" class="form-label">Foto Profil</label>
+                                    <input type="file" class="form-control" id="foto" name="foto"
+                                        accept="image/*">
+                                </div>
+                            @endif
                         </div>
                         <div class="mb-3">
                             <label for="no_telp" class="form-label">Nomor Telepon</label>
