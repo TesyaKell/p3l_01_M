@@ -5,6 +5,8 @@ use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\Penitip;
+use App\Notifications\MobileNotif;
 use App\Models\Barang;
 use App\Models\Keranjang;
 use App\Http\Helper\Helper;
@@ -101,7 +103,9 @@ class transaksiController extends Controller
                 $hargaBarang = $barang->harga;
 
                 // Hitung komisi dan harga jual bersih
-                if ($barang->opsi_barang === 'Diperpanjang') {
+                if ($barang->opsi_barang === 'Diperpanjang' && $barang->id_hunter_pegawai) {
+                    $komisiReusmart = $hargaBarang * 0.25;
+                } elseif ($barang->opsi_barang === 'Diperpanjang') {
                     $komisiReusmart = $hargaBarang * 0.30;
                 } elseif ($barang->id_hunter_pegawai) {
                     $komisiReusmart = $hargaBarang * 0.15;
@@ -131,6 +135,13 @@ class transaksiController extends Controller
 
                 $totalHarga += $hargaBarang;
                 $totalBonus += $bonus;
+
+                // $penitip = Penitip::find($barang->id_penitip);
+
+                // $penitip->notify(new MobileNotif(
+                //     'Barang dibeli!',
+                //     'Barang kamu telah berhasil dibeli oleh pembeli.'
+                // ));
             }
 
             // Poin
@@ -169,7 +180,7 @@ class transaksiController extends Controller
 
             // Simpan detail transaksi
             foreach ($detailTransaksiData as $detail) {
-                $detail['id_transaksi'] = $transaksi->id_transaksi;
+                $detail['no_nota'] = $noNota;
                 DetailTransaksi::create($detail);
                 Barang::where('kode_barang', $detail['kode_barang'])->update(['status' => 'Terjual']);
             }
@@ -274,7 +285,7 @@ class transaksiController extends Controller
 
     public function verifikasi(Request $request, $no_nota)
     {
-        $transaksi = Transaksi::where('no_nota', $no_nota)->firstOrFail();
+        $transaksi = Transaksi::with('detailTransaksi.barang')->where('no_nota', $no_nota)->firstOrFail();
 
         if ($transaksi->status !== 'Menunggu Konfirmasi') {
             return redirect()->back()->with('error', 'Transaksi tidak valid untuk diverifikasi.');
@@ -285,8 +296,22 @@ class transaksiController extends Controller
             'tanggal_lunas' => now(),
         ]);
 
+        foreach ($transaksi->detailTransaksi as $detail) {
+            $barang = $detail->barang;
+            if ($barang) {
+                $penitip = Penitip::find($barang->id_penitip);
+                if ($penitip) {
+                    $penitip->notify(new MobileNotif(
+                        'Barang Anda Terjual!',
+                        'Barang kamu telah berhasil dibeli oleh pembeli.'
+                    ));
+                }
+            }
+        }
+
         return redirect()->route('verifikasi.pembayaran')->with('success', 'Transaksi berhasil diverifikasi.');
     }
+
 
     public function tidakDiverifikasi(Request $request, $no_nota)
     {
