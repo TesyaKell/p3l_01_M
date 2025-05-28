@@ -187,6 +187,13 @@ class TransaksiKirimResource extends Resource
                 ->requiresConfirmation()
                 ->visible(fn ($record) =>  $record->status === 'Menunggu Pickup'),
                 //berhasil update tapi belum kirim notifikasi
+                Tables\Actions\Action::make('cetakNota')
+                    ->label('Cetak Nota')
+                    ->icon('heroicon-o-printer')
+                    ->url(fn ($record) => route('cetak-nota-penjualan', $record->no_nota))
+                    ->openUrlInNewTab()
+                    ->color('gray')
+                    ->visible(fn ($record) =>  $record->status !== 'Batal'),
 
 
                 Tables\Actions\EditAction::make(),

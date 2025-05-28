@@ -44,24 +44,32 @@
         <div>Jl. Green Eco Park No. 456 Yogyakarta</div>
 
         <div class="section">
-            <div>No Nota : {{ $transaksi->nomor_nota }}</div>
-            <div>Tanggal pesan : {{ \Carbon\Carbon::parse($transaksi->tanggal_pesan)->format('d/m/Y H:i') }}</div>
-            <div>Lunas pada : {{ \Carbon\Carbon::parse($transaksi->tanggal_lunas)->format('d/m/Y H:i') }}</div>
-            <div>Tanggal ambil : {{ $transaksi->tanggal_ambil ? \Carbon\Carbon::parse($transaksi->tanggal_ambil)->format('d/m/Y') : '-' }}</div>
+            <div>No Nota        : {{ $transaksi->no_nota }}</div>
+            <div>Tanggal pesan  : {{ \Carbon\Carbon::parse($transaksi->tanggal_pesan)->format('d/m/Y H:i') }}</div>
+            <div>Lunas pada     : {{ \Carbon\Carbon::parse($transaksi->tanggal_lunas)->format('d/m/Y H:i') }}</div>
+            <div>Tanggal ambil  : {{ $transaksi->tanggal_ambil_kirim ? \Carbon\Carbon::parse($transaksi->tanggal_ambil)->format('d/m/Y') : '-' }}</div>
         </div>
 
         <div class="section">
-            <strong>Pembeli</strong> : {{ $transaksi->pembeli->email }} / {{ $transaksi->pembeli->nama }}<br>
-            {{ $transaksi->alamat_lengkap ?? '-' }}<br>
+            <strong>Pembeli</strong> : {{ $transaksi->pembeli->email }} / {{ $transaksi->pembeli->nama_pembeli }}<br>
+            {{ $transaksi->alamat_pengiriman ?? '-' }}<br>
             Delivery: - ({{ $transaksi->metode_pengiriman === 'pickup' ? 'diambil sendiri' : 'kurir' }})
         </div>
 
         <div class="section">
+            @php
+                $total_harga = 0.00;
+                $total_poin = 0;
+            @endphp
             <table>
-                @foreach($transaksi->barang as $barang)
+                @foreach($detail as $barang)
                     <tr>
-                        <td>{{ $barang->nama_barang }}</td>
-                        <td class="text-right">Rp{{ number_format($barang->pivot->harga, 0, ',', '.') }}</td>
+                        <td>{{ $barang->barang->nama_barang }}</td>
+                        <td class="text-right"> {{ number_format($barang->barang->harga, 0, ',', '.') }}</td>
+                        @php
+                            $total_harga += $barang->barang->harga;
+                            $total_poin += $barang->transaksi->tambah_poin;
+                        @endphp
                     </tr>
                 @endforeach
             </table>
@@ -71,34 +79,43 @@
             <table>
                 <tr>
                     <td>Total</td>
-                    <td class="text-right">Rp{{ number_format($transaksi->total_awal, 0, ',', '.') }}</td>
+                    <td class="text-right">{{ number_format($total_harga, 0, ',', '.') }}</td>
                 </tr>
                 <tr>
                     <td>Ongkos Kirim</td>
-                    <td class="text-right">Rp{{ number_format($transaksi->ongkir, 0, ',', '.') }}</td>
+                    <td class="text-right">{{ number_format($transaksi->ongkir, 0, ',', '.') }}</td>
                 </tr>
                 <tr>
                     <td>Total</td>
-                    <td class="text-right">Rp{{ number_format($transaksi->total_awal + $transaksi->ongkir, 0, ',', '.') }}</td>
+                    <td class="text-right">{{ number_format($total_harga + $transaksi->ongkir, 0, ',', '.') }}</td>
+                    @php
+                        $total_harga += $transaksi->ongkir;
+                    @endphp
                 </tr>
                 <tr>
-                    <td>Potongan {{ $transaksi->jumlah_poin_digunakan }} poin</td>
-                    <td class="text-right">- Rp{{ number_format($transaksi->potongan_poin, 0, ',', '.') }}</td>
+                    <td>Potongan {{ $transaksi->tukar_poin ?? 0 }} poin</td>
+                    @php
+                        $diskon = $transaksi->tukar_poin * 10000;
+                    @endphp
+                    <td class="text-right">- {{ number_format($diskon, 0, ',', '.') }}</td>
+                    @php
+                        $total_harga -= $diskon;
+                    @endphp
                 </tr>
                 <tr>
                     <td><strong>Total</strong></td>
-                    <td class="text-right"><strong>Rp{{ number_format($transaksi->total_harga, 0, ',', '.') }}</strong></td>
+                    <td class="text-right"><strong>{{ number_format($total_harga, 0, ',', '.') }}</strong></td>
                 </tr>
             </table>
         </div>
 
         <div class="section">
-            Poin dari pesanan ini: {{ $transaksi->poin_didapat }}<br>
-            Total poin customer: {{ $transaksi->pembeli->total_poin }}
+            Poin dari pesanan ini: {{ $total_poin }}<br>
+            Total poin customer: {{ $transaksi->pembeli->poin + $total_poin  }}
         </div>
 
         <div class="section">
-            QC oleh: {{ $transaksi->qc->nama ?? '-' }} ({{ $transaksi->qc->id_pegawai ?? '-' }})
+            QC oleh: {{ $transaksi->pegawai->nama_pegawai ?? '-' }} 
         </div>
 
         <div class="section dotted">

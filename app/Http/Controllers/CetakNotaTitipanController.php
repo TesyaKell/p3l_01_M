@@ -22,12 +22,15 @@ class CetakNotaTitipanController extends Controller
     public function cetakNotaPenjualan($no_nota)
     {
         $transaksi = Transaksi::where('no_nota',$no_nota )->first();
-        $detail = detail_transaksi::with(['barang', 'pembeli'])->where('no_nota',$transaksi->no_nota)->first();
-        
-        if (!$transaksi || !$detail) {
+        $detail = detail_transaksi::with('barang')
+            ->where('no_nota',$transaksi->no_nota)
+            ->get();
+
+        if (!$transaksi || $detail->isEmpty()) {
             abort(404, 'Nota tidak ditemukan.');
         }
-        $pdf = Pdf::loadView('nota-penjualan', compact('transaksi'));
+
+        $pdf = Pdf::loadView('nota-penjualan', compact('transaksi', 'detail'));
         return $pdf->stream('nota-penjualan-'. $transaksi->no_nota .'.pdf'); // atau ->download() untuk langsung unduh
     }
 }
