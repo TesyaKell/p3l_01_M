@@ -286,6 +286,9 @@ Route::get('/search/requestdonasi', [RequestDonasiController::class, 'search'])-
 Route::get('/cetak-nota-titipan/{barang}', [CetakNotaTitipanController::class, 'cetak'])
     ->name('cetak-nota-titipan');
 
+Route::get('/cetak-nota-penjualan/{id}', [CetakNotaTitipanController::class, 'cetakNotaPenjualan'])->name('cetak-nota-penjualan');
+
+
 Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerc');
 
 Route::delete('/delete/requestdonasi/{id}', [RequestDonasiController::class, 'delete'])->name('destroy.requestdonasi');

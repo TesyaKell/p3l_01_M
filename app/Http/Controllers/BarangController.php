@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\detail_transaksi;
+use App\Models\Transaksi;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Barang;
@@ -193,8 +195,8 @@ class BarangController extends Controller
     public function updateBarangDiambil(Request $request, $id){
         $barang = Barang::where('kode_barang', $id)->firstOrFail();
         $barang->update([
-            // 'tanggal_ambil' => now(),
-            'status' => 'Diambil']);
+            'status' => 'Diambil'
+        ]);
         $id_penitip = $barang->id_penitip;
 
         return redirect()->route('historyBarang', ['id_penitip' => $id_penitip])->with('status', 'Data penitip berhasil diperbarui!');
@@ -202,17 +204,19 @@ class BarangController extends Controller
         //barang yang ditampilkan semua atau yang belum terbeli/didonasikan?
         
     }
-    public function confirmBarangDiambil(Request $request, $id){
+    public function terimaBarangDiambil($id){
         //ini untuk pemrosesan dari sisi gudang
         $barang = Barang::where('kode_barang', $id)->firstOrFail();
         $barang->update([
-            'tanggal_ambil' => now()]);
-        $id_penitip = $barang->id_penitip;
-
-        // return redirect()->route('historyBarang', ['id_penitip' => $id_penitip])->with('status', 'Data penitip berhasil diperbarui!');
-
-        //barang yang ditampilkan semua atau yang belum terbeli/didonasikan?
-        
+            'tanggal_ambil' => now()
+        ]);
+    }
+    public function TolakBarangDiambil($id){
+        //ini untuk pemrosesan dari sisi gudang
+        $barang = Barang::where('kode_barang', $id)->firstOrFail();
+        $barang->update([
+            'status' => 'Terdonasi'
+        ]);
     }
   
     public function searchBarangTitipan(Request $request, $id_penitip){
@@ -231,4 +235,31 @@ class BarangController extends Controller
         return view('historyPenitipanBarang', compact('barangUser',  'query', 'condition'));
     }
 
+    public function autoDonasikanBarang()
+    {
+        // 1. Barang belum dibayar lebih dari 15 menit (status = 'Belum Dibayar')
+        $TransaksiExpired = Transaksi::where('status', 'Menunggu Pembayaran')
+            ->where('created_at', '<=', Carbon::now()->subMinutes(15))//kolom created_at tidak ada di transaksi
+            ->get();
+        $DetailTransaksiExpired = detail_transaksi::where('no_nota', $TransaksiExpired->no_nota)->get();
+        $BarangTerdonasikan = Barang::where('kode_barang', $DetailTransaksiExpired->kode_barang)->get();
+
+        foreach ($BarangTerdonasikan as $barang) {
+            $barang->status = 'Terdonasi';
+            $barang->save();
+        }
+
+        // 2. Barang sudah dijadwalkan diambil, tapi belum diambil >2 hari
+        $TransaksiExpired = Transaksi::where('status', 'Menunggu Pickup')
+            ->where('tanggal_ambil_kirim', '<=', Carbon::now()->subDays(2))
+            ->get();
+
+        $DetailTransaksiExpired = detail_transaksi::where('no_nota', $TransaksiExpired->no_nota)->get();
+        $BarangTerdonasikan = Barang::where('kode_barang', $DetailTransaksiExpired->kode_barang)->get();
+
+        foreach ($BarangTerdonasikan as $barang) {
+            $barang->status = 'Terdonasi';
+            $barang->save();
+        }
+    }
 }

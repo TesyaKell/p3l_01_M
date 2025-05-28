@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Barang;
+use App\Models\detail_transaksi;
+use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -16,5 +18,16 @@ class CetakNotaTitipanController extends Controller
         ];
         $pdf = Pdf::loadView('nota-titipan', $data);
         return $pdf->stream('nota-titipan' . $barang->no_nota_titipan . '.pdf');
+    }
+    public function cetakNotaPenjualan($no_nota)
+    {
+        $transaksi = Transaksi::where('no_nota',$no_nota )->first();
+        $detail = detail_transaksi::with(['barang', 'pembeli'])->where('no_nota',$transaksi->no_nota)->first();
+        
+        if (!$transaksi || !$detail) {
+            abort(404, 'Nota tidak ditemukan.');
+        }
+        $pdf = Pdf::loadView('nota-penjualan', compact('transaksi'));
+        return $pdf->stream('nota-penjualan-'. $transaksi->no_nota .'.pdf'); // atau ->download() untuk langsung unduh
     }
 }
