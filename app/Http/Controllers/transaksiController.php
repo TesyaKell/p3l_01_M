@@ -350,5 +350,20 @@ class transaksiController extends Controller
 
         return redirect()->route('verifikasi.pembayaran')->with('success', 'Transaksi berhasil ditandai sebagai "Tidak Diverifikasi".');
     }
+    public function bayarPenitip($no_nota)
+    {
+        $transaksiKePenitip = DetailTransaksi::where('no_nota', $no_nota)->get();
+        foreach ($transaksiKePenitip as $keyBarang) {
 
+            $barang = Barang::where('kode_barang', $keyBarang->kode_barang)->first();
+
+            if (!$barang) continue; 
+            $penitip = Penitip::where('id_penitip', $barang->id_penitip)->first();
+
+            if (!$penitip) continue; 
+            $penitip->update([
+                'saldo' => $penitip->saldo + $keyBarang->komisi_penitip
+            ]);
+        }
+    }
 }
