@@ -33,6 +33,8 @@ class DetailTransaksiController extends Controller
             'harga_jual_bersih' => 'required|numeric',
             'bonus' => 'required|numeric',
             'total' => 'required|numeric',
+            'komisi_reusmart' => 'required|numeric',
+            'komisi_hunter' => 'required|numeric',
         ]);
 
         DetailTransaksi::create($validated);

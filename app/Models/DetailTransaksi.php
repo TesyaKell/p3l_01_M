@@ -9,6 +9,7 @@ class DetailTransaksi extends Model
     protected $table = 'detail_transaksi';
     protected $primaryKey = 'id_detail_transaksi';
     public $timestamps = false;
+    public $incrementing = true;
 
     protected $fillable = [
         'kode_barang',
@@ -16,7 +17,8 @@ class DetailTransaksi extends Model
         'nama_barang',
         'harga_jual_bersih',
         'bonus',
-        'total'
+        'total',
+        'komisi_reusmart'
     ];
 
     public function transaksi()

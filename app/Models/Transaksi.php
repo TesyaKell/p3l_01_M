@@ -43,4 +43,9 @@ class Transaksi extends Model
     {
         return $this->belongsTo(Pegawai::class, 'id_kurir_pegawai');
     }
+
+    public function detailTransaksi()
+    {
+        return $this->hasMany(DetailTransaksi::class, 'no_nota', 'no_nota');
+    }
 }

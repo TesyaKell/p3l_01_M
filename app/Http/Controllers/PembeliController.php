@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Helper\Helper;
 use App\Models\Pembeli;
+use App\Models\Rating;
 use App\Notifications\VerifyEmail;
+use Illuminate\Support\Facades\DB;
 use Auth;
 use Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,6 +20,26 @@ use Str;
 
 class PembeliController extends Controller
 {
+    public function historyPembelian()
+    {
+        $user = Auth::guard('pembeli')->user();
+
+        $detailTransaksiList = DB::table('detail_transaksi')
+           ->join('transaksi', 'detail_transaksi.no_nota', '=', 'transaksi.no_nota')
+           ->where('transaksi.id_pembeli', auth()->user()->id)
+           ->where('transaksi.status', 'Selesai')
+           ->select('detail_transaksi.*', 'transaksi.status', 'transaksi.no_nota')
+           ->get();
+
+        // Retrieve ratings for the authenticated user
+        $ratings = Rating::where('id_pembeli', auth()->user()->id)
+            ->pluck('bintang', 'id_detail_transaksi');
+
+        return view('history_pembelian', compact('detailTransaksiList', 'ratings'));
+    }
+
+
+
     private function generatePembeliId()
     {
         do {
@@ -83,6 +106,13 @@ class PembeliController extends Controller
         }
 
         if (Auth::guard('pembeli')->attempt($request->only('email', 'password'))) {
+            $user = Auth::guard('pembeli')->user();
+            Log::info('Pembeli berhasil login', [
+                'id_pembeli' => $user->id_pembeli,
+                'nama_pembeli' => $user->nama_pembeli,
+                'email' => $user->email,
+                'waktu' => now()
+            ]);
             return redirect('/')->with('status', 'Login successful!');
         }
 

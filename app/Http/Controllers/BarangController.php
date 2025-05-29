@@ -5,13 +5,29 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Barang;
 use App\Http\Helper\Helper;
-use App\Models\Keranjang;
-
-
+use App\Models\KategoriBarang;
+use App\Models\Kategori;
 use Illuminate\Support\Facades\Storage;
 
 class BarangController extends Controller
 {
+    public function tes()
+    {
+        $kategoriList = KategoriBarang::all();
+
+        // Get products with penitip and rating information
+        $barangTersedia = Barang::with(['penitip'])
+            ->where('status_barang', 'tersedia')
+            ->get()
+            ->map(function ($barang) {
+                // Add average rating to each product
+                $barang->average_rating = $barang->penitip->averageRating();
+                $barang->total_ratings = $barang->penitip->totalRatings();
+                return $barang;
+            });
+
+        return view('homeProduk', compact('kategoriList', 'barangTersedia'));
+    }
     public function index()
     {
         $barang = Barang::where('status', 'tersedia')->get();

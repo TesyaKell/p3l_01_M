@@ -60,7 +60,7 @@ class Barang extends Model
     }
     public function transaksi()
     {
-        return $this->hasMany(detail_transaksi::class, 'kode_barang');
+        return $this->hasMany(DetailTransaksi::class, 'kode_barang');
     }
     public function hitungDurasi(): int
     {

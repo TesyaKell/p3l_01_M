@@ -46,8 +46,11 @@
                 @foreach ($results as $barang)
                     <div class="col">
                         <div class="card h-100">
-                            <img src="{{ asset('images/' . $barang->foto_produk) }}" class="card-img-top p-3"
-                                alt="{{ $barang->nama_barang }}">
+                            <img src="{{ asset('storage/' . ($item->barang?->foto_produk[0] ?? 'images/default.png')) }}"
+                                class="img-fluid rounded-start p-3"
+                                alt="{{ $item->barang->nama_barang ?? 'Tanpa nama' }}"
+                                style="height: 150px; object-fit: contain;">
+
                             <div class="card-body">
                                 <h5 class="card-title">{{ $barang->nama_barang }}</h5>
                                 <p class="card-text text-muted">
