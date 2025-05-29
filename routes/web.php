@@ -16,7 +16,7 @@ use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\transaksiController;
 use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\KomentarController;
-<<<<<<< HEAD
+use App\Http\Controllers\LaporanOwnerController;
 use App\Http\Controllers\CetakNotaTitipanController;
 use App\Http\Controllers\ClaimMerchController;
 use App\Http\Controllers\RatingController;
@@ -37,9 +37,9 @@ Route::middleware(['auth:pembeli'])->group(function () {
 Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi');
 
 Route::post('/rate-product', [TransaksiController::class, 'rateProduct'])->name('pembeli.rateProduct');
-=======
-use App\Http\Controllers\LaporanOwnerController;
->>>>>>> dba153dee4cdf646a746f416c06b41525dfb7189
+
+
+
 
 
 Route::prefix('owner/laporan')->middleware(['auth:pegawai'])->group(function () {
@@ -124,11 +124,8 @@ Route::post('/keranjang', [BarangController::class, 'tambahKeKeranjang'])->name(
 Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang')->middleware('logged_in');
 
 
-<<<<<<< HEAD
-=======
 //TRANSAKSI
 Route::get('/transaksi', [transaksiController::class, 'index'])->name('transaksi');
->>>>>>> dba153dee4cdf646a746f416c06b41525dfb7189
 
 
 //Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('logged_in:organisasi,pembeli');

@@ -46,8 +46,4 @@ class Transaksi extends Model
     {
         return $this->hasMany(DetailTransaksi::class, 'no_nota', 'no_nota');
     }
-<<<<<<< HEAD
-=======
-
->>>>>>> dba153dee4cdf646a746f416c06b41525dfb7189
 }

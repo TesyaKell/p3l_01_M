@@ -9,7 +9,9 @@ use Spatie\Permission\Traits\HasRoles;
 
 class Pegawai extends Authenticatable
 {
-    use HasRoles, Notifiable, HasApiTokens;
+    use HasRoles;
+    use Notifiable;
+    use HasApiTokens;
     protected $table = 'pegawai';
     protected $primaryKey = 'id_pegawai';
     public $incrementing = false;
