@@ -4,11 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-<<<<<<< HEAD
-    "content-hash": "700faeccf437554a9d2523b9a773e4bd",
-=======
-    "content-hash": "4219f2d3b9f1ba06868e543b8cd04cc0",
->>>>>>> 8a38c4ab2123e1ad268ef12dcc80f6c5198c9c79
+    "content-hash": "d89128480a02094c438aac3621216019",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -77,7 +73,83 @@
             "time": "2025-04-06T06:54:34+00:00"
         },
         {
-<<<<<<< HEAD
+            "name": "barryvdh/laravel-dompdf",
+            "version": "v3.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/barryvdh/laravel-dompdf.git",
+                "reference": "8e71b99fc53bb8eb77f316c3c452dd74ab7cb25d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/barryvdh/laravel-dompdf/zipball/8e71b99fc53bb8eb77f316c3c452dd74ab7cb25d",
+                "reference": "8e71b99fc53bb8eb77f316c3c452dd74ab7cb25d",
+                "shasum": ""
+            },
+            "require": {
+                "dompdf/dompdf": "^3.0",
+                "illuminate/support": "^9|^10|^11|^12",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "larastan/larastan": "^2.7|^3.0",
+                "orchestra/testbench": "^7|^8|^9|^10",
+                "phpro/grumphp": "^2.5",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "PDF": "Barryvdh\\DomPDF\\Facade\\Pdf",
+                        "Pdf": "Barryvdh\\DomPDF\\Facade\\Pdf"
+                    },
+                    "providers": [
+                        "Barryvdh\\DomPDF\\ServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-master": "3.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Barryvdh\\DomPDF\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Barry vd. Heuvel",
+                    "email": "barryvdh@gmail.com"
+                }
+            ],
+            "description": "A DOMPDF Wrapper for Laravel",
+            "keywords": [
+                "dompdf",
+                "laravel",
+                "pdf"
+            ],
+            "support": {
+                "issues": "https://github.com/barryvdh/laravel-dompdf/issues",
+                "source": "https://github.com/barryvdh/laravel-dompdf/tree/v3.1.1"
+            },
+            "funding": [
+                {
+                    "url": "https://fruitcake.nl",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/barryvdh",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-02-13T15:07:54+00:00"
+        },
+        {
             "name": "beste/clock",
             "version": "3.0.0",
             "source": {
@@ -188,141 +260,141 @@
                     "Beste\\Cache\\": "src"
 =======
             "name": "barryvdh/laravel-dompdf",
-            "version": "v3.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/barryvdh/laravel-dompdf.git",
-                "reference": "8e71b99fc53bb8eb77f316c3c452dd74ab7cb25d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/barryvdh/laravel-dompdf/zipball/8e71b99fc53bb8eb77f316c3c452dd74ab7cb25d",
-                "reference": "8e71b99fc53bb8eb77f316c3c452dd74ab7cb25d",
-                "shasum": ""
-            },
-            "require": {
-                "dompdf/dompdf": "^3.0",
-                "illuminate/support": "^9|^10|^11|^12",
-                "php": "^8.1"
-            },
-            "require-dev": {
-                "larastan/larastan": "^2.7|^3.0",
-                "orchestra/testbench": "^7|^8|^9|^10",
-                "phpro/grumphp": "^2.5",
-                "squizlabs/php_codesniffer": "^3.5"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "aliases": {
-                        "PDF": "Barryvdh\\DomPDF\\Facade\\Pdf",
-                        "Pdf": "Barryvdh\\DomPDF\\Facade\\Pdf"
+                    "version": "v3.1.1",
+                    "source": {
+                        "type": "git",
+                        "url": "https://github.com/barryvdh/laravel-dompdf.git",
+                        "reference": "8e71b99fc53bb8eb77f316c3c452dd74ab7cb25d"
                     },
-                    "providers": [
-                        "Barryvdh\\DomPDF\\ServiceProvider"
-                    ]
-                },
-                "branch-alias": {
-                    "dev-master": "3.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Barryvdh\\DomPDF\\": "src"
+                    "dist": {
+                        "type": "zip",
+                        "url": "https://api.github.com/repos/barryvdh/laravel-dompdf/zipball/8e71b99fc53bb8eb77f316c3c452dd74ab7cb25d",
+                        "reference": "8e71b99fc53bb8eb77f316c3c452dd74ab7cb25d",
+                        "shasum": ""
+                    },
+                    "require": {
+                        "dompdf/dompdf": "^3.0",
+                        "illuminate/support": "^9|^10|^11|^12",
+                        "php": "^8.1"
+                    },
+                    "require-dev": {
+                        "larastan/larastan": "^2.7|^3.0",
+                        "orchestra/testbench": "^7|^8|^9|^10",
+                        "phpro/grumphp": "^2.5",
+                        "squizlabs/php_codesniffer": "^3.5"
+                    },
+                    "type": "library",
+                    "extra": {
+                        "laravel": {
+                            "aliases": {
+                                "PDF": "Barryvdh\\DomPDF\\Facade\\Pdf",
+                                "Pdf": "Barryvdh\\DomPDF\\Facade\\Pdf"
+                            },
+                            "providers": [
+                                "Barryvdh\\DomPDF\\ServiceProvider"
+                            ]
+                        },
+                        "branch-alias": {
+                            "dev-master": "3.0-dev"
+                        }
+                    },
+                    "autoload": {
+                        "psr-4": {
+                            "Barryvdh\\DomPDF\\": "src"
 >>>>>>> 8a38c4ab2123e1ad268ef12dcc80f6c5198c9c79
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
+                        }
+                    },
+                    "notification-url": "https://packagist.org/downloads/",
+                    "license": [
+                        "MIT"
+                    ],
+                    "authors": [
+                        {
 <<<<<<< HEAD
                     "name": "Jérôme Gamez",
-                    "email": "jerome@gamez.name"
-                }
-            ],
-            "description": "A PSR-6 In-Memory cache that can be used as a fallback implementation and/or in tests.",
-            "keywords": [
-                "beste",
-                "cache",
-                "psr-6"
-            ],
-            "support": {
-                "issues": "https://github.com/beste/in-memory-cache-php/issues",
-                "source": "https://github.com/beste/in-memory-cache-php/tree/1.3.1"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/jeromegamez",
-                    "type": "github"
-                }
-            ],
-            "time": "2024-08-26T15:51:58+00:00"
-        },
-        {
-            "name": "beste/json",
-            "version": "1.6.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/beste/json.git",
-                "reference": "a25b883c71f84aee3709d5635e71286af1fdc8eb"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/beste/json/zipball/a25b883c71f84aee3709d5635e71286af1fdc8eb",
-                "reference": "a25b883c71f84aee3709d5635e71286af1fdc8eb",
-                "shasum": ""
-            },
-            "require": {
-                "ext-json": "*",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
-            },
-            "require-dev": {
-                "phpstan/extension-installer": "^1.3",
-                "phpstan/phpstan": "^2.0.4",
-                "phpstan/phpstan-phpunit": "^2.0.2",
-                "phpstan/phpstan-strict-rules": "^2.0.1",
-                "phpunit/phpunit": "^10.4.2",
-                "rector/rector": "^2.0.3"
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "src/Json.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jérôme Gamez",
-                    "email": "jerome@gamez.name"
-                }
-            ],
-            "description": "A simple JSON helper to decode and encode JSON",
-            "keywords": [
-                "helper",
-                "json"
-            ],
-            "support": {
-                "issues": "https://github.com/beste/json/issues",
-                "source": "https://github.com/beste/json/tree/1.6.0"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/jeromegamez",
-                    "type": "github"
+                            "email": "jerome@gamez.name"
+                        }
+                    ],
+                    "description": "A PSR-6 In-Memory cache that can be used as a fallback implementation and/or in tests.",
+                    "keywords": [
+                        "beste",
+                        "cache",
+                        "psr-6"
+                    ],
+                    "support": {
+                        "issues": "https://github.com/beste/in-memory-cache-php/issues",
+                        "source": "https://github.com/beste/in-memory-cache-php/tree/1.3.1"
+                    },
+                    "funding": [
+                        {
+                            "url": "https://github.com/jeromegamez",
+                            "type": "github"
+                        }
+                    ],
+                    "time": "2024-08-26T15:51:58+00:00"
                 },
                 {
-                    "url": "https://tidelift.com/funding/github/packagist/beste/json",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2025-04-07T21:36:08+00:00"
+                    "name": "beste/json",
+                    "version": "1.6.0",
+                    "source": {
+                        "type": "git",
+                        "url": "https://github.com/beste/json.git",
+                        "reference": "a25b883c71f84aee3709d5635e71286af1fdc8eb"
+                    },
+                    "dist": {
+                        "type": "zip",
+                        "url": "https://api.github.com/repos/beste/json/zipball/a25b883c71f84aee3709d5635e71286af1fdc8eb",
+                        "reference": "a25b883c71f84aee3709d5635e71286af1fdc8eb",
+                        "shasum": ""
+                    },
+                    "require": {
+                        "ext-json": "*",
+                        "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
+                    },
+                    "require-dev": {
+                        "phpstan/extension-installer": "^1.3",
+                        "phpstan/phpstan": "^2.0.4",
+                        "phpstan/phpstan-phpunit": "^2.0.2",
+                        "phpstan/phpstan-strict-rules": "^2.0.1",
+                        "phpunit/phpunit": "^10.4.2",
+                        "rector/rector": "^2.0.3"
+                    },
+                    "type": "library",
+                    "autoload": {
+                        "files": [
+                            "src/Json.php"
+                        ]
+                    },
+                    "notification-url": "https://packagist.org/downloads/",
+                    "license": [
+                        "MIT"
+                    ],
+                    "authors": [
+                        {
+                            "name": "Jérôme Gamez",
+                            "email": "jerome@gamez.name"
+                        }
+                    ],
+                    "description": "A simple JSON helper to decode and encode JSON",
+                    "keywords": [
+                        "helper",
+                        "json"
+                    ],
+                    "support": {
+                        "issues": "https://github.com/beste/json/issues",
+                        "source": "https://github.com/beste/json/tree/1.6.0"
+                    },
+                    "funding": [
+                        {
+                            "url": "https://github.com/jeromegamez",
+                            "type": "github"
+                        },
+                        {
+                            "url": "https://tidelift.com/funding/github/packagist/beste/json",
+                            "type": "tidelift"
+                        }
+                    ],
+                    "time": "2025-04-07T21:36:08+00:00"
 =======
                     "name": "Barry vd. Heuvel",
                     "email": "barryvdh@gmail.com"

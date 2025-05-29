@@ -66,6 +66,9 @@
                 <a class="nav-link" href="{{ route('katalogbarang') }}" target="cs-content">
                     <i class="me-1">💬</i><span>Komentar</span>
                 </a>
+                <a class="nav-link" href="{{ route('verifikasi.pembayaran') }}" target="cs-content">
+                    <i class="me-1">🪙</i><span>Verifikasi</span>
+                </a>
                 <a class="nav-link" href="/">
                     <i class="me-1">🏠</i><span>Beranda</span>
                 </a>

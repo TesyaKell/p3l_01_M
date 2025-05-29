@@ -31,11 +31,14 @@ class Donasi extends Model
         return $this->belongsTo(RequestDonasi::class, 'id_request');
     }
 
-
     public function penitip()
     {
         return $this->belongsTo(Penitip::class, 'id_penitip', 'id_penitip'); // Ensure the relationship is correct
     }
 
+    public function requestDonasi()
+    {
+        return $this->belongsTo(\App\Models\RequestDonasi::class, 'id_request');
+    }
 
 }

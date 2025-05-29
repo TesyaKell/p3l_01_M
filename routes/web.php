@@ -16,32 +16,26 @@ use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\transaksiController;
 use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\KomentarController;
-use App\Http\Controllers\CetakNotaTitipanController;
-use App\Http\Controllers\ClaimMerchController;
-use App\Http\Controllers\RatingController;
+use App\Http\Controllers\LaporanOwnerController;
 
-Route::middleware(['auth:pembeli'])->group(function () {
-
-    Route::get('/history', [RatingController::class, 'index'])->name('history');
-
-    Route::prefix('rating')->name('rating.')->group(function () {
-        Route::post('/', [RatingController::class, 'store'])->name('store');
-        Route::put('/{id}', [RatingController::class, 'update'])->name('update');
-        Route::delete('/{id}', [RatingController::class, 'destroy'])->name('destroy');
-    });
+Route::prefix('owner/laporan')->middleware(['auth:pegawai'])->group(function () {
+    Route::get('/donasi/pdf', [LaporanOwnerController::class, 'donasiPdf'])->name('owner.laporan.donasi.pdf');
+    Route::get('/owner/laporan/request/pdf', [LaporanOwnerController::class, 'requestPdf'])
+        ->name('owner.laporan.request.pdf');
 });
 
 
-//TRANSAKSI
-Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi');
 
-Route::post('/rate-product', [TransaksiController::class, 'rateProduct'])->name('pembeli.rateProduct');
+//transaksi verifikasi cs
+Route::get('/verifikasi-pembayaran', [TransaksiController::class, 'halamanVerifikasi'])->name('verifikasi.pembayaran');
+Route::put('/transaksi/{no_nota}/verifikasi', [TransaksiController::class, 'verifikasi'])->name('transaksi.verifikasi');
+Route::put('/transaksi/{no_nota}/tidak-diverifikasi', [transaksiController::class, 'tidakDiverifikasi'])->name('transaksi.tidakDiverifikasi');
 
 
+Route::get('/transaksi/riwayat', [transaksiController::class, 'riwayatTransaksi'])->name('riwayat.transaksi');
+Route::post('/transaksi/upload/{id}', [transaksiController::class, 'uploadBuktiPembayaran'])->name('upload.bukti');
 Route::post('/checkout', [transaksiController::class, 'prosesCheckout'])->name('checkout');
-Route::get('/transaksi', [transaksiController::class, 'index'])->name('transaksi.index');
 Route::get('/transaksi/{no_nota}', [transaksiController::class, 'show'])->name('transaksi.show');
-
 
 
 //Route::post('/keranjang/pilih-alamat', [KeranjangController::class, 'pilihAlamat'])->name('keranjang.pilihAlamat');
@@ -111,6 +105,8 @@ Route::post('/keranjang', [BarangController::class, 'tambahKeKeranjang'])->name(
 Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang')->middleware('logged_in');
 
 
+//TRANSAKSI
+Route::get('/transaksi', [transaksiController::class, 'index'])->name('transaksi');
 
 
 //Route::get('/kategoriBarang/{id}', [KategoriBarangController::class, 'show'])->name('kategoriBarang')->middleware('logged_in:organisasi,pembeli');
