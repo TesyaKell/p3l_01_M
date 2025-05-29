@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\detail_transaksi;
+use App\Models\DetailTransaksi;
 use App\Models\Transaksi;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -241,7 +241,7 @@ class BarangController extends Controller
         ->get();
 
     foreach ($expiredUnpaid as $transaksi) {
-        $details = detail_transaksi::where('no_nota', $transaksi->no_nota)->get();
+        $details = DetailTransaksi::where('no_nota', $transaksi->no_nota)->get();
 
         foreach ($details as $detail) {
             Barang::where('kode_barang', $detail->kode_barang)
@@ -255,7 +255,7 @@ class BarangController extends Controller
         ->get();
 
     foreach ($expiredPickup as $transaksi) {
-        $details = detail_transaksi::where('no_nota', $transaksi->no_nota)->get();
+        $details = DetailTransaksi::where('no_nota', $transaksi->no_nota)->get();
 
         foreach ($details as $detail) {
             Barang::where('kode_barang', $detail->kode_barang)

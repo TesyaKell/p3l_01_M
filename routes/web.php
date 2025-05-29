@@ -31,8 +31,8 @@ Route::prefix('owner/laporan')->middleware(['auth:pegawai'])->group(function () 
 
 
 //transaksi verifikasi cs
-Route::get('/verifikasi-pembayaran', [TransaksiController::class, 'halamanVerifikasi'])->name('verifikasi.pembayaran');
-Route::put('/transaksi/{no_nota}/verifikasi', [TransaksiController::class, 'verifikasi'])->name('transaksi.verifikasi');
+Route::get('/verifikasi-pembayaran', [transaksiController::class, 'halamanVerifikasi'])->name('verifikasi.pembayaran');
+Route::put('/transaksi/{no_nota}/verifikasi', [transaksiController::class, 'verifikasi'])->name('transaksi.verifikasi');
 Route::put('/transaksi/{no_nota}/tidak-diverifikasi', [transaksiController::class, 'tidakDiverifikasi'])->name('transaksi.tidakDiverifikasi');
 
 
@@ -42,11 +42,11 @@ Route::post('/checkout', [transaksiController::class, 'prosesCheckout'])->name('
 Route::get('/transaksi/{no_nota}', [transaksiController::class, 'show'])->name('transaksi.show');
 
 //TRANSAKSI
-Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi');
+Route::get('/transaksi', [transaksiController::class, 'index'])->name('transaksi');
 
 //Route::post('/keranjang/pilih-alamat', [KeranjangController::class, 'pilihAlamat'])->name('keranjang.pilihAlamat');
 Route::delete('/keranjang/{id}', [KeranjangController::class, 'destroy'])->name('keranjang.destroy');
-Route::post('/rate-product', [TransaksiController::class, 'rateProduct'])->name('pembeli.rateProduct');
+Route::post('/rate-product', [transaksiController::class, 'rateProduct'])->name('pembeli.rateProduct');
 
 //Route::post('/keranjang/pilih-alamat', [KeranjangController::class, 'pilihAlamat'])->name('keranjang.pilihAlamat');
 

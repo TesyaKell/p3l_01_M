@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\detail_transaksi;
+use App\Models\DetailTransaksi;
 
 class Rating extends Model
 {
@@ -29,6 +29,6 @@ class Rating extends Model
 
     public function detailTransaksi()
     {
-        return $this->belongsTo(detail_transaksi::class, 'id_detail_transaksi');
+        return $this->belongsTo(DetailTransaksi::class, 'id_detail_transaksi');
     }
 }

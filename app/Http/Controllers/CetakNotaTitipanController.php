@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Barang;
-use App\Models\detail_transaksi;
+use App\Models\DetailTransaksi;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -22,7 +22,7 @@ class CetakNotaTitipanController extends Controller
     public function cetakNotaPenjualan($no_nota)
     {
         $transaksi = Transaksi::where('no_nota',$no_nota )->first();
-        $detail = detail_transaksi::with('barang')
+        $detail = DetailTransaksi::with('barang')
             ->where('no_nota',$transaksi->no_nota)
             ->get();
         $userQc = auth('pegawai')->user();

@@ -102,33 +102,7 @@ use App\Http\Helper\Helper;
             </div>
         </div>
 
-    </div>
-
-    <h2 class="mb-4"><strong>Keranjang Saya </strong></h2>
-
-    @php
-        $totalHarga = 0;
-    @endphp
-
-    @if ($keranjangItems->isEmpty())
-        <div class="alert alert-info">Keranjang Anda kosong.</div>
-    @else
-        <div class="list-group">
-            @foreach ($keranjangItems as $item)
-                @php
-                    $totalHarga += $item->barang->harga;
-                @endphp
-                <div class="card mb-3 shadow-sm">
-                    <div class="row g-0 align-items-center">
-                        <!-- Gambar Produk -->
-                        <div class="col-md-3">
-                            <img src="{{ asset('storage/' . ($item->barang?->foto_produk[0] ?? 'images/default.png')) }}"
-                                class="img-fluid rounded-start p-3"
-                                alt="{{ $item->barang->nama_barang ?? 'Tanpa nama' }}"
-                                style="height: 150px; object-fit: contain;">
-
-                        </div>
-
+    
         <!-- Modal Tambah Alamat -->
         <div class="modal fade" id="alamatModal" tabindex="-1" aria-labelledby="alamatModalLabel" aria-hidden="true">
             <div class="modal-dialog">

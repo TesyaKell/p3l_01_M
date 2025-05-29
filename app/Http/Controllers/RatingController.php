@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Rating;
 use App\Models\Pembeli;
-use App\Models\detail_transaksi;
+use App\Models\DetailTransaksi;
 use Illuminate\Http\Request;
 
 class RatingController extends Controller
@@ -20,7 +20,7 @@ class RatingController extends Controller
     public function create()
     {
         $pembelis = Pembeli::all();
-        $details = detail_transaksi::all();
+        $details = DetailTransaksi::all();
         return view('rating.create', compact('pembelis', 'details'));
     }
 
@@ -51,7 +51,7 @@ class RatingController extends Controller
     {
         $rating = Rating::findOrFail($id);
         $pembelis = Pembeli::all();
-        $details = detail_transaksi::all();
+        $details = DetailTransaksi::all();
         return view('rating.edit', compact('rating', 'pembelis', 'details'));
     }
 
