@@ -14,6 +14,10 @@ use App\Http\Helper\Helper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\Sanctum;
+<<<<<<< HEAD
+=======
+
+>>>>>>> dba153dee4cdf646a746f416c06b41525dfb7189
 
 class transaksiController extends Controller
 {

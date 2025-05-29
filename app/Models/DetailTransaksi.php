@@ -18,7 +18,12 @@ class DetailTransaksi extends Model
         'harga_jual_bersih',
         'bonus',
         'total',
+<<<<<<< HEAD
         'komisi_reusmart'
+=======
+        'komisi_reusmart',
+        'komisi_hunter',
+>>>>>>> dba153dee4cdf646a746f416c06b41525dfb7189
     ];
 
     public function transaksi()

@@ -48,6 +48,7 @@ class Barang extends Model
         return $this->belongsTo(Pegawai::class, 'id_hunter_pegawai');
     }
 
+<<<<<<< HEAD
     public function qcPegawai()
     {
         return $this->belongsTo(Pegawai::class, 'id_qc_pegawai');
@@ -101,4 +102,12 @@ class Barang extends Model
     {
         return $this->nama_barang ?? '-';
     }
+=======
+
+    public function detailTransaksi()
+    {
+        return $this->hasOne(\App\Models\DetailTransaksi::class, 'kode_barang', 'kode_barang');
+    }
+
+>>>>>>> dba153dee4cdf646a746f416c06b41525dfb7189
 }
