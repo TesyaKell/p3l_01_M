@@ -6,11 +6,13 @@ use App\Notifications\ResetPasswordEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Organisasi extends Authenticatable
 {
     use HasFactory;
     use Notifiable;
+    use SoftDeletes;
 
     protected $table = 'organisasi';
     protected $primaryKey = 'id_organisasi';
@@ -25,6 +27,7 @@ class Organisasi extends Authenticatable
         'verify_key',
         'no_telp',
         'email_verified_at',
+        'alamat',
     ];
 
     protected $hidden = [

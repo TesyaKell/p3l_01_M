@@ -6,10 +6,11 @@ use App\Notifications\ResetPasswordEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class Pembeli extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     protected $table = 'pembeli';
     protected $primaryKey = 'id_pembeli';
@@ -26,6 +27,7 @@ class Pembeli extends Authenticatable
         'poin',
         'saldo',
         'verify_key',
+        'fcm_token',
     ];
 
     protected $hidden = [
@@ -44,5 +46,10 @@ class Pembeli extends Authenticatable
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new ResetPasswordEmail($token, 'pembeli'));
+    }
+
+    public function routeNotificationForFcm()
+    {
+        return $this->fcm_token;
     }
 }

@@ -6,11 +6,12 @@ use App\Notifications\ResetPasswordEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class Penitip extends Authenticatable
 {
     use HasFactory;
-    use Notifiable;
+    use Notifiable, HasApiTokens;
 
     protected $table = 'penitip';
     protected $primaryKey = 'id_penitip';
@@ -30,6 +31,7 @@ class Penitip extends Authenticatable
         'top_seller',
         'verify_key',
         'foto_nik',
+        'fcm_token',
     ];
 
     protected $hidden = [
@@ -53,5 +55,10 @@ class Penitip extends Authenticatable
     public function getNameAttribute(): string
     {
         return $this->nama_penitip;
+    }
+
+    public function routeNotificationForFcm()
+    {
+        return $this->fcm_token;
     }
 }

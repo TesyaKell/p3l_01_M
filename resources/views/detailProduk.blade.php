@@ -69,7 +69,7 @@ use App\Http\Helper\Helper;
         }
 
         .btn-pink {
-            background-color: #d99da7;
+            background-color: #d87ca7;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -90,6 +90,7 @@ use App\Http\Helper\Helper;
             padding: 15px;
             margin-bottom: 15px;
         }
+
 
         .product-details {
             display: flex;
@@ -409,6 +410,24 @@ use App\Http\Helper\Helper;
                 height: 250px;
             }
         }
+
+        /* Floating alert di tengah atas */
+        .floating-alert {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: 250px;
+            max-width: 400px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 1050;
+            font-size: 0.9rem;
+            pointer-events: none;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -416,18 +435,6 @@ use App\Http\Helper\Helper;
     @include('components.navbar')
 
     <main class="container-sm my-5 flex-fill">
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
-
         <div class="product-card mb-4 container-fluid px-5">
             <div class="row g-0">
                 <!-- Product Images Carousel -->

@@ -21,21 +21,41 @@ class KeranjangController extends Controller
             ->where('id_pembeli', $user->id_pembeli)
             ->get();
 
-        // Ambil alamat pembeli
-        $alamatPembeli = Alamat::with('pembeli')
-            ->where('id_pembeli', $user->id_pembeli)
-            ->first();
+        // Ambil alamat yang dipilih dari session, jika tidak ada fallback ke alamat pertama
+        $selectedAlamatId = session('selected_alamat_id');
 
-        // $alamatList = Alamat::where('id_pembeli', $user->id_pembeli)->get();
-        // $selectedAlamatId = session('selected_alamat_id');
-        // $selectedAlamat = $alamatList->firstWhere('id_alamat', $selectedAlamatId) ?? $alamatList->first();
+        if ($selectedAlamatId) {
+            $alamatPembeli = Alamat::where('id_pembeli', $user->id_pembeli)
+                ->where('id_alamat', $selectedAlamatId)
+                ->first();
+        } else {
+            $alamatPembeli = Alamat::where('id_pembeli', $user->id_pembeli)->first();
+        }
 
-
-        // Kirim ke view
         return view('keranjang', compact('keranjangItems', 'alamatPembeli'));
-        //return view('keranjang', compact('keranjangItems', 'alamatList', 'selectedAlamat', 'selectedAlamatId'));
-
     }
+
+
+    public function destroy($id)
+    {
+        $item = Keranjang::findOrFail($id);
+        $item->delete();
+
+        return redirect()->back()->with('success', 'Produk berhasil dihapus dari keranjang.');
+    }
+
+    public function pilihAlamat(Request $request)
+    {
+        $request->validate([
+            'alamat_id' => 'required|exists:alamat,id_alamat',
+        ]);
+
+        session(['selected_alamat_id' => $request->alamat_id]);
+
+        return redirect()->route('keranjang');
+    }
+
+
 
     // public function pilihAlamat(Request $request)
     // {

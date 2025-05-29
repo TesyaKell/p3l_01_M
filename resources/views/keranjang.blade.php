@@ -1,3 +1,7 @@
+<?php
+use App\Http\Helper\Helper;
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -32,96 +36,72 @@
     </style>
 </head>
 
-<body class="container my-5">
-    {{-- @php
-        dd($alamatPembeli);
-    @endphp --}}
+<body class="d-flex flex-column min-vh-100">
+    @include('components.navbar')
 
-    <h3 class="mb-4 text-start mt-4"><strong>Alamat</strong></h3>
-
-    {{-- Card Alamat Pembeli jika sudah ada alamat --}}
-    @if ($alamatPembeli && $alamatPembeli->pembeli)
-        <a href="{{ route('alamat.index') }}" class="text-decoration-none text-dark">
-            <div class="card mb-4 shadow-sm alamat-item">
-                <div class="card-body position-relative">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">Alamat Anda</h5>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-chevron-right" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd"
-                                d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708" />
-                        </svg>
-                    </div>
-                </div>
+    <main class="container my-4 flex-fill">
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
             </div>
-        </a>
-    @endif
-
-    {{-- Card Alamat Pembeli --}}
-    @if ($alamatPembeli && $alamatPembeli->pembeli)
-        <div class="card mb-4 shadow-sm">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <h5 class="mb-1">{{ $alamatPembeli->nama_lengkap }}
-                        <small class="text-muted ms-2">{{ $alamatPembeli->no_telp }}</small>
-                    </h5>
-                </div>
-                <p class="mb-1">{{ $alamatPembeli->lokasi }}</p>
-                <span class="badge bg-secondary">{{ $alamatPembeli->jenis }}</span>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
             </div>
+        @endif
+
+
+        <!-- Menu navigasi -->
+        <div class="d-flex justify-content-center gap-4 mb-4 mt-1" style="margin-top: -10px;">
+            <a href="{{ route('homeProduk') }}" class="text-dark fw-semibold text-decoration-none">Beranda</a>
+            <a href="{{ route('infoUmum') }}" class="text-dark fw-semibold text-decoration-none">Tentang Kami</a>
+            <a href="{{ route('katalogbarang') }}" class="text-dark fw-semibold text-decoration-none">Produk</a>
         </div>
-    @else
-        {{-- Card Tambah Alamat --}}
-        <div class="card mb-4 shadow-sm">
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Alamat belum tersedia</h5>
-                <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#alamatModal">
-                    Tambahkan alamat <span>&gt;</span>
-                </button>
-            </div>
-        </div>
-    @endif
 
+        <!-- Alamat -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h3 class="mb-4 text-start mt-5"><strong>Alamat</strong></h3>
 
+                @if ($alamatPembeli)
+                    <a href="{{ route('alamat.index') }}" class="text-decoration-none text-dark">
+                        <div class="card mb-4 shadow-sm alamat-item">
+                            <div class="card-body position-relative">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">Alamat Anda</h5>
+                                    <i class="bi bi-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
 
-    <!-- Modal Tambah Alamat -->
-    <div class="modal fade" id="alamatModal" tabindex="-1" aria-labelledby="alamatModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="alamatModalLabel">Tambah Alamat</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form action="{{ route('alamat.index') }}" method="POST">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="nama_lengkap" class="form-label">Nama Lengkap</label>
-                            <input type="text" class="form-control" name="nama_lengkap" id="nama_lengkap" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="no_telp" class="form-label">No. Telepon</label>
-                            <input type="text" class="form-control" name="no_telp" id="no_telp" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="lokasi" class="form-label">Lokasi</label>
-                            <textarea class="form-control" name="lokasi" id="lokasi" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="jenis" class="form-label">Jenis Alamat</label>
-                            <select class="form-select" name="jenis" id="jenis" required>
-                                <option value="Rumah">Rumah</option>
-                                <option value="Kantor">Kantor</option>
-                            </select>
+                    <!-- Tampil Alamat yang Dipilih -->
+                    <div id="alamatTerpilih" class="card mb-4 shadow-sm d-none">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <h5 class="mb-1">{{ $alamatPembeli->nama_lengkap }}
+                                    <small class="text-muted ms-2">{{ $alamatPembeli->no_telp }}</small>
+                                </h5>
+                            </div>
+                            <p class="mb-1">{{ $alamatPembeli->lokasi }}</p>
+                            <span class="badge bg-secondary">{{ $alamatPembeli->jenis }}</span>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                        <button type="submit" class="btn btn-primary">Simpan Alamat</button>
+                @else
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Alamat belum tersedia</h5>
+                            <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#alamatModal">
+                                Tambahkan alamat <span>&gt;</span>
+                            </button>
+                        </div>
                     </div>
-                </form>
+                @endif
             </div>
         </div>
+
     </div>
 
     <h2 class="mb-4"><strong>Keranjang Saya </strong></h2>
@@ -149,33 +129,278 @@
 
                         </div>
 
-                        <!-- Nama Barang -->
-                        <div class="col-md-6">
-                            <div class="card-body">
-                                <h5 class="card-title mb-0">{{ $item->barang->nama_barang }}</h5>
+        <!-- Modal Tambah Alamat -->
+        <div class="modal fade" id="alamatModal" tabindex="-1" aria-labelledby="alamatModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{{ route('alamat.index') }}" method="POST">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="alamatModalLabel">Tambah Alamat</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Tutup"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="nama_lengkap" class="form-label">Nama Lengkap</label>
+                                <input type="text" class="form-control" name="nama_lengkap" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="no_telp" class="form-label">No. Telepon</label>
+                                <input type="text" class="form-control" name="no_telp" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="lokasi" class="form-label">Lokasi</label>
+                                <textarea class="form-control" name="lokasi" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="jenis" class="form-label">Jenis Alamat</label>
+                                <select class="form-select" name="jenis" required>
+                                    <option value="Rumah">Rumah</option>
+                                    <option value="Kantor">Kantor</option>
+                                </select>
                             </div>
                         </div>
-
-                        <!-- Harga Barang -->
-                        <div class="col-md-3 text-end pe-4">
-                            <p class="fw-bold harga mb-0">
-                                Rp{{ number_format($item->barang->harga, 0, ',', '.') }}
-                            </p>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            <button type="submit" class="btn btn-primary">Simpan Alamat</button>
                         </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Konten Keranjang -->
+        <div class="row">
+            <div class="col-md-8">
+                <h2 class="mb-4"><strong>Keranjang Saya</strong></h2>
+                @php $totalHarga = 0; @endphp
+
+                @if ($keranjangItems->isEmpty())
+                    <div class="alert alert-info">Keranjang Anda kosong.</div>
+                @else
+                    <div class="list-group">
+                        @foreach ($keranjangItems as $item)
+                            @php $totalHarga += $item->barang->harga; @endphp
+                            <div class="card mb-3 shadow-sm">
+                                <div class="row g-0 align-items-center">
+                                    <div class="col-md-3">
+                                        <img src="{{ asset('images/' . $item->barang->foto_produk) }}"
+                                            class="img-fluid rounded-start p-3"
+                                            style="height: 150px; object-fit: contain;"
+                                            alt="{{ $item->barang->nama_barang }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card-body">
+                                            <h5 class="card-title mb-0">{{ $item->barang->nama_barang }}</h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 pe-4">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <p class="fw-bold harga mb-0">
+                                                Rp{{ number_format($item->barang->harga, 0, ',', '.') }}</p>
+                                            <button class="btn btn-outline-danger btn-sm ms-2" data-bs-toggle="modal"
+                                                data-bs-target="#hapusModal{{ $item->id_keranjang }}">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                        <!-- Modal hapus -->
+                        @foreach ($keranjangItems as $item)
+                            <div class="modal fade" id="hapusModal{{ $item->id_keranjang }}" tabindex="-1"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Konfirmasi Hapus</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Tutup"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Yakin ingin menghapus <strong>{{ $item->barang->nama_barang }}</strong>?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Batal</button>
+                                            <form action="{{ route('keranjang.destroy', $item->id_keranjang) }}"
+                                                method="POST">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="btn btn-danger w-100">Hapus</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    {{-- hitung ongkir --}}
+                    @php
+                        $ongkir = 0;
+                        $totalPembayaran = $totalHarga + $ongkir;
+                        $poinPembeli = Helper::getLoggedInUser()->poin ?? 0;
+
+                        $poinDasar = floor($totalHarga / 10000);
+                        $bonusPoin = $totalHarga > 500000 ? floor($poinDasar * 0.2) : 0;
+                        $totalPoin = $poinDasar + $bonusPoin;
+                    @endphp
+
+                    {{-- Input tukar poin --}}
+                    <div class="mb-3">
+                        <label for="tukarPoin" class="form-label fw-semibold">Tukar Poin</label>
+                        <input type="number" class="form-control" id="tukarPoin" name="tukar_poin" min="0"
+                            max="{{ $poinPembeli }}" value="0">
+                        <div class="form-text">Poin Anda saat ini: <strong
+                                id="poinTersedia">{{ $poinPembeli }}</strong> poin</div>
+                    </div>
+
+                    {{-- Hasil perhitungan dinamis --}}
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <h6>Subtotal:</h6>
+                            <span id="subtotal">Rp{{ number_format($totalHarga, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <h6>Ongkos Kirim:</h6>
+                            <span id="ongkir">Rp{{ number_format($ongkir, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            @if ($totalHarga > 1500000)
+                                <h5>Total:</h5>
+                                <span class="text-primary fw-bold"
+                                    id="totalPembayaran">Rp{{ number_format($totalPembayaran, 0, ',', '.') }}</span>
+                            @elseif ($totalHarga < 1500000)
+                                <h5>Total:</h5>
+                                <span class="text-primary fw-bold"
+                                    id="totalPembayaran">Rp{{ number_format($totalPembayaran, 0, ',', '.') }}</span>
+                            @endif
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <p>Poin dari Pesanan ini:</p>
+                            <span class="text-success fw-bold">{{ $totalPoin }} poin</span>
+                        </div>
+                        <form method="POST" action="{{ route('checkout') }}" id="formCheckout">
+                            @csrf
+                            <input type="hidden" name="alamat_pengiriman" id="inputAlamatPengiriman"
+                                value="">
+                            <input type="hidden" name="metode_pengiriman" id="inputMetodePengiriman"
+                                value="">
+                            <input type="hidden" id="hiddenTukarPoin" name="tukar_poin" value="0">
+
+                            <button type="submit" class="btn btn-success btn-lg">Checkout</button>
+
+                            @if (session('error'))
+                                <div class="alert alert-danger">{{ session('error') }}</div>
+                            @endif
+
+                        </form>
+
+                    </div>
+
+                @endif
+            </div>
+
+            <!-- Pilih Pengiriman -->
+            <div class="col-md-4">
+                <h3 class="mb-4"><strong>Pilih Pengiriman</strong></h3>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="metodePengiriman" class="form-label">Metode Pengiriman</label>
+                                <select class="form-select" id="metodePengiriman" name="metode_pengiriman" required>
+                                    <option value="" selected disabled>Pilih metode pengiriman</option>
+                                    <option value="kurir">Kurir</option>
+                                    <option value="ambil_tempat">Ambil di Tempat</option>
+                                </select>
+                            </div>
+                        </form>
                     </div>
                 </div>
-            @endforeach
+            </div>
         </div>
+    </main>
 
-        <!-- Total Harga dan Checkout -->
-        <div class="mt-4 d-flex justify-content-between align-items-center">
-            <h4>Total: <span class="text-primary">Rp{{ number_format($totalHarga, 0, ',', '.') }}</span></h4>
-            <a href="{{ route('homeProduk') }}" class="btn btn-success btn-lg">Checkout</a>
-        </div>
-    @endif
-
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- tampilkan alamat saat pilih Kurir -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const metodeSelect = document.getElementById("metodePengiriman");
+            const inputMetode = document.getElementById("inputMetodePengiriman");
+            const inputAlamat = document.getElementById("inputAlamatPengiriman");
+            const alamatBox = document.getElementById("alamatTerpilih");
+            const tukarPoinInput = document.getElementById("tukarPoin");
+            const poinTersedia = parseInt(document.getElementById("poinTersedia").innerText);
+            const subtotalEl = document.getElementById("subtotal");
+            const ongkirEl = document.getElementById("ongkir");
+            const totalEl = document.getElementById("totalPembayaran");
+            const checkoutForm = document.getElementById("formCheckout");
+
+
+            const subtotalValue = {{ $totalHarga }};
+            let ongkirValue = 0;
+
+            function formatRupiah(angka) {
+                return 'Rp' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            }
+
+            function ambilAlamatTerpilih() {
+                if (alamatBox && !alamatBox.classList.contains("d-none")) {
+                    const nama = alamatBox.querySelector("h5").innerText.trim();
+                    const lokasi = alamatBox.querySelector("p").innerText.trim();
+                    return `${nama} - ${lokasi}`;
+                }
+                return '';
+            }
+
+            function updateTotal() {
+                let tukarPoin = parseInt(tukarPoinInput.value) || 0;
+                let totalSetelahDiskon = subtotalValue + ongkirValue;
+
+                const maxPoinBolehTukar = Math.min(poinTersedia, totalSetelahDiskon);
+                if (tukarPoin > maxPoinBolehTukar) {
+                    tukarPoin = maxPoinBolehTukar;
+                    tukarPoinInput.value = tukarPoin;
+                }
+
+                totalSetelahDiskon -= tukarPoin;
+                totalEl.innerText = formatRupiah(totalSetelahDiskon);
+            }
+
+            if (metodeSelect && alamatBox) {
+                metodeSelect.addEventListener("change", function() {
+                    const metode = this.value;
+                    inputMetode.value = metode;
+
+                    if (metode === "kurir") {
+                        alamatBox.classList.remove("d-none");
+                        ongkirValue = subtotalValue < 1500000 ? 100000 : 0;
+                    } else {
+                        alamatBox.classList.add("d-none");
+                        ongkirValue = 0;
+                    }
+
+                    ongkirEl.innerText = formatRupiah(ongkirValue);
+                    updateTotal();
+                });
+            }
+
+            tukarPoinInput.addEventListener("input", updateTotal);
+
+            // submit form untuk isi input hidden
+            if (checkoutForm) {
+                checkoutForm.addEventListener("submit", function() {
+                    document.getElementById("hiddenTukarPoin").value = tukarPoinInput.value;
+                    inputMetode.value = metodeSelect.value;
+                    inputAlamat.value = ambilAlamatTerpilih();
+                });
+            }
+        });
+    </script>
 
 </body>
 

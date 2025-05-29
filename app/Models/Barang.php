@@ -74,6 +74,12 @@ class Barang extends Model
         return $tanggalMasuk->diffInDays($tanggalAmbil);
     }
 
+
+    public function detailTransaksi()
+    {
+        return $this->hasOne(\App\Models\DetailTransaksi::class, 'kode_barang', 'kode_barang');
+    }
+
     protected static function boot()
     {
         parent::boot();

@@ -1,0 +1,28 @@
+<?php
+
+use App\Http\Controllers\UserController;
+use App\Models\Pegawai;
+use App\Models\Penitip;
+use App\Notifications\MobileNotif;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+Route::post('/login-mobile', [UserController::class, 'loginApi']);
+// contoh untuk testing notif
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout-mobile', [UserController::class, 'logoutApi']);
+});
+Route::get('/test-fcm', function (Request $request) {
+    //  cari dulu user nya yang mau ditarget
+    //  1 barang -> dicari
+    //  2 dari barang dapeting id_penitip
+    //  3 $user = Penitip::find($id_penitip);
+    //  4 $user->notify(new MobileNotif('Barang ' . $id_barang . " Berhasil blablabla...", 'Test Body'));
+
+    $user = Penitip::find('T14');
+    // panggil fungsi notify
+    $id_barang = "100";
+    $user->notify(new MobileNotif('Barang ' . $id_barang . " Berhasil blablabla...", 'Test Body'));
+    // ga perlu return ini, cmn karena kita testing di postman
+    return response()->json(['message' => 'Notification sent successfully']);
+});
