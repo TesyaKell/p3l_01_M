@@ -20,7 +20,6 @@ use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\KomentarController;
 use App\Http\Controllers\LaporanOwnerController;
 use App\Http\Controllers\CetakNotaTitipanController;
-use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\ClaimMerchController;
 
 Route::prefix('owner/laporan')->middleware(['auth:pegawai'])->group(function () {

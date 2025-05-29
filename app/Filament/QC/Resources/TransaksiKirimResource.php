@@ -4,6 +4,9 @@ namespace App\Filament\QC\Resources;
 
 use App\Filament\QC\Resources\TransaksiKirimResource\Pages;
 use App\Filament\QC\Resources\TransaksiKirimResource\RelationManagers;
+use App\Models\Barang;
+use App\Models\DetailTransaksi;
+use App\Models\Penitip;
 use App\Models\Transaksi;
 use App\Models\Pembeli;
 use Filament\Tables\Actions\Action;
@@ -173,7 +176,18 @@ class TransaksiKirimResource extends Resource
                 ->action(function ($record) {
                     $record->status = 'Selesai';
                     $record->save();
+                    // $detailList = DetailTransaksi::where('no_nota', $record->no_nota)->get();
+                    // foreach ($detailList as $detail) {
+                    //     $barang = Barang::where('kode_barang', $detail->kode_barang)->first();
+                    //     if (!$barang) continue;
 
+                    //     $penitip = Penitip::where('id_penitip', $barang->id_penitip)->first();
+                    //     if (!$penitip) continue;
+
+                    //     $penitip->update([
+                    //         'saldo' => $penitip->saldo + $detail->komisi_penitip,
+                    //     ]);
+                    // }
                     Notification::make()
                         ->title('Barang berhasil dikonfirmasi')
                         ->body('Status telah diperbarui menjadi Selesai.')

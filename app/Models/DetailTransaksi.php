@@ -19,6 +19,7 @@ class DetailTransaksi extends Model
         'total',
         'komisi_reusmart',
         'komisi_hunter',
+        'komisi_penitip',
     ];
 
     public function transaksi()
@@ -29,5 +30,9 @@ class DetailTransaksi extends Model
     public function barang()
     {
         return $this->belongsTo(Barang::class, 'kode_barang', 'kode_barang');
+    }
+    public function getNamaBarangAttribute()
+    {
+        return $this->attributes['nama_barang'] ?? ($this->barang ? $this->barang->nama_barang : null);
     }
 }
