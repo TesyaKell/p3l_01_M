@@ -176,18 +176,18 @@ class TransaksiKirimResource extends Resource
                 ->action(function ($record) {
                     $record->status = 'Selesai';
                     $record->save();
-                    // $detailList = DetailTransaksi::where('no_nota', $record->no_nota)->get();
-                    // foreach ($detailList as $detail) {
-                    //     $barang = Barang::where('kode_barang', $detail->kode_barang)->first();
-                    //     if (!$barang) continue;
+                    $detailList = DetailTransaksi::where('no_nota', $record->no_nota)->get();
+                    foreach ($detailList as $detail) {
+                        $barang = Barang::where('kode_barang', $detail->kode_barang)->first();
+                        if (!$barang) continue;
 
-                    //     $penitip = Penitip::where('id_penitip', $barang->id_penitip)->first();
-                    //     if (!$penitip) continue;
+                        $penitip = Penitip::where('id_penitip', $barang->id_penitip)->first();
+                        if (!$penitip) continue;
 
-                    //     $penitip->update([
-                    //         'saldo' => $penitip->saldo + $detail->komisi_penitip,
-                    //     ]);
-                    // }
+                        $penitip->update([
+                            'saldo' => $penitip->saldo + $detail->komisi_penitip,
+                        ]);
+                    }
                     Notification::make()
                         ->title('Barang berhasil dikonfirmasi')
                         ->body('Status telah diperbarui menjadi Selesai.')

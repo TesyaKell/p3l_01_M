@@ -186,10 +186,7 @@ class transaksiController extends Controller
             foreach ($detailTransaksiData as $detail) {
                 $detail['no_nota'] = $noNota;
                 DetailTransaksi::create($detail);
-                $barang = Barang::where('kode_barang', $detail['kode_barang'])->first();
-                $barang->update(['status' => 'Terjual']);
-                $penitip = Penitip::where('id_penitip', $barang->id_penitip)->first();
-                $penitip->update(['saldo' => $penitip->saldo + $detail['komisi_penitip']]);
+                Barang::where('kode_barang', $detail['kode_barang'])->update(['status' => 'Terjual']);
             }
 
             // Update poin pembeli
