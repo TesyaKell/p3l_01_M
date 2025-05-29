@@ -25,12 +25,13 @@ class CetakNotaTitipanController extends Controller
         $detail = detail_transaksi::with('barang')
             ->where('no_nota',$transaksi->no_nota)
             ->get();
+        $userQc = auth('pegawai')->user();
 
         if (!$transaksi || $detail->isEmpty()) {
             abort(404, 'Nota tidak ditemukan.');
         }
 
-        $pdf = Pdf::loadView('nota-penjualan', compact('transaksi', 'detail'));
+        $pdf = Pdf::loadView('nota-penjualan', compact('transaksi', 'detail', 'userQc'));
         return $pdf->stream('nota-penjualan-'. $transaksi->no_nota .'.pdf'); // atau ->download() untuk langsung unduh
     }
 }

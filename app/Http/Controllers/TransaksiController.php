@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Barang;
 use App\Models\detail_transaksi;
+use App\Models\Penitip;
 use App\Models\Transaksi;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -33,5 +34,27 @@ class TransaksiController extends Controller
             'komisi_reusmart' => $komisi,
         ]);
     }
+
+    public function bayarPenitip($no_nota)
+    {
+        $transaksiKePenitip = detail_transaksi::where('no_nota', $no_nota)->get();
+        foreach ($transaksiKePenitip as $keyBarang) {
+
+            $barang = Barang::where('kode_barang', $keyBarang->kode_barang)->first();
+
+            if (!$barang) continue; 
+
+            $penitip = Penitip::where('id_penitip', $barang->id_penitip)->first();
+
+            if (!$penitip) continue; 
+
+            $saldoBaru = $penitip->saldo + $keyBarang->komisi_penitip;
+
+            $penitip->update([
+                'saldo' => $saldoBaru
+            ]);
+        }
+    }
+
 
 }
