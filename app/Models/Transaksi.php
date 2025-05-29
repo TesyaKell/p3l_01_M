@@ -13,7 +13,7 @@ class Transaksi extends Model
 
     protected $fillable = [
         'no_nota',
-        'id_kurir_pegawai ',
+        'id_kurir_pegawai',
         'id_pembeli',
         'tanggal_pesan',
         'tanggal_lunas',
@@ -42,5 +42,10 @@ class Transaksi extends Model
     public function pegawai()
     {
         return $this->belongsTo(Pegawai::class, 'id_kurir_pegawai');
+    }
+
+    public function detailTransaksi()
+    {
+        return $this->hasMany(DetailTransaksi::class, 'no_nota', 'no_nota');
     }
 }

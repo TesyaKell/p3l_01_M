@@ -9,24 +9,44 @@ use App\Http\Controllers\PenitipController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MerchandiseController;
-use App\Models\Barang;
-use App\Models\Merchandise;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\RequestDonasiController;
 use App\Http\Controllers\KeranjangController;
+use App\Http\Controllers\transaksiController;
 use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\KomentarController;
 use App\Http\Controllers\CetakNotaTitipanController;
-use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\ClaimMerchController;
+use App\Http\Controllers\RatingController;
+
+Route::middleware(['auth:pembeli'])->group(function () {
+
+    Route::get('/history', [RatingController::class, 'index'])->name('history');
+
+    Route::prefix('rating')->name('rating.')->group(function () {
+        Route::post('/', [RatingController::class, 'store'])->name('store');
+        Route::put('/{id}', [RatingController::class, 'update'])->name('update');
+        Route::delete('/{id}', [RatingController::class, 'destroy'])->name('destroy');
+    });
+});
+
 
 //TRANSAKSI
 Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi');
 
 Route::post('/rate-product', [TransaksiController::class, 'rateProduct'])->name('pembeli.rateProduct');
 
+
+Route::post('/checkout', [transaksiController::class, 'prosesCheckout'])->name('checkout');
+Route::get('/transaksi', [transaksiController::class, 'index'])->name('transaksi.index');
+Route::get('/transaksi/{no_nota}', [transaksiController::class, 'show'])->name('transaksi.show');
+
+
+
 //Route::post('/keranjang/pilih-alamat', [KeranjangController::class, 'pilihAlamat'])->name('keranjang.pilihAlamat');
+Route::delete('/keranjang/{id}', [KeranjangController::class, 'destroy'])->name('keranjang.destroy');
+
 
 Route::post('/komentar', [KomentarController::class, 'store'])->name('komentar.store');
 
@@ -42,6 +62,10 @@ Route::middleware('logged_in')->group(function () {
     Route::put('/alamat/{id}', [AlamatController::class, 'update'])->name('alamat.update');
     Route::delete('/alamat/{id}', [AlamatController::class, 'destroy'])->name('alamat.destroy');
 })->name('alamat');
+
+// PILIH ALAMAT DI KERANJANG
+Route::post('/keranjang/pilih-alamat', [KeranjangController::class, 'pilihAlamat'])->name('keranjang.pilihAlamat')->middleware('logged_in');
+
 
 
 //History penjualan penitip
@@ -221,23 +245,11 @@ Route::post('/logout', function () {
 
 Route::post('/logout', [ProfilController::class, 'logout'])->name('logout.custom');
 
+Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerc');
 
 
 Route::get('/merchandise', [MerchandiseController::class, 'index'])->name('merchandise.index');
-
-Route::post('/redeem-merchandise', function (Request $request) {
-    $merchandise = Merchandise::find($request->merchandise_id);
-
-    if (!$merchandise || $merchandise->stok <= 0) {
-        return response()->json(['success' => false, 'message' => 'Merchandise not available or out of stock']);
-    }
-
-    $merchandise->stok -= 1;
-    $merchandise->save();
-
-
-    return response()->json(['success' => true, 'new_stock' => $merchandise->stok]);
-});
+Route::post('/redeem-merchandise', [MerchandiseController::class, 'redeem'])->name('merchandise.redeem');
 
 //Route to jabatan - Pegawai - CS
 Route::get('/cshomepage', function () {
@@ -286,13 +298,5 @@ Route::get('/search/requestdonasi', [RequestDonasiController::class, 'search'])-
 Route::get('/cetak-nota-titipan/{barang}', [CetakNotaTitipanController::class, 'cetak'])
     ->name('cetak-nota-titipan');
 
-Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerc');
 
-Route::delete('/delete/requestdonasi/{id}', [RequestDonasiController::class, 'delete'])->name('destroy.requestdonasi');
-Route::get('/search/requestdonasi/all', [RequestDonasiController::class, 'search'])->name('search.requestdonasi.fall');
-Route::get('/search/requestdonasi', [RequestDonasiController::class, 'searchById'])->name('search.requestdonasi');
-
-
-Route::get('/pembeli/transaksi', [PembeliController::class, 'historyTransaksiPembelian'])
-    ->name('pembeli.transaksi');
-
+Route::post('/transaksi/upload/{id}', [transaksiController::class, 'uploadBuktiPembayaran'])->name('upload.bukti');

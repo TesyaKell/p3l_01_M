@@ -435,7 +435,7 @@ use App\Http\Helper\Helper;
                     <div class="carousel-container">
                         <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
                             <div class="carousel-inner">
-                                @foreach ($barang->foto_produk as $index => $foto)
+                                @foreach ($barang->foto_produk ?? [] as $index => $foto)
                                     <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
                                         <img src="{{ asset('storage/' . $foto) }}" class="d-block w-100"
                                             alt="{{ $barang->nama_barang }} - Image {{ $index + 1 }}">
@@ -456,7 +456,7 @@ use App\Http\Helper\Helper;
 
                         <!-- Thumbnails -->
                         <div class="carousel-thumbnails">
-                            @foreach ($barang->foto_produk as $index => $foto)
+                            @foreach ($barang->foto_produk ?? [] as $index => $foto)
                                 <img src="{{ asset('storage/' . $foto) }}"
                                     class="carousel-thumbnail {{ $index == 0 ? 'active' : '' }}"
                                     data-bs-target="#productCarousel" data-bs-slide-to="{{ $index }}"
@@ -526,14 +526,11 @@ use App\Http\Helper\Helper;
                                 <div class="quantity-section mb-3">
                                     <label class="quantity-label">Jumlah:</label>
                                     <div class="quantity-controls">
-                                        <button type="button" class="quantity-btn minus" onclick="decreaseQuantity()">
-                                            <i class="bi bi-dash"></i>
-                                        </button>
-                                        <input type="number" id="quantity" value="1" min="1"
-                                            max="10" class="quantity-input">
-                                        <button type="button" class="quantity-btn plus" onclick="increaseQuantity()">
-                                            <i class="bi bi-plus"></i>
-                                        </button>
+
+                                        <input id="quantity" value="1" min="1" max="10"
+                                            class="quantity-input" disabled>
+
+
                                     </div>
                                 </div>
 

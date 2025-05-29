@@ -23,9 +23,10 @@ class BarangDonasiResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('opsi', 'didonasikan')
-            ->whereNull('tanggal_laku');
+            ->where('opsi', 'Didonasikan')
+            ->where('status', 'Tersedia');
     }
+
 
     public static function form(Form $form): Form
     {
@@ -151,7 +152,7 @@ class BarangDonasiResource extends Resource
                             ->maxLength(255),
                     ])
                    ->action(function (array $data, Barang $record) {
-                       // Create donation record
+
                        $donasi = new \App\Models\Donasi();
                        $donasi->id_request = $data['id_request'];
                        $donasi->kode_barang = $record->kode_barang;
@@ -161,23 +162,21 @@ class BarangDonasiResource extends Resource
                        $donasi->nama_penitip = $record->penitip->nama_penitip;
                        $donasi->save();
 
-                       // Ubah status request_donasi menjadi 'Dikirim'
                        $request = RequestDonasi::find($data['id_request']);
                        if ($request) {
                            $request->status = 'Dikirim';
                            $request->save();
                        }
 
-                       // Update barang
                        $record->status = 'Didonasikan';
                        $record->tanggal_laku = now();
                        $record->save();
 
-                       // Update poin & saldo penitip
                        $penitip = $record->penitip;
                        if ($penitip) {
-                           $penitip->poin = $penitip->poin + 1;
-                           $penitip->saldo = $penitip->saldo + 10000;
+                           $hargaBarang = $record->harga;
+                           $poinTambahan = floor($record->harga / 10000);
+                           $penitip->poin += $poinTambahan;
                            $penitip->save();
                        }
                    })

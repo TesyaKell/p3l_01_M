@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Helper\Helper;
 use App\Models\Donasi;
 use App\Models\RequestDonasi;
+use App\Models\ClaimMerch; // Import ClaimMerch model
 use Illuminate\Http\Request;
 
 class ProfilController extends Controller
@@ -24,7 +25,7 @@ class ProfilController extends Controller
         $queryParams = $request->query();
         $akses = $queryParams['akses'] ?? null;
 
-        // masuk lahaman profile tapi lom pencet tombol pas role organisasi default ke request donasi
+        // Masuk halaman profile tapi belum pencet tombol, pas role organisasi default ke request donasi
         if (Helper::getLoggedInUser('organisasi') && $akses == null) {
             $akses = 'request_donasi';
         }
@@ -33,7 +34,7 @@ class ProfilController extends Controller
 
         if ($akses == 'request_donasi') {
             $requests = RequestDonasi::where('id_organisasi', $user->id_organisasi)->get();
-        } else if ($akses == 'history_donasi') {
+        } elseif ($akses == 'history_donasi') {
             $requests = Donasi::with(['barang', 'penitip'])
                 ->whereIn('id_request', function ($query) use ($user) {
                     $query->select('id_request')
@@ -43,17 +44,25 @@ class ProfilController extends Controller
                 ->get();
         }
 
+        // Fetch claimed merchandise for pembeli users
+        $claims = [];
+        if ($guard === 'pembeli') {
+            $claims = ClaimMerch::where('id_pembeli', $user->id_pembeli)
+                ->with('merchandise') // Eager load the merchandise relationship
+                ->get();
+        }
+
         return view('profil', [
             'user' => $user,
-            'guard' => $guard, // Pass guard type to the view
+            'guard' => $guard,
             'requestDonasi' => $requests,
+            'claims' => $claims, // Pass claims to the view
         ]);
     }
 
     // Menentukan guard berdasarkan jenis pengguna
     private function getGuard($user)
     {
-        // Tentukan guard sesuai dengan jenis pengguna (misalnya, organisasi, pembeli, penitip, dll.)
         if (isset($user->nama_organisasi)) {
             return 'organisasi';
         }
@@ -69,7 +78,6 @@ class ProfilController extends Controller
         return 'pegawai';
     }
 
-
     public function logout(Request $request)
     {
         $user = Helper::getAuth();
@@ -82,5 +90,4 @@ class ProfilController extends Controller
 
         return redirect('/jabatan')->with('success', 'Logout berhasil!');
     }
-
 }

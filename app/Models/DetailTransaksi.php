@@ -4,23 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class detail_transaksi extends Model
+class DetailTransaksi extends Model
 {
     protected $table = 'detail_transaksi';
     protected $primaryKey = 'id_detail_transaksi';
+    public $timestamps = false;
     public $incrementing = true;
-    public $timestamps = true;
 
     protected $fillable = [
-        'id_detail_transaksi',
         'kode_barang',
         'no_nota',
         'nama_barang',
         'harga_jual_bersih',
         'bonus',
-        'total'
+        'total',
+        'komisi_reusmart'
     ];
-
 
     public function transaksi()
     {
@@ -30,10 +29,5 @@ class detail_transaksi extends Model
     public function barang()
     {
         return $this->belongsTo(Barang::class, 'kode_barang', 'kode_barang');
-    }
-
-    public function getNamaBarangAttribute()
-    {
-        return $this->attributes['nama_barang'] ?? ($this->barang ? $this->barang->nama_barang : null);
     }
 }

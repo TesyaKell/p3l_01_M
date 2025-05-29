@@ -16,6 +16,33 @@
         body {
             font-family: 'Poppins', sans-serif;
         }
+
+        .btn-pink {
+            background-color: #e83e8c;
+            color: white;
+        }
+
+        .btn-pink:hover {
+            background-color: #d63384;
+            color: white;
+        }
+
+        .floating-alert {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: 250px;
+            max-width: 400px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 1050;
+            font-size: 0.9rem;
+            pointer-events: none;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -49,24 +76,45 @@
         <div class="row">
             @forelse ($barangTersedia as $barang)
                 <div class="col-md-4 mb-4">
-                    <a href="{{ route('detailProduk', ['id' => $barang->kode_barang]) }}"
-                        class="text-decoration-none text-dark">
-                        <div class="card h-100" style="cursor:pointer;">
+                    {{-- <a href="{{ route('detailProduk', ['id' => $barang->kode_barang]) }}"
+                        class="text-decoration-none text-dark"> --}}
+                    <div class="card h-100" style="cursor:pointer;">
 
-                            @if ($barang->foto_produk)
-                                <img src="{{ asset('images/' . $barang->foto_produk) }}"
-                                    class="card-img-top p-2 rounded" alt="{{ $barang->nama_barang }}"
-                                    style="height: 200px; object-fit: contain;">
-                            @else
-                                <img src="{{ asset('images/no-image.png') }}" class="card-img-top p-2 rounded"
-                                    alt="No image" style="height: 200px; object-fit: contain;">
+                        @if (!empty($barang->foto_produk) && isset($barang->foto_produk[0]))
+                            <img src="{{ asset('storage/' . $barang->foto_produk[0]) }}"
+                                class="h-48 object-contain p-4 rounded-t-xl" alt="{{ $barang->nama_barang }}">
+                        @else
+                            <img src="{{ asset('images/no-image.png') }}" class="h-48 object-contain p-4 rounded-t-xl"
+                                alt="No image">
+                        @endif
+
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ $barang->nama_barang }}</h5>
+                            <p class="card-text mb-4">Rp{{ number_format($barang->harga, 0, ',', '.') }}</p>
+
+                            @if (auth()->guard('pembeli')->check())
+                                <div class="d-flex align-items-center gap-2">
+                                    @if ($barang->status == 'Tersedia')
+                                        <form action="{{ route('keranjang') }}" method="POST"
+                                            class="flex-grow-1 tambah-keranjang-form">
+                                            @csrf
+                                            <input type="hidden" name="kode_barang"
+                                                value="{{ $barang->kode_barang }}">
+                                            <button type="submit" class="btn text-white w-50"
+                                                style="background-color: #e83e8c;">Beli</button>
+                                        </form>
+                                    @else
+                                        <button class="btn btn-secondary w-50" disabled>Beli</button>
+                                    @endif
+
+                                    <a href="{{ route('detailProduk', ['id' => $barang->kode_barang]) }}"
+                                        class="btn btn-outline-secondary w-20">
+                                        Detail Produk
+                                    </a>
+                                </div>
                             @endif
-
-                            <div class="card-body">
-                                <h5 class="card-title">{{ $barang->nama_barang }}</h5>
-                                <p class="card-text">Rp{{ number_format($barang->harga, 0, ',', '.') }}</p>
-                            </div>
                         </div>
+                    </div>
                     </a>
                 </div>
             @empty
@@ -80,6 +128,62 @@
     @include('components.footer')
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelectorAll('.tambah-keranjang-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(this);
+
+                fetch(this.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRF-TOKEN': this.querySelector('[name="_token"]').value
+                        }
+                    })
+                    .then(async response => {
+                        const text = await response.text();
+                        if (response.ok) {
+                            alertSuccess('Berhasil tambah produk ke keranjang!');
+                        } else {
+                            alertError(text || 'Gagal menambahkan produk. Silakan coba lagi.');
+                        }
+                    })
+                    .catch(() => {
+                        alertError('Gagal menambahkan produk. Silakan coba lagi.');
+                    });
+            });
+        });
+
+        function alertSuccess() {
+            showFloatingAlert('Berhasil Tambah Produk ke Keranjang Anda!', 'success');
+        }
+
+        function alertError() {
+            showFloatingAlert('Barang Ini Sudah Ada di Keranjang Anda!', 'danger');
+        }
+
+        function showFloatingAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} floating-alert shadow`;
+            alertDiv.textContent = message;
+
+            document.body.appendChild(alertDiv);
+
+            // Muncul animasi fade in
+            setTimeout(() => {
+                alertDiv.style.opacity = '1';
+            }, 100);
+
+            // Hilang setelah 3 detik dengan fade out
+            setTimeout(() => {
+                alertDiv.style.opacity = '0';
+                setTimeout(() => alertDiv.remove(), 500);
+            }, 3000);
+        }
+    </script>
+
 </body>
 
 </html>
