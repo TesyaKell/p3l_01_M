@@ -8,7 +8,6 @@ use App\Http\Helper\Helper;
 use App\Models\Pembeli;
 use App\Models\Rating;
 use App\Notifications\VerifyEmail;
-use Illuminate\Support\Facades\DB;
 use Auth;
 use Hash;
 use Illuminate\Support\Facades\Log;
