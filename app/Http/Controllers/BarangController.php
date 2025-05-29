@@ -236,30 +236,33 @@ class BarangController extends Controller
     }
 
     public function autoDonasikanBarang()
-    {
-        // 1. Barang belum dibayar lebih dari 15 menit (status = 'Belum Dibayar')
-        $TransaksiExpired = Transaksi::where('status', 'Menunggu Pembayaran')
-            ->where('created_at', '<=', Carbon::now()->subMinutes(15))//kolom created_at tidak ada di transaksi
-            ->get();
-        $DetailTransaksiExpired = detail_transaksi::where('no_nota', $TransaksiExpired->no_nota)->get();
-        $BarangTerdonasikan = Barang::where('kode_barang', $DetailTransaksiExpired->kode_barang)->get();
+{
+    // 1. Transaksi belum dibayar > 15 menit
+    $expiredUnpaid = Transaksi::where('status', 'Menunggu Pembayaran')
+        ->where('tanggal_pesan', '<=', Carbon::now()->subMinutes(15)) // ganti sesuai kolom waktu di database
+        ->get();
 
-        foreach ($BarangTerdonasikan as $barang) {
-            $barang->status = 'Terdonasi';
-            $barang->save();
-        }
+    foreach ($expiredUnpaid as $transaksi) {
+        $details = detail_transaksi::where('no_nota', $transaksi->no_nota)->get();
 
-        // 2. Barang sudah dijadwalkan diambil, tapi belum diambil >2 hari
-        $TransaksiExpired = Transaksi::where('status', 'Menunggu Pickup')
-            ->where('tanggal_ambil_kirim', '<=', Carbon::now()->subDays(2))
-            ->get();
-
-        $DetailTransaksiExpired = detail_transaksi::where('no_nota', $TransaksiExpired->no_nota)->get();
-        $BarangTerdonasikan = Barang::where('kode_barang', $DetailTransaksiExpired->kode_barang)->get();
-
-        foreach ($BarangTerdonasikan as $barang) {
-            $barang->status = 'Terdonasi';
-            $barang->save();
+        foreach ($details as $detail) {
+            Barang::where('kode_barang', $detail->kode_barang)
+                ->update(['status' => 'Terdonasi']);
         }
     }
+
+    // 2. Transaksi sudah dijadwalkan ambil, tapi lewat > 2 hari
+    $expiredPickup = Transaksi::where('status', 'Menunggu Pickup')
+        ->where('tanggal_ambil_kirim', '<=', Carbon::now()->subDays(2))
+        ->get();
+
+    foreach ($expiredPickup as $transaksi) {
+        $details = detail_transaksi::where('no_nota', $transaksi->no_nota)->get();
+
+        foreach ($details as $detail) {
+            Barang::where('kode_barang', $detail->kode_barang)
+                ->update(['status' => 'Terdonasi']);
+        }
+    }
+}
 }

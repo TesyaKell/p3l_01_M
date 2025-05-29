@@ -1,3 +1,6 @@
+@php
+    use App\Models\Pegawai;
+@endphp
 <!DOCTYPE html>
 <html>
 <head>
@@ -49,11 +52,11 @@
             <div>Lunas pada     : {{ \Carbon\Carbon::parse($transaksi->tanggal_lunas)->format('d/m/Y H:i') }}</div>
             <div>Tanggal ambil  : {{ $transaksi->tanggal_ambil_kirim ? \Carbon\Carbon::parse($transaksi->tanggal_ambil)->format('d/m/Y') : '-' }}</div>
         </div>
-
+        
         <div class="section">
             <strong>Pembeli</strong> : {{ $transaksi->pembeli->email }} / {{ $transaksi->pembeli->nama_pembeli }}<br>
             {{ $transaksi->alamat_pengiriman ?? '-' }}<br>
-            Delivery: - ({{ $transaksi->metode_pengiriman === 'pickup' ? 'diambil sendiri' : 'kurir' }})
+            Delivery: {{ $transaksi->tipe_delivery === 'ambil_tempat' ? '- (diambil sendiri)' : 'Kurir ReUseMart('.$transaksi->pegawai->nama_pegawai. ')' }}
         </div>
 
         <div class="section">
@@ -68,13 +71,12 @@
                         <td class="text-right"> {{ number_format($barang->barang->harga, 0, ',', '.') }}</td>
                         @php
                             $total_harga += $barang->barang->harga;
-                            $total_poin += $barang->transaksi->tambah_poin;
                         @endphp
                     </tr>
                 @endforeach
             </table>
         </div>
-
+        
         <div class="section">
             <table>
                 <tr>
@@ -108,15 +110,18 @@
                 </tr>
             </table>
         </div>
-
+        @php
+            $total_poin = floor(($total_harga - $diskon) / 10000);
+        @endphp
         <div class="section">
             Poin dari pesanan ini: {{ $total_poin }}<br>
             Total poin customer: {{ $transaksi->pembeli->poin + $total_poin  }}
         </div>
 
         <div class="section">
-            QC oleh: {{ $transaksi->pegawai->nama_pegawai ?? '-' }} 
+            QC oleh: {{ $userQc->nama_pegawai ?? '-' }} ({{ $userQc->id_pegawai ?? '-' }})
         </div>
+
 
         <div class="section dotted">
             Diambil oleh:<br><br>
