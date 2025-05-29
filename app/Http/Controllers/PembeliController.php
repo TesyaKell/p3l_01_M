@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use DB;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Helper\Helper;
 use App\Models\Pembeli;
@@ -22,7 +23,7 @@ class PembeliController extends Controller
         do {
             $last = \App\Models\Pembeli::orderBy('id_pembeli', 'desc')->first();
             $nextNumber = $last ? ((int) substr($last->id_pembeli, 1)) + 1 : 1;
-            $id = 'C' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
+            $id = 'C' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
         } while (\App\Models\Pembeli::where('id_pembeli', $id)->exists());
 
         return $id;
@@ -159,42 +160,40 @@ class PembeliController extends Controller
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
     }
-    // public function historyTransaksiPembelian(Request $request)
-    // {
-    //     $user = Helper::getLoggedInUser('pembeli');
+    public function historyTransaksiPembelian(Request $request)
+    {
+        $user = Auth::guard('pembeli')->user();
 
-    //     if (!$user) {
-    //         return redirect()->route('login.pembeli')->with('error', 'Anda harus login terlebih dahulu.');
-    //     }
+        if (!$user) {
+            return redirect()->route('login.pembeli')->with('error', 'Silakan login terlebih dahulu.');
+        }
 
-    //     $bulan = $request->input('bulan', now()->month);
-    //     $tahun = $request->input('tahun', now()->year);
+        // $bulan = $request->input('bulan', now()->month);
+        // $tahun = $request->input('tahun', now()->year);
 
-    //     $pembeli = Pembeli::findOrFail($user->id_pembeli);
-    //     $id_pembeli = $pembeli->id_pembeli;
+        $transaksi = DB::table('detail_transaksi')
+            ->join('transaksi', 'detail_transaksi.no_nota', '=', 'transaksi.no_nota')
+            ->where('transaksi.id_pembeli', $user->id_pembeli)
+            // ->whereMonth('transaksi.tanggal_lunas', $bulan)
+            // ->whereYear('transaksi.tanggal_lunas', $tahun)
+            ->select(
+                'transaksi.no_nota',
+                'detail_transaksi.nama_barang',
+                'transaksi.tambah_poin',
+                'transaksi.tipe_delivery',
+                'transaksi.total_pembayaran',
+                'transaksi.alamat_pengiriman',
+                'transaksi.status',
+            )
+            ->get();
 
-    //     $transaksi = DB::table('detail_transaksi')
-    //         ->join('transaksi', 'detail_transaksi.no_nota', '=', 'transaksi.no_nota')
-    //         ->where('transaksi.id_pembeli', $id_pembeli)
-    //         ->whereMonth('transaksi.tanggal_lunas', $bulan)
-    //         ->whereYear('transaksi.tanggal_lunas', $tahun)
-    //         ->select(
-    //             'transaksi.no_nota',
-    //             'detail_transaksi.nama_barang',
-    //             'transaksi.tambah_poin',
-    //             'transaksi.tipe_delivery',
-    //             'transaksi.total_pembayaran',
-    //             'transaksi.alamat_pengiriman',
-    //             'transaksi.status',
-    //         )
-    //         ->get();
+        return view('transaksi_pembelian', [
+            'transaksi' => $transaksi,
+            // 'bulan' => (int) $bulan,
+            // 'tahun' => (int) $tahun,
+            'tanggal_cetak' => now()->format('d/m/Y'),
+        ]);
+    }
 
-    //     return view('profil', [
-    //         'transaksi' => $transaksi,
-    //         'bulan' => (int) $bulan,
-    //         'tahun' => (int) $tahun,
-    //         'tanggal_cetak' => now()->format('d/m/Y'),
-    //     ]);
-    // }
 
 }
