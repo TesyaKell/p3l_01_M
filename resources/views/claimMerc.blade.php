@@ -68,8 +68,8 @@
 
         @php
             $total = count($claimMerchList);
-            $diambil = $claimMerchList->where('status', 'Diambil')->count();
-            $belumDiambil = $claimMerchList->where('status', 'Proses Diambil')->count();
+            $selesai = $claimMerchList->where('status', 'Selesai')->count();
+            $prosesPengambilan = $claimMerchList->where('status', 'Proses Pengambilan')->count();
         @endphp
 
         <div class="row mb-4">
@@ -82,23 +82,21 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-md-3 col-sm-6 mb-3">
                 <div class="card border-success shadow-sm">
                     <div class="card-body text-center">
                         <i class="bi bi-check-circle display-6 text-success"></i>
-                        <h5 class="card-title mt-2">Sudah Diambil</h5>
-                        <div class="fs-4 fw-bold">{{ $diambil }}</div>
+                        <h5 class="card-title mt-2">Selesai</h5>
+                        <div class="fs-4 fw-bold">{{ $selesai }}</div>
                     </div>
                 </div>
             </div>
-
             <div class="col-md-3 col-sm-6 mb-3">
                 <div class="card border-warning shadow-sm">
                     <div class="card-body text-center">
                         <i class="bi bi-hourglass-split display-6 text-warning"></i>
-                        <h5 class="card-title mt-2">Belum Diambil</h5>
-                        <div class="fs-4 fw-bold">{{ $belumDiambil }}</div>
+                        <h5 class="card-title mt-2">Proses Pengambilan</h5>
+                        <div class="fs-4 fw-bold">{{ $prosesPengambilan }}</div>
                     </div>
                 </div>
             </div>
@@ -110,9 +108,9 @@
             <div class="card-body">
                 <div class="mb-3">
                     <button class="btn btn-outline-danger btn-filter active" data-status="all">Semua</button>
-                    <button class="btn btn-outline-info btn-filter" data-status="Diambil">Sudah Diambil</button>
-                    <button class="btn btn-outline-success btn-filter" data-status="Proses Diambil">Belum
-                        Diambil</button>
+                    <button class="btn btn-outline-info btn-filter" data-status="Selesai">Selesai</button>
+                    <button class="btn btn-outline-success btn-filter" data-status="Proses Pengambilan">Proses
+                        Pengambilan</button>
                 </div>
                 <table id="claimMerchTable" class="table table-striped">
                     <thead>
@@ -135,8 +133,9 @@
                                     @php
                                         $status = ucfirst($claim->status);
                                         $badgeClass = match ($status) {
-                                            'Diambil' => 'bg-info',
-                                            'Proses Diambil' => 'bg-success',
+                                            'Selesai' => 'badge-delivered',
+                                            'Proses Pengambilan' => 'badge-approved',
+                                            default => 'badge-secondary', // Fallback for unexpected statuses
                                         };
                                     @endphp
                                     <span class="badge {{ $badgeClass }} badge-status">{{ $status }}</span>
