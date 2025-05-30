@@ -261,12 +261,12 @@ use App\Models\Merchandise;
                             </div>
                             @if ($guard === 'pembeli')
                                 <div class="mb-4">
-                                    <label for="foto"
+                                    {{-- <label for="foto"
                                         class="block text-base sm:text-lg font-medium text-gray-700">Foto
                                         Profil</label>
                                     <input type="file"
                                         class="form-control w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                                        id="foto" name="foto" accept="image/*">
+                                        id="foto" name="foto" accept="image/*"> --}}
                                 </div>
                             @endif
                         </div>

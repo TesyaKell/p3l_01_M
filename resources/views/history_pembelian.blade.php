@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+@php
+    use App\Models\Rating;
+@endphp
 <html lang="id">
 
 <head>
@@ -89,7 +92,7 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <h3 class="text-xl font-semibold text-gray-800">{{ $noNota }}</h3>
+                                    <h3 class="text-xl font-semibold text-gray-800">{{ $firstDetail->nama_barang }}</h3>
                                     <div class="flex items-center space-x-2 text-sm text-gray-500 mt-1">
                                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -120,102 +123,96 @@
                                         <div class="flex flex-col sm:flex-row justify-between items-start">
                                             <div class="flex-1">
                                                 <h5 class="text-base font-semibold text-gray-800">
-                                                    {{ $detail->nama_barang }}</h5>
-                                                <p class="text-sm text-gray-600 mt-1">Kode: {{ $detail->kode_barang }}
-                                                </p>
-                                                <div
-                                                    class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mt-2 text-sm text-gray-600">
-                                                    <span>Harga: Rp
-                                                        {{ number_format($detail->harga_jual_bersih, 0, ',', '.') }}</span>
-                                                    @if ($detail->bonus > 0)
-                                                        <span class="text-green-600">Bonus: Rp
-                                                            {{ number_format($detail->bonus, 0, ',', '.') }}</span>
-                                                    @endif
-                                                </div>
-
-                                                <!-- Rating Section -->
-                                                @if (auth()->check())
-                                                    <div class="mt-4 pt-4 border-t border-gray-100">
-                                                        @php
-                                                            $existingRating = isset(
-                                                                $ratings[$detail->id_detail_transaksi],
-                                                            )
-                                                                ? (object) [
-                                                                    'bintang' => $ratings[$detail->id_detail_transaksi],
-                                                                    'id_rating' => Rating::where(
-                                                                        'id_detail_transaksi',
-                                                                        $detail->id_detail_transaksi,
-                                                                    )
-                                                                        ->where('id_pembeli', auth()->user()->id)
-                                                                        ->first()->id_rating,
-                                                                ]
-                                                                : null;
-                                                        @endphp
-
-                                                        @if ($existingRating)
-                                                            <div class="flex items-center space-x-2">
-                                                                <span class="text-sm text-gray-600">Rating Anda:</span>
-                                                                <div class="flex items-center">
-                                                                    @for ($i = 1; $i <= 5; $i++)
-                                                                        <svg class="h-5 w-5 {{ $i <= $existingRating->bintang ? 'text-yellow-400' : 'text-gray-300' }}"
-                                                                            fill="currentColor" viewBox="0 0 20 20">
-                                                                            <path
-                                                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81 .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                                                            </path>
-                                                                        </svg>
-                                                                    @endfor
-                                                                    <span
-                                                                        class="ml-2 text-sm text-gray-600">({{ $existingRating->bintang }}/5)</span>
-                                                                </div>
-                                                            </div>
-                                                            <button
-                                                                onclick="editRating('{{ $existingRating->id_rating }}', '{{ $existingRating->bintang }}')"
-                                                                class="mt-2 text-sm text-pink-600 hover:text-pink-700 underline">
-                                                                Edit Rating
-                                                            </button>
-                                                        @else
-                                                            <div class="rating-section">
-                                                                <p class="text-sm text-gray-600 mb-2">Berikan rating
-                                                                    untuk produk ini:</p>
-                                                                <form action="{{ route('rating.store') }}"
-                                                                    method="POST" class="rating-form">
-                                                                    @csrf
-                                                                    <input type="hidden" name="id_detail_transaksi"
-                                                                        value="{{ $detail->id_detail_transaksi }}">
-                                                                    <input type="hidden" name="bintang"
-                                                                        id="rating-{{ $detail->id_detail_transaksi }}"
-                                                                        value="">
-                                                                    <div class="flex items-center space-x-1 mb-3">
-                                                                        @for ($i = 1; $i <= 5; $i++)
-                                                                            <button type="button"
-                                                                                class="star-btn rating-star text-gray-300 hover:text-yellow-400"
-                                                                                data-rating="{{ $i }}"
-                                                                                data-form="rating-{{ $detail->id_detail_transaksi }}">
-                                                                                <svg class="h-5 w-5" fill="currentColor"
-                                                                                    viewBox="0 0 20 20">
-                                                                                    <path
-                                                                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81 .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                                                                    </path>
-                                                                                </svg>
-                                                                            </button>
-                                                                        @endfor
-                                                                    </div>
-                                                                    <button type="submit"
-                                                                        class="mt-2 px-4 py-2 gradient-bg text-white text-sm rounded-lg hover:bg-pink-700 transition-colors disabled:opacity-50 shadow-md"
-                                                                        disabled>
-                                                                        Kirim Rating
-                                                                    </button>
-                                                                </form>
-                                                            </div>
+                                                    <div
+                                                        class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mt-2 text-sm text-gray-600">
+                                                        <span>Harga:
+                                                            Rp{{ number_format($detail->harga_jual_bersih, 0, ',', '.') }}</span>
+                                                        @if ($detail->bonus > 0)
+                                                            <span class="text-green-600">Bonus:
+                                                                Rp{{ number_format($detail->bonus, 0, ',', '.') }}</span>
                                                         @endif
                                                     </div>
-                                                @else
-                                                    <div class="mt-4 pt-4 border-t border-gray-100">
-                                                        <p class="text-sm text-gray-500 italic">
-                                                            Silakan login untuk memberikan rating
-                                                        </p>
-                                                    </div>
-                                                @endif
+
+                                                    <!-- Rating Section -->
+                                                    @if (auth()->check())
+                                                        <div class="mt-4 pt-4 border-t border-gray-100">
+                                                            @php
+                                                                $existingRating = isset(
+                                                                    $ratings[$detail->id_detail_transaksi],
+                                                                )
+                                                                    ? (object) [
+                                                                        'bintang' =>
+                                                                            $ratings[$detail->id_detail_transaksi]
+                                                                                ->bintang,
+                                                                        'id_rating' =>
+                                                                            $ratings[$detail->id_detail_transaksi]
+                                                                                ->id_rating,
+                                                                    ]
+                                                                    : null;
+                                                            @endphp
+
+                                                            @if ($existingRating)
+                                                                <div class="flex items-center space-x-2">
+                                                                    <span class="text-sm text-gray-600">Rating
+                                                                        Anda:</span>
+                                                                    <div class="flex items-center">
+                                                                        @for ($i = 1; $i <= 5; $i++)
+                                                                            <svg class="h-5 w-5 {{ $i <= $existingRating->bintang ? 'text-yellow-400' : 'text-gray-300' }}"
+                                                                                fill="currentColor" viewBox="0 0 20 20">
+                                                                                <path
+                                                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81 .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                                                                                </path>
+                                                                            </svg>
+                                                                        @endfor
+                                                                        <span
+                                                                            class="ml-2 text-sm text-gray-600">({{ $existingRating->bintang }}/5)</span>
+                                                                    </div>
+                                                                </div>
+                                                            @else
+                                                                <!-- Rest of the rating form remains unchanged -->
+                                                                <div class="rating-section">
+                                                                    <p class="text-sm text-gray-600 mb-2">Berikan rating
+                                                                        untuk produk ini:</p>
+                                                                    <form action="{{ route('rating.store') }}"
+                                                                        method="POST" class="rating-form">
+                                                                        @csrf
+                                                                        <input type="hidden" name="id_detail_transaksi"
+                                                                            value="{{ $detail->id_detail_transaksi }}">
+                                                                        <input type="hidden" name="bintang"
+                                                                            id="rating-{{ $detail->id_detail_transaksi }}"
+                                                                            value="">
+                                                                        <div class="flex items-center space-x-1 mb-3">
+                                                                            @for ($i = 1; $i <= 5; $i++)
+                                                                                <button type="button"
+                                                                                    class="star-btn rating-star text-gray-300 hover:text-yellow-400"
+                                                                                    data-rating="{{ $i }}"
+                                                                                    data-form="rating-{{ $detail->id_detail_transaksi }}">
+                                                                                    <svg class="h-5 w-5"
+                                                                                        fill="currentColor"
+                                                                                        viewBox="0 0 20 20">
+                                                                                        <path
+                                                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81 .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                                                                                        </path>
+                                                                                    </svg>
+                                                                                </button>
+                                                                            @endfor
+                                                                        </div>
+                                                                        <button type="submit"
+                                                                            class="mt-2 px-4 py-2 gradient-bg text-white text-sm rounded-lg hover:bg-pink-700 transition-colors disabled:opacity-50 shadow-md"
+                                                                            disabled>
+                                                                            Kirim Rating
+                                                                        </button>
+                                                                    </form>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    @else
+                                                        <div class="mt-4 pt-4 border-t border-gray-100">
+                                                            <p class="text-sm text-gray-500 italic">
+                                                                Silakan login untuk memberikan rating
+                                                            </p>
+                                                        </div>
+                                                    @endif
                                             </div>
                                             <div class="text-right mt-3 sm:mt-0">
                                                 <div class="font-semibold text-gray-900">Rp
@@ -278,76 +275,9 @@
         </div>
     </div>
 
-    <!-- Edit Rating Modal -->
-    <div id="editRatingModal"
-        class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-        <div class="relative top-20 mx-auto p-6 border w-full max-w-md shadow-lg rounded-xl bg-white">
-            <div class="gradient-bg text-white p-4 rounded-t-xl">
-                <h3 class="text-lg font-semibold">Edit Rating</h3>
-            </div>
-            <form id="editRatingForm" method="POST" class="p-6">
-                @csrf
-                @method('PUT')
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Rating:</label>
-                    <div class="flex items-center space-x-1" id="editStars">
-                        @for ($i = 1; $i <= 5; $i++)
-                            <button type="button"
-                                class="edit-star-btn rating-star text-gray-300 hover:text-yellow-400"
-                                data-rating="{{ $i }}">
-                                <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 20 20">
-                                    <path
-                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81 .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                    </path>
-                                </svg>
-                            </button>
-                        @endfor
-                    </div>
-                    <input type="hidden" name="bintang" id="editRatingValue">
-                </div>
-                <div class="flex justify-end space-x-3">
-                    <button type="button" onclick="closeEditModal()"
-                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
-                        Batal
-                    </button>
-                    <button type="submit"
-                        class="px-4 py-2 gradient-bg text-white rounded-lg hover:bg-pink-700 transition-colors shadow-md">
-                        Update Rating
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+
 
     <script>
-        function editRating(ratingId, currentRating) {
-            const modal = document.getElementById('editRatingModal');
-            const form = document.getElementById('editRatingForm');
-            const ratingInput = document.getElementById('editRatingValue');
-
-            form.action = `/rating/${ratingId}`;
-            ratingInput.value = currentRating;
-            updateEditStars(currentRating);
-            modal.classList.remove('hidden');
-        }
-
-        function closeEditModal() {
-            document.getElementById('editRatingModal').classList.add('hidden');
-        }
-
-        function updateEditStars(rating) {
-            const stars = document.querySelectorAll('.edit-star-btn');
-            stars.forEach((star, index) => {
-                if (index < rating) {
-                    star.classList.remove('text-gray-300');
-                    star.classList.add('text-yellow-400');
-                } else {
-                    star.classList.remove('text-yellow-400');
-                    star.classList.add('text-gray-300');
-                }
-            });
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
             function updateStars(form, rating) {
                 const stars = form.querySelectorAll('.star-btn');

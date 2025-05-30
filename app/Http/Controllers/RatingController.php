@@ -12,17 +12,33 @@ class RatingController extends Controller
 {
     public function index()
     {
-        // Retrieve transactions with status 'Selesai' for the authenticated user
+        $userId = auth()->guard('pembeli')->id();
+        if (!$userId) {
+            Log::error('No authenticated pembeli user');
+            return redirect()->route('login')->with('error', 'Please log in to view transaction history.');
+        }
+
+        Log::info('Authenticated User ID', ['id' => $userId]);
+
         $detailTransaksiList = DB::table('detail_transaksi')
             ->join('transaksi', 'detail_transaksi.no_nota', '=', 'transaksi.no_nota')
-            ->where('transaksi.id_pembeli', auth()->user()->id)
+            ->where('transaksi.id_pembeli', $userId)
             ->where('transaksi.status', 'Selesai')
             ->select('detail_transaksi.*', 'transaksi.status', 'transaksi.no_nota')
             ->get();
 
-        // Retrieve ratings for the authenticated user
-        $ratings = Rating::where('id_pembeli', auth()->user()->id)
-            ->pluck('bintang', 'id_detail_transaksi');
+        Log::info('Detail Transaksi List', [
+            'count' => $detailTransaksiList->count(),
+            'data' => $detailTransaksiList->toArray(),
+        ]);
+
+        // Modified query to include id_rating
+        $ratings = Rating::where('id_pembeli', $userId)
+            ->select('id_detail_transaksi', 'bintang', 'id_rating')
+            ->get()
+            ->keyBy('id_detail_transaksi');
+
+        Log::info('Ratings Collection', ['ratings' => $ratings->toArray()]);
 
         return view('history_pembelian', compact('detailTransaksiList', 'ratings'));
     }

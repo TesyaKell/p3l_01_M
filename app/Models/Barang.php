@@ -59,10 +59,6 @@ class Barang extends Model
     {
         return $this->belongsTo(Penitip::class, 'id_penitip');
     }
-    public function transaksi()
-    {
-        return $this->hasMany(DetailTransaksi::class, 'kode_barang');
-    }
     public function hitungDurasi(): int
     {
         $tanggalMasuk = $this->tanggal_masuk ? \Carbon\Carbon::parse($this->tanggal_masuk) : null;
@@ -95,9 +91,6 @@ class Barang extends Model
         });
     }
 
-
-
-
     public function getNamaBarangSafeAttribute()
     {
         return $this->nama_barang ?? '-';
@@ -106,7 +99,7 @@ class Barang extends Model
 
     public function detailTransaksi()
     {
-        return $this->hasOne(\App\Models\DetailTransaksi::class, 'kode_barang', 'kode_barang');
+        return $this->hasMany(DetailTransaksi::class, 'kode_barang', 'kode_barang');
     }
 
 }

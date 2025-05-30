@@ -122,7 +122,7 @@ use App\Http\Helper\Helper;
                         <tr class="text-center">
                             <td class="p-4">
                                 Rp{{ number_format(auth()->guard('penitip')->user()->saldo, 0, ',', '.') }}</td>
-                            <td class="p-4">{{ auth()->guard('pembeli')->user()->poin }}</td>
+                            <td>{{ auth()->guard('penitip')->user()->poin }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -339,30 +339,9 @@ use App\Http\Helper\Helper;
                                     <h5 class="text-base font-medium">{{ $barang->nama_barang }}</h5>
                                     <p class="text-blue-600 font-semibold mt-1">
                                         Rp{{ number_format($barang->harga, 0, ',', '.') }}</p>
-                                    @if ($barang->average_rating > 0)
-                                        <div class="flex items-center gap-2 mt-2">
-                                            <div class="flex text-yellow-400">
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    @if ($i <= round($barang->average_rating))
-                                                        <span>★</span>
-                                                    @else
-                                                        <span>☆</span>
-                                                    @endif
-                                                @endfor
-                                            </div>
-                                            <span class="text-sm text-gray-500">
-                                                {{ number_format($barang->average_rating, 1) }}
-                                                ({{ $barang->total_ratings }}
-                                                {{ $barang->total_ratings == 1 ? 'rating' : 'ratings' }})
-                                            </span>
-                                        </div>
-                                    @else
-                                        <div class="text-sm text-gray-500 mt-2">
-                                            <small>Belum ada rating</small>
-                                        </div>
-                                    @endif
+
                                     <small class="text-gray-600 mt-auto pt-2">
-                                        Oleh: {{ $barang->penitip->nama_penitip ?? 'Unknown' }}
+                                        Penitp {{ $barang->penitip->nama_penitip ?? 'Unknown' }}
                                     </small>
                                 </div>
                             </div>

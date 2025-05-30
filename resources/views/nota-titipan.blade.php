@@ -4,210 +4,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nota Penitipan Barang</title>
+    <title>Nota Penitipan Barang - REuse Mart</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 14px;
+            margin: 30px;
+            color: #333;
+            background-color: #fff;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            border: 2px solid #2c3e50;
+            border-radius: 8px;
             padding: 20px;
-            font-size: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .header {
             text-align: center;
             margin-bottom: 20px;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 2px solid #3498db;
             padding-bottom: 10px;
         }
 
+
+
         .header h1 {
             margin: 0;
-            font-size: 18px;
+            font-size: 22px;
+            color: #2c3e50;
+            text-transform: uppercase;
+            font-weight: 700;
         }
 
         .header p {
-            margin: 5px 0;
+            margin: 3px 0;
+            font-size: 13px;
+            color: #7f8c8d;
         }
 
-        .info-section {
-            margin-bottom: 20px;
-        }
-
-        .info-section h2 {
-            font-size: 14px;
-            margin: 0 0 10px 0;
-            border-bottom: 1px solid #eee;
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 20px 0 10px;
+            border-bottom: 1px solid #3498db;
             padding-bottom: 5px;
+            text-transform: uppercase;
         }
 
-        .info-row {
-            display: flex;
-            margin-bottom: 5px;
-        }
-
-        .info-label {
-            width: 150px;
-            font-weight: bold;
-        }
-
-        .info-value {
-            flex: 1;
-        }
-
-        .table {
+        .details-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
-        .table th,
-        .table td {
-            border: 1px solid #ddd;
+        .details-table th,
+        .details-table td {
             padding: 8px;
             text-align: left;
+            border-bottom: 1px solid #ecf0f1;
         }
 
-        .table th {
-            background-color: #f2f2f2;
+        .details-table th {
+            font-weight: 600;
+            color: #2c3e50;
+            width: 40%;
+        }
+
+        .details-table td {
+            color: #34495e;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .label {
+            font-weight: 600;
+            color: #2c3e50;
         }
 
         .footer {
-            margin-top: 30px;
+            margin-top: 25px;
             text-align: center;
-            font-size: 10px;
-            color: #666;
+            border-top: 1px solid #3498db;
+            padding-top: 10px;
         }
 
-        .signatures {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 50px;
+        .footer p {
+            margin: 5px 0;
+            font-size: 13px;
+            color: #7f8c8d;
         }
 
-        .signature {
-            width: 45%;
-            text-align: center;
-        }
+        @media print {
+            body {
+                margin: 0;
+                font-size: 12pt;
+            }
 
-        .signature-line {
-            margin-top: 50px;
-            border-top: 1px solid #000;
+            .container {
+                box-shadow: none;
+                border: none;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="header">
-        <h1>NOTA PENITIPAN BARANG</h1>
-        <p>ReuSmart - Solusi Barang Bekas Berkualitas</p>
-        <p>Jl. Contoh No. 123, Kota, Provinsi</p>
-        <p>Telp: (021) 1234-5678 | Email: info@reusmart.com</p>
-    </div>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Nota Penitipan Barang</h1>
+            <p>REuse Mart</p>
+            <p>Jl. Green ECO Park No. 456, Yogyakarta</p>
+        </div>
 
-    <div class="info-section">
-        <h2>Informasi Nota</h2>
-        <div class="info-row">
-            <div class="info-label">Nomor Nota:</div>
-            <div class="info-value">{{ $titipan->no_nota }}</div>
-        </div>
-        <div class="info-row">
-            <div class="info-label">Tanggal Cetak:</div>
-            <div class="info-value">{{ $tanggal_cetak->format('d/m/Y H:i') }}</div>
-        </div>
-    </div>
+        <!-- Consignment Details -->
+        @php
+            $firstDetail = $titipan->detailTransaksi->first();
+            $noNota =
+                $firstDetail && $firstDetail->transaksi
+                    ? $firstDetail->transaksi->no_nota
+                    : 'TEMP-' . $titipan->kode_barang;
+        @endphp
 
-    <div class="info-section">
-        <h2>Informasi Penitip</h2>
-        <div class="info-row">
-            <div class="info-label">ID Penitip:</div>
-            <div class="info-value">{{ $titipan->id_penitip }}</div>
-        </div>
-        <div class="info-row">
-            <div class="info-label">Nama Penitip:</div>
-            <div class="info-value">{{ $titipan->penitip->nama_penitip }}</div>
-        </div>
-        <div class="info-row">
-            <div class="info-label">No. Telepon:</div>
-            <div class="info-value">{{ $titipan->penitip->no_telp }}</div>
-        </div>
-        <div class="info-row">
-            <div class="info-label">Email:</div>
-            <div class="info-value">{{ $titipan->penitip->email }}</div>
-        </div>
-    </div>
 
-    <div class="info-section">
-        <h2>Informasi Barang</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Kode Barang</th>
-                    <th>Nama Barang</th>
-                    <th>Deskripsi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{ $titipan->kode_barang }}</td>
-                    <td>{{ $titipan->barang?->nama_barang }}</td>
-                    <td>{{ $titipan->barang?->deskripsi }}</td>
-                </tr>
-            </tbody>
+        <table class="details-table">
+            <tr>
+                <th>No Nota</th>
+                <td>{{ $noNota }}</td>
+            </tr>
+            <tr>
+                <th>Tanggal Penitipan</th>
+                <td>{{ $titipan->tanggal_masuk ? \Carbon\Carbon::parse($titipan->tanggal_masuk)->translatedFormat('d F Y, H:i') : '-' }}
+                </td>
+            </tr>
+            <tr>
+                <th>Masa Penitipan Sampai</th>
+                <td>{{ $titipan->tanggal_akhir ? \Carbon\Carbon::parse($titipan->tanggal_akhir)->translatedFormat('d F Y') : '-' }}
+                </td>
+            </tr>
         </table>
-    </div>
 
-    <div class="info-section">
-        <h2>Informasi Penitipan</h2>
+        <!-- Consignor Details -->
+        <div class="section-title">Penitip</div>
+        <table class="details-table">
+            <tr>
+                <th>Nama</th>
+                <td>{{ $titipan->penitip->id_penitip ?? '-' }} /
+                    {{ $titipan->penitip->nama_penitip ?? 'Tidak Diketahui' }}</td>
+            </tr>
+            <tr>
+                <th>Alamat</th>
+                <td>{{ $titipan->penitip->alamat ?? 'Perumahan Margonda 2/50, Caturtunggal, Depok, Sleman' }}</td>
+            </tr>
+        </table>
 
+        <!-- Product Details -->
+        <div class="section-title">Detail Barang: {{ $titipan->nama_barang_safe }}</div>
+        <table class="details-table">
+            <tr>
+                <th>Harga</th>
+                <td>Rp {{ number_format($titipan->harga ?? 0, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <th>Berat Barang</th>
+                <td>{{ $titipan->berat_barang ?? '0' }} kg</td>
+            </tr>
+            <tr>
+                <th>Garansi</th>
+                <td>{{ $titipan->batas_garansi ? \Carbon\Carbon::parse($titipan->batas_garansi)->translatedFormat('F Y') : 'Tidak Ada' }}
+                </td>
+            </tr>
+        </table>
 
-        <div class="info-row">
-            <div class="info-label">Tanggal Masuk:</div>
-            <div class="info-value">
-                @if ($titipan->tanggal_masuk)
-                    {{ \Carbon\Carbon::parse($titipan->tanggal_masuk)->format('d/m/Y H:i') }}
-                @else
-                    -
-                @endif
-            </div>
+        <!-- Footer: QC -->
+        <div class="footer">
+            <p><span class="label">Diterima dan QC oleh:</span></p>
+            <p>{{ $titipan->qcPegawai->id_pegawai ?? 'P18' }} - {{ $titipan->qcPegawai->nama_pegawai ?? 'Farida' }}
+            </p>
+            <p>Terima kasih atas kepercayaan Anda kepada REuse Mart!</p>
         </div>
-        <div class="info-row">
-            <div class="info-label">Durasi Penitipan:</div>
-            <div class="info-value">{{ $titipan->hitungDurasi() }} hari</div>
-        </div>
-        <div class="info-row">
-            <div class="info-label">Status:</div>
-            <div class="info-value">{{ ucfirst($titipan->status) }}</div>
-        </div>
-        <div class="info-row">
-            <div class="info-label">Biaya Penitipan:</div>
-            <div class="info-value">Rp {{ number_format($titipan->biaya_penitipan, 0, ',', '.') }}</div>
-        </div>
-    </div>
-
-    @if ($titipan->catatan)
-        <div class="info-section">
-            <h2>Catatan</h2>
-            <p>{{ $titipan->catatan }}</p>
-        </div>
-    @endif
-
-    <div class="signatures">
-        <div class="signature">
-            <p>Penitip</p>
-            <div class="signature-line"></div>
-            <p>{{ $titipan->penitip->nama_penitip }}</p>
-        </div>
-        <div class="signature">
-            <p>Petugas</p>
-            <div class="signature-line"></div>
-            <p>_____________________</p>
-        </div>
-    </div>
-
-    <div class="footer">
-        <p>Dokumen ini dicetak pada {{ $tanggal_cetak->format('d/m/Y H:i') }} dan merupakan bukti sah penitipan barang.
-        </p>
-        <p>Barang yang tidak diambil dalam waktu 30 hari akan dianggap sebagai donasi.</p>
     </div>
 </body>
 
