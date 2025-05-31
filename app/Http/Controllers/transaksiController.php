@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Pembeli;
 use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Auth;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Penitip;
@@ -13,8 +14,8 @@ use App\Models\Keranjang;
 use App\Http\Helper\Helper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-
 use Laravel\Sanctum\Sanctum;
+use Illuminate\Http\JsonResponse;
 
 
 class transaksiController extends Controller
@@ -123,16 +124,14 @@ class transaksiController extends Controller
                 $tanggalLaku = Carbon::now();
                 $selisihHari = $tanggalMasuk->diffInDays($tanggalLaku, false);
                 $bonus = ($selisihHari >= 0 && $selisihHari < 7) ? $komisiReusmart * 0.1 : 0;
-                $komisiPenitip = $hargaJualBersih +$bonus;
 
                 $detailTransaksiData[] = [
                     'kode_barang' => $barang->kode_barang,
                     'no_nota' => $noNota,
                     'nama_barang' => $barang->nama_barang,
-                    'harga_jual_bersih' => $hargaJualBersih,
+                    'harga_jual_bersih' => $hargaJualBersih + $bonus,
                     'komisi_reusmart' => $komisiReusmart,
                     'komisi_hunter' => $komisiHunter,
-                    'komisi_penitip' => $komisiPenitip,
                     'bonus' => $bonus,
                     'total' => $hargaJualBersih,
                 ];
@@ -177,7 +176,7 @@ class transaksiController extends Controller
                 'alamat_pengiriman' => $request->input('alamat_pengiriman'),
                 'total_harga_jual_bersih' => $totalHarga,
                 'total_pembayaran' => $totalPembayaran,
-                // 'komisi_penitip' => array_sum(array_column($detailTransaksiData, 'harga_jual_bersih')) + $totalBonus,
+                //'komisi_penitip' => array_sum(array_column($detailTransaksiData, 'harga_jual_bersih')) + $totalBonus,
                 'status' => 'menunggu pembayaran',
                 'tukar_poin' => $tukarPoin,
             ]);
@@ -193,10 +192,6 @@ class transaksiController extends Controller
             $pembeli->update(['poin' => $poinSetelah]);
             $barang->update(['tanggal_laku' => now()]);
 
-
-            //CEK DULU
-            // $detailTransaksiData->update(['komisi_reusmart' => $komisiReusmart]);
-            // $detailTransaksiData->update(['komisi_hunter' => $komisiHunter]);
 
             // Hapus semua item keranjang
             Keranjang::where('id_pembeli', $pembeli->id_pembeli)->delete();
@@ -350,20 +345,114 @@ class transaksiController extends Controller
 
         return redirect()->route('verifikasi.pembayaran')->with('success', 'Transaksi berhasil ditandai sebagai "Tidak Diverifikasi".');
     }
-    public function bayarPenitip($no_nota)
+
+    public function getPengirimanKurir(): JsonResponse
     {
-        $transaksiKePenitip = DetailTransaksi::where('no_nota', $no_nota)->get();
-        foreach ($transaksiKePenitip as $keyBarang) {
+        $user = auth()->user();
 
-            $barang = Barang::where('kode_barang', $keyBarang->kode_barang)->first();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized',
+            ], 401);
+        }
 
-            if (!$barang) continue; 
-            $penitip = Penitip::where('id_penitip', $barang->id_penitip)->first();
+        $transaksi = Transaksi::with(['detailTransaksi.barang'])
+            ->where('tipe_delivery', 'kurir')
+            ->where('status', 'Dikirim')
+            ->where('id_kurir_pegawai', $user->id_pegawai)
+            ->orderByDesc('tanggal_lunas')
+            ->get();
 
-            if (!$penitip) continue; 
-            $penitip->update([
-                'saldo' => $penitip->saldo + $keyBarang->komisi_penitip
+        return response()->json([
+            'success' => true,
+            'data' => $transaksi,
+        ]);
+    }
+    public function getHistoryPengirimanKurir(): JsonResponse
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        $transaksi = Transaksi::with(['detailTransaksi.barang'])
+            ->where('tipe_delivery', 'kurir')
+            ->where('status', '=', 'Selesai')
+            ->where('id_kurir_pegawai', $user->id_pegawai)
+            ->orderByDesc('tanggal_ambil_kirim')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $transaksi,
+        ]);
+    }
+
+    public function selesaikanPengiriman(Request $request, $no_nota)
+    {
+        $user = auth()->user();
+
+        $transaksi = Transaksi::where('no_nota', $no_nota)->firstOrFail();
+
+        if (!$user || $transaksi->id_kurir_pegawai !== $user->id_pegawai) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        if ($transaksi->status !== 'Dikirim') {
+            return response()->json([
+                'success' => true,
+                'data' => $transaksi,
             ]);
         }
+
+        // Update status transaksi
+        $transaksi->update([
+            'status' => 'Selesai',
+            //'tanggal_ambil_kirim' => now(),
+        ]);
+
+        // Update status barang
+        foreach ($transaksi->detailTransaksi as $detail) {
+            if ($detail->barang) {
+                $detail->barang->update([
+                    'tanggal_ambil' => now(),
+                ]);
+            }
+        }
+
+        // Kirim notifikasi ke penitip
+        foreach ($transaksi->detailTransaksi as $detail) {
+            if ($detail->barang && $detail->barang->id_penitip) {
+                $penitip = Penitip::find($detail->barang->id_penitip);
+                $pembeli = Pembeli::find($transaksi->id_pembeli);
+                if ($penitip) {
+                    $penitip->notify(new MobileNotif(
+                        'Barang Anda Telah Dikirim!',
+                        'Barang kamu telah berhasil dikirim oleh kurir.'
+                    ));
+                }
+
+                if ($pembeli) {
+                    $pembeli->notify(new MobileNotif(
+                        'Pengiriman Selesai',
+                        'Barang Anda telah berhasil diterima.'
+                    ));
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pengiriman selesai.',
+            'data' => $transaksi,
+        ]);
     }
 }
