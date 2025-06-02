@@ -2,10 +2,35 @@
 <html>
 
 <head>
+    <title>Preview Laporan Transaksi Penitip</title>
     <style>
         body {
             font-family: sans-serif;
             font-size: 12px;
+            margin: 20px;
+        }
+
+        .header-actions {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            margin: 0 5px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
         }
 
         table {
@@ -38,6 +63,12 @@
 </head>
 
 <body>
+    <div class="header-actions">
+        <a href="{{ url()->previous() }}" class="btn btn-secondary">Kembali</a>
+        <a href="{{ route('laporan.penitip.pdf', ['penitip_id' => $penitipId, 'bulan' => $bulan, 'tahun' => $tahun]) }}"
+            class="btn btn-primary">Download PDF</a>
+    </div>
+
     <h2>ReUse Mart</h2>
     <p>Jl. Green Eco Park No. 456 Yogyakarta</p>
     <h3>LAPORAN TRANSAKSI PENITIP</h3>
@@ -54,7 +85,6 @@
         <p><strong>ID Penitip:</strong> {{ $penitipInfo->id_penitip ?? '-' }}</p>
         <p><strong>Nama Penitip:</strong> {{ $penitipInfo->nama_penitip ?? '-' }}</p>
 
-
         <table>
             <thead>
                 <tr>
@@ -68,7 +98,7 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse ($barangList as $barang)
+                @forelse ($barangGrouped->first() as $barang)
                     <tr>
                         <td>{{ $barang->kode_barang }}</td>
                         <td>{{ $barang->nama_barang }}</td>

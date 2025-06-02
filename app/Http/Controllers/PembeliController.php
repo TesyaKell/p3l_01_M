@@ -8,7 +8,6 @@ use App\Http\Helper\Helper;
 use App\Models\Pembeli;
 use App\Models\Rating;
 use App\Notifications\VerifyEmail;
-use Illuminate\Support\Facades\DB;
 use Auth;
 use Hash;
 use Illuminate\Support\Facades\Log;
@@ -26,11 +25,11 @@ class PembeliController extends Controller
         $user = Auth::guard('pembeli')->user();
 
         $detailTransaksiList = DB::table('detail_transaksi')
-           ->join('transaksi', 'detail_transaksi.no_nota', '=', 'transaksi.no_nota')
-           ->where('transaksi.id_pembeli', auth()->user()->id)
-           ->where('transaksi.status', 'Selesai')
-           ->select('detail_transaksi.*', 'transaksi.status', 'transaksi.no_nota')
-           ->get();
+            ->join('transaksi', 'detail_transaksi.no_nota', '=', 'transaksi.no_nota')
+            ->where('transaksi.id_pembeli', auth()->user()->id)
+            ->where('transaksi.status', 'Selesai')
+            ->select('detail_transaksi.*', 'transaksi.status', 'transaksi.no_nota')
+            ->get();
 
         // Retrieve ratings for the authenticated user
         $ratings = Rating::where('id_pembeli', auth()->user()->id)

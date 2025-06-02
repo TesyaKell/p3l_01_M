@@ -55,31 +55,17 @@ class ListPrintLaporanTransaksiPenitips extends ListRecords
                         ->required()
                         ->default(date('Y')),
                 ])
-                ->action(function (array $data): \Symfony\Component\HttpFoundation\StreamedResponse {
+                ->action(function (array $data): void {
                     $penitipId = $data['penitip_id'];
                     $bulan = (int) $data['bulan'];
                     $tahun = (int) $data['tahun'];
 
-                    $barangList = Barang::with('penitip')
-                        ->where('id_penitip', $penitipId)
-                        ->where('status', 'terjual')
-                        ->whereMonth('tanggal_laku', $bulan)
-                        ->whereYear('tanggal_laku', $tahun)
-                        ->get();
-
-                    $penitip = $barangList->first()?->penitip;
-
-                    $pdf = Pdf::loadView('laporan.laporan_transaksi_penitip', [
-                        'barangGrouped' => collect([$penitipId => $barangList]),
+                    // Redirect ke halaman preview dengan parameter
+                    $this->redirect(route('laporan.penitip.preview', [
+                        'penitip_id' => $penitipId,
                         'bulan' => $bulan,
-                        'tahun' => $tahun,
-                        'penitip' => $penitip,
-                        'tanggalCetak' => now()->translatedFormat('d F Y'),
-                    ]);
-
-                    return Response::streamDownload(function () use ($pdf) {
-                        echo $pdf->output();
-                    }, "laporan-transaksi-penitip-{$penitipId}-{$bulan}-{$tahun}.pdf");
+                        'tahun' => $tahun
+                    ]));
                 }),
         ];
     }

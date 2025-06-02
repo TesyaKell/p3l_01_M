@@ -14,10 +14,11 @@ class ListPrintLaporanDonasis extends ListRecords
     {
         return [
             Actions\Action::make('unduh_pdf')
-                ->label('Unduh PDF')
+                ->label('Preview & Unduh PDF')
                 ->icon('heroicon-o-arrow-down-tray')
-                ->url(route('owner.laporan.donasi.pdf'))
-                ->openUrlInNewTab()
+                ->action(function (): void {
+                    $this->redirect(route('laporan.donasi.preview'));
+                })
                 ->color('primary'),
         ];
     }

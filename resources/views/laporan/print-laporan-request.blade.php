@@ -1,3 +1,4 @@
+{{-- filepath: d:\00. SEMESTER 6\001. P3L\P3L RAKHEL\p3l_01_M\resources\views\laporan\print-laporan-request.blade.php --}}
 <x-filament::page>
     <h2 class="text-xl font-bold mb-4">Request Donasi Status Diproses</h2>
 
@@ -24,9 +25,9 @@
         </tbody>
     </table>
 
-    <x-filament::button tag="a" href="{{ route('owner.laporan.request.pdf', ['status' => 'Diproses']) }}"
-        target="_blank" color="primary" class="mb-4">
-        Unduh PDF (Diproses)
+    <x-filament::button tag="a" href="{{ route('laporan.request.preview', ['status' => 'Diproses']) }}"
+        color="primary" class="mb-4">
+        Preview & Unduh PDF (Diproses)
     </x-filament::button>
 
     <h2 class="text-xl font-bold mb-4">Request Donasi Status Diterima</h2>
@@ -53,8 +54,8 @@
             @endforelse
         </tbody>
     </table>
-    <x-filament::button tag="a" href="{{ route('owner.laporan.request.pdf', ['status' => 'Diterima']) }}"
-        target="_blank" color="success" class="mb-4">
-        Unduh PDF (Diterima)
+    <x-filament::button tag="a" href="{{ route('laporan.request.preview', ['status' => 'Diterima']) }}"
+        color="success" class="mb-4">
+        Preview & Unduh PDF (Diterima)
     </x-filament::button>
 </x-filament::page>

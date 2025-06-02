@@ -338,3 +338,8 @@ Route::get('/search/requestdonasi', [RequestDonasiController::class, 'searchById
 Route::get('/pembeli/transaksi', [PembeliController::class, 'historyTransaksiPembelian'])
     ->name('pembeli.transaksi');
 
+Route::get('/laporan/penitip/preview', [App\Http\Controllers\LaporanOwnerController::class, 'penitipPreview'])->name('laporan.penitip.preview');
+Route::get('/laporan/penitip/pdf', [App\Http\Controllers\LaporanOwnerController::class, 'penitipPdf'])->name('laporan.penitip.pdf');
+Route::get('/laporan/donasi/preview', [App\Http\Controllers\LaporanOwnerController::class, 'donasiPreview'])->name('laporan.donasi.preview');
+Route::get('/laporan/request/preview', [App\Http\Controllers\LaporanOwnerController::class, 'requestPreview'])->name('laporan.request.preview');
+
