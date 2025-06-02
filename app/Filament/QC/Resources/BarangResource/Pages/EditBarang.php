@@ -30,9 +30,13 @@ class EditBarang extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $barangData = $data['barangs'][0];
-        $barangData['id_penitip'] = $data['id_penitip'];
+        if (isset($data['id_penitip'])) {
+            $barangData['id_penitip'] = $data['id_penitip'];
+        }
+
         return $barangData;
     }
+
 
     protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
     {
@@ -53,7 +57,9 @@ class EditBarang extends EditRecord
             ->modalSubmitActionLabel('Ya, Simpan')
             ->modalCancelActionLabel('Batal')
             ->action(function () {
-                $this->save();
+                $data = $this->form->getState();
+                $this->handleRecordUpdate($this->getRecord(), $data);
+                return redirect()->route('filament.qc.resources.barangs.index');
             })
             ->successNotification(
                 Notification::make()

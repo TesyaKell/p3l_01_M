@@ -313,3 +313,6 @@ Route::get('/cetak-nota-titipan/{barang}', [CetakNotaTitipanController::class, '
 
 
 Route::post('/transaksi/upload/{id}', [transaksiController::class, 'uploadBuktiPembayaran'])->name('upload.bukti');
+
+
+Route::get('/test-notifikasi', [BarangController::class, 'notifikasi']);

@@ -128,13 +128,9 @@
             <p>Jl. Green ECO Park No. 456, Yogyakarta</p>
         </div>
 
-        <!-- Consignment Details -->
         @php
             $firstDetail = $titipan->detailTransaksi->first();
-            $noNota =
-                $firstDetail && $firstDetail->transaksi
-                    ? $firstDetail->transaksi->no_nota
-                    : 'TEMP-' . $titipan->kode_barang;
+            $noNota = $firstDetail && $firstDetail->transaksi ? $firstDetail->transaksi->no_nota : 'Belum Ada No Nota';
         @endphp
 
 
@@ -165,7 +161,26 @@
             </tr>
             <tr>
                 <th>Alamat</th>
-                <td>{{ $titipan->penitip->alamat ?? 'Perumahan Margonda 2/50, Caturtunggal, Depok, Sleman' }}</td>
+                <td>{{ $titipan->penitip->alamat ?? 'Ga ada alamat' }}</td>
+            </tr>
+            @php
+                $firstDetail = $titipan->detailTransaksi->first();
+                $transaksi = $firstDetail->transaksi ?? null;
+                $kurirId = $transaksi ? $transaksi->id_kurir_pegawai : null;
+                $status = $transaksi ? strtolower($transaksi->status) : null;
+            @endphp
+
+            <tr>
+                <th>Kurir</th>
+                <td>
+                    @if ($status === 'Terjual')
+                        {{ $kurirId ?? 'Ambil Di Gudang' }}
+                    @elseif (strtolower($status) === 'Terdonasi')
+                        Barang didonasikan
+                    @else
+                        Barang belum laku
+                    @endif
+                </td>
             </tr>
         </table>
 
@@ -187,7 +202,6 @@
             </tr>
         </table>
 
-        <!-- Footer: QC -->
         <div class="footer">
             <p><span class="label">Diterima dan QC oleh:</span></p>
             <p>{{ $titipan->qcPegawai->id_pegawai ?? 'P18' }} - {{ $titipan->qcPegawai->nama_pegawai ?? 'Farida' }}

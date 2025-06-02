@@ -189,11 +189,16 @@ class BarangResource extends Resource
                             ->disabled(),
 
                         Forms\Components\FileUpload::make('foto_produk')
-                            ->label('Gambar Barang')
-                            ->multiple()
-                            ->image()
-                            ->maxFiles(5)
-                            ->required(),
+                ->label('Foto Barang')
+                ->image()
+                ->multiple()
+                ->preserveFilenames()
+                ->directory('produk')
+                ->enableOpen()
+                ->enableDownload()
+                ->maxFiles(5)
+                ->maxSize(2048) // Tambahkan batasan ukuran
+                ->required(),
                     ])
                     ->required()
                     ->minItems(1)

@@ -8,6 +8,8 @@ use App\Http\Helper\Helper;
 use App\Models\KategoriBarang;
 use App\Models\Kategori;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
+use App\Notifications\MobileNotif;
 
 class BarangController extends Controller
 {
@@ -17,7 +19,7 @@ class BarangController extends Controller
 
         // Get products with penitip and rating information
         $barangTersedia = Barang::with(['penitip'])
-            ->where('status_barang', 'tersedia')
+            ->where('status_barang', 'Tersedia')
             ->get()
             ->map(function ($barang) {
                 // Add average rating to each product
@@ -172,5 +174,53 @@ class BarangController extends Controller
         return view('search', compact('results', 'query'));
     }
 
+    public function notifikasi(Request $request)
+    {
+        \Log::info("Memulai proses notifikasi pada " . now());
+        Carbon::setLocale('id');
+        $today = Carbon::now('Asia/Jakarta')->toDateString();
+
+        $items = Barang::with('penitip')
+            ->where('status', 'Tersedia')
+            ->get();
+
+        $notificationsSent = 0;
+
+        foreach ($items as $item) {
+            $penitip = $item->penitip;
+            if (!$penitip || !$penitip->fcm_token) {
+                \Log::warning("Penitip atau FCM token kosong untuk barang {$item->kode_barang}");
+                continue;
+            }
+
+            $tanggalAkhir = Carbon::parse($item->tanggal_akhir, 'Asia/Jakarta')->toDateString();
+            $tanggalBatas = Carbon::parse($item->tanggal_batas, 'Asia/Jakarta')->toDateString();
+
+            if ($tanggalAkhir === $today || $tanggalBatas === $today) {
+                $title = ($tanggalAkhir === $today)
+                    ? "Masa Titip Barang {$item->nama_barang} Berakhir Hari Ini!"
+                    : "Masa Titip Barang {$item->nama_barang} Akan Berakhir Hari Ini!";
+
+                $body = ($tanggalAkhir === $today)
+                    ? "Masa titip untuk {$item->nama_barang} berakhir hari ini ({$tanggalAkhir}). Silakan ambil tindakan."
+                    : "Masa titip untuk {$item->nama_barang} akan berakhir hari ini ({$tanggalBatas}). Silakan persiapkan tindakan.";
+
+                try {
+                    \Log::info("Mengirim notif ke penitip {$penitip->id_penitip} dengan token {$penitip->fcm_token}");
+                    $penitip->notify(new MobileNotif($title, $body));
+                    \Log::info("Notifikasi terkirim ke penitip {$penitip->id_penitip}");
+                    $notificationsSent++;
+                } catch (\Exception $e) {
+                    \Log::error("Gagal mengirim notifikasi untuk penitip {$penitip->id_penitip}: {$e->getMessage()}");
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Notifikasi diproses, {$notificationsSent} notifikasi dikirim.",
+            'today' => $today,
+        ]);
+    }
 
 }

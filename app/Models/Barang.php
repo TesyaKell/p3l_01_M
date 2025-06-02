@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Barang extends Model
 {
@@ -58,6 +59,16 @@ class Barang extends Model
     public function penitip()
     {
         return $this->belongsTo(Penitip::class, 'id_penitip');
+    }
+
+    public function getTanggalBerakhirAttribute()
+    {
+        if ($this->attributes['tanggal_akhir']) {
+            return Carbon::parse($this->attributes['tanggal_akhir']);
+        }
+        return $this->tanggal_masuk && $this->masa_titip
+            ? Carbon::parse($this->tanggal_masuk)->addDays($this->masa_titip)
+            : null;
     }
     public function hitungDurasi(): int
     {
