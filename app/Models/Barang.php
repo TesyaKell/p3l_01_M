@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Barang extends Model
 {
@@ -48,6 +49,7 @@ class Barang extends Model
         return $this->belongsTo(Pegawai::class, 'id_hunter_pegawai');
     }
 
+
     public function qcPegawai()
     {
         return $this->belongsTo(Pegawai::class, 'id_qc_pegawai');
@@ -58,9 +60,15 @@ class Barang extends Model
     {
         return $this->belongsTo(Penitip::class, 'id_penitip');
     }
-    public function transaksi()
+
+    public function getTanggalBerakhirAttribute()
     {
-        return $this->hasMany(detail_transaksi::class, 'kode_barang');
+        if ($this->attributes['tanggal_akhir']) {
+            return Carbon::parse($this->attributes['tanggal_akhir']);
+        }
+        return $this->tanggal_masuk && $this->masa_titip
+            ? Carbon::parse($this->tanggal_masuk)->addDays($this->masa_titip)
+            : null;
     }
     public function hitungDurasi(): int
     {
@@ -75,10 +83,10 @@ class Barang extends Model
     }
 
 
-    public function detailTransaksi()
-    {
-        return $this->hasOne(\App\Models\DetailTransaksi::class, 'kode_barang', 'kode_barang');
-    }
+    // public function detailTransaksi()
+    // {
+    //     return $this->hasOne(\App\Models\DetailTransaksi::class, 'kode_barang', 'kode_barang');
+    // }
 
     protected static function boot()
     {
@@ -100,11 +108,15 @@ class Barang extends Model
         });
     }
 
-
-
-
     public function getNamaBarangSafeAttribute()
     {
         return $this->nama_barang ?? '-';
     }
+
+
+    public function detailTransaksi()
+    {
+        return $this->hasMany(DetailTransaksi::class, 'kode_barang', 'kode_barang');
+    }
+
 }

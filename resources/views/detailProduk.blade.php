@@ -69,7 +69,7 @@ use App\Http\Helper\Helper;
         }
 
         .btn-pink {
-            background-color: #d87ca7;
+            background-color: #d99da7;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -91,8 +91,7 @@ use App\Http\Helper\Helper;
             margin-bottom: 15px;
         }
 
-
-        .product-details {
+        <<<<<<<<< Temporary merge branch 1 .product-details {
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -410,24 +409,6 @@ use App\Http\Helper\Helper;
                 height: 250px;
             }
         }
-
-        /* Floating alert di tengah atas */
-        .floating-alert {
-            position: fixed;
-            top: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            min-width: 250px;
-            max-width: 400px;
-            padding: 10px 15px;
-            border-radius: 5px;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            z-index: 1050;
-            font-size: 0.9rem;
-            pointer-events: none;
-            text-align: center;
-        }
     </style>
 </head>
 
@@ -435,6 +416,18 @@ use App\Http\Helper\Helper;
     @include('components.navbar')
 
     <main class="container-sm my-5 flex-fill">
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <div class="product-card mb-4 container-fluid px-5">
             <div class="row g-0">
                 <!-- Product Images Carousel -->
@@ -442,7 +435,7 @@ use App\Http\Helper\Helper;
                     <div class="carousel-container">
                         <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
                             <div class="carousel-inner">
-                                @foreach ($barang->foto_produk as $index => $foto)
+                                @foreach ($barang->foto_produk ?? [] as $index => $foto)
                                     <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
                                         <img src="{{ asset('storage/' . $foto) }}" class="d-block w-100"
                                             alt="{{ $barang->nama_barang }} - Image {{ $index + 1 }}">
@@ -463,7 +456,7 @@ use App\Http\Helper\Helper;
 
                         <!-- Thumbnails -->
                         <div class="carousel-thumbnails">
-                            @foreach ($barang->foto_produk as $index => $foto)
+                            @foreach ($barang->foto_produk ?? [] as $index => $foto)
                                 <img src="{{ asset('storage/' . $foto) }}"
                                     class="carousel-thumbnail {{ $index == 0 ? 'active' : '' }}"
                                     data-bs-target="#productCarousel" data-bs-slide-to="{{ $index }}"
@@ -533,14 +526,10 @@ use App\Http\Helper\Helper;
                                 <div class="quantity-section mb-3">
                                     <label class="quantity-label">Jumlah:</label>
                                     <div class="quantity-controls">
-                                        <button type="button" class="quantity-btn minus" onclick="decreaseQuantity()">
-                                            <i class="bi bi-dash"></i>
-                                        </button>
-                                        <input type="number" id="quantity" value="1" min="1"
-                                            max="10" class="quantity-input">
-                                        <button type="button" class="quantity-btn plus" onclick="increaseQuantity()">
-                                            <i class="bi bi-plus"></i>
-                                        </button>
+
+                                        <input id="quantity" value="1" min="1" max="10" class="quantity-input" disabled>
+
+
                                     </div>
                                 </div>
 
@@ -549,16 +538,12 @@ use App\Http\Helper\Helper;
                                         @csrf
                                         <input type="hidden" name="kode_barang" value="{{ $barang->kode_barang }}">
                                         <input type="hidden" name="quantity" id="cart-quantity" value="1">
-
                                         <div class="button-group">
                                             <button type="submit" class="btn btn-pink btn-cart">
                                                 <i class="bi bi-cart-plus me-2"></i>
                                                 <span>Masukkan Ke Keranjang</span>
                                             </button>
-
                                         </div>
-
-
                                     </form>
                                 </div>
 
@@ -610,8 +595,10 @@ use App\Http\Helper\Helper;
                 @endforelse
 
                 {{-- Form Komentar --}}
-                @if (Helper::isLoggedIn(['pegawai', 'pembeli']) ||
-                        (Helper::isLoggedIn(['pegawai', 'pembeli']) && auth()->user()->jabatan === 'Customer Service'))
+                @if (
+                        Helper::isLoggedIn(['pegawai', 'pembeli']) ||
+                        (Helper::isLoggedIn(['pegawai', 'pembeli']) && auth()->user()->jabatan === 'Customer Service')
+                    )
                     <form action="{{ route('komentar.store') }}" method="POST" class="mt-4">
                         @csrf
                         <input type="hidden" name="kode_barang" value="{{ $barang->kode_barang }}">
@@ -633,13 +620,13 @@ use App\Http\Helper\Helper;
 
     <!-- Custom JavaScript for thumbnail navigation -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Get all thumbnails
             const thumbnails = document.querySelectorAll('.carousel-thumbnail');
 
             // Add click event to each thumbnail
             thumbnails.forEach(thumbnail => {
-                thumbnail.addEventListener('click', function() {
+                thumbnail.addEventListener('click', function () {
                     // Get the slide index from data attribute
                     const slideIndex = this.getAttribute('data-bs-slide-to');
 
@@ -658,7 +645,7 @@ use App\Http\Helper\Helper;
 
             // Update thumbnail active class when carousel slides
             const productCarousel = document.getElementById('productCarousel');
-            productCarousel.addEventListener('slid.bs.carousel', function(event) {
+            productCarousel.addEventListener('slid.bs.carousel', function (event) {
                 const slideIndex = event.to;
                 thumbnails.forEach((thumb, index) => {
                     if (index === slideIndex) {

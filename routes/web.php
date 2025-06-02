@@ -9,8 +9,6 @@ use App\Http\Controllers\PenitipController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MerchandiseController;
-use App\Models\Barang;
-use App\Models\Merchandise;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\RequestDonasiController;
@@ -21,6 +19,28 @@ use App\Http\Controllers\KomentarController;
 use App\Http\Controllers\LaporanOwnerController;
 use App\Http\Controllers\CetakNotaTitipanController;
 use App\Http\Controllers\ClaimMerchController;
+use App\Http\Controllers\RatingController;
+
+Route::middleware(['auth:pembeli'])->group(function () {
+
+    Route::get('/history', [RatingController::class, 'index'])->name('history');
+
+    Route::prefix('rating')->name('rating.')->group(function () {
+        Route::post('/', [RatingController::class, 'store'])->name('store');
+        Route::put('/{id}', [RatingController::class, 'update'])->name('update');
+        Route::delete('/{id}', [RatingController::class, 'destroy'])->name('destroy');
+    });
+});
+
+
+//TRANSAKSI
+Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi');
+
+Route::post('/rate-product', [TransaksiController::class, 'rateProduct'])->name('pembeli.rateProduct');
+
+
+
+
 
 Route::prefix('owner/laporan')->middleware(['auth:pegawai'])->group(function () {
     Route::get('/donasi/pdf', [LaporanOwnerController::class, 'donasiPdf'])->name('owner.laporan.donasi.pdf');
@@ -252,20 +272,7 @@ Route::post('/logout', [ProfilController::class, 'logout'])->name('logout.custom
 
 
 Route::get('/merchandise', [MerchandiseController::class, 'index'])->name('merchandise.index');
-
-Route::post('/redeem-merchandise', function (Request $request) {
-    $merchandise = Merchandise::find($request->merchandise_id);
-
-    if (!$merchandise || $merchandise->stok <= 0) {
-        return response()->json(['success' => false, 'message' => 'Merchandise not available or out of stock']);
-    }
-
-    $merchandise->stok -= 1;
-    $merchandise->save();
-
-
-    return response()->json(['success' => true, 'new_stock' => $merchandise->stok]);
-});
+Route::post('/redeem-merchandise', [MerchandiseController::class, 'redeem'])->name('merchandise.redeem');
 
 //Route to jabatan - Pegawai - CS
 Route::get('/cshomepage', function () {
@@ -315,8 +322,12 @@ Route::get('/cetak-nota-titipan/{barang}', [CetakNotaTitipanController::class, '
     ->name('cetak-nota-titipan');
 
 Route::get('/cetak-nota-penjualan/{id}', [CetakNotaTitipanController::class, 'cetakNotaPenjualan'])->name('cetak-nota-penjualan');
+Route::post('/transaksi/upload/{id}', [transaksiController::class, 'uploadBuktiPembayaran'])->name('upload.bukti');
 
+Route::get('/test-notifikasi', [BarangController::class, 'notifikasi']);
 
+//Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerch.index');
+Route::patch('/claim-merch/{id}/selesaikan', [ClaimMerchController::class, 'selesaikan'])->name('claimMerch.selesaikan');
 Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerc');
 
 Route::delete('/delete/requestdonasi/{id}', [RequestDonasiController::class, 'delete'])->name('destroy.requestdonasi');

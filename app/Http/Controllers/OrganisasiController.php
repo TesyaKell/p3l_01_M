@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Organisasi;
-
 use App\Http\Helper\Helper;
 use App\Notifications\VerifyEmail;
 use Auth;
@@ -17,20 +16,25 @@ use Str;
 
 class OrganisasiController extends Controller
 {
-
-    private function generateOrganisasiId()
+    public function generateOrganisasiId()
     {
-        $last = \App\Models\Organisasi::orderBy('id_organisasi', 'desc')->first();
+        do {
+            $lastNumber = Organisasi::withTrashed()
+                ->select('id_organisasi')
+                ->get()
+                ->map(fn ($item) => (int) substr($item->id_organisasi, 3))
+                ->sortDesc()
+                ->first();
 
-        if (!$last) {
-            $nextNumber = 1;
-        } else {
-            $lastNumber = (int) substr($last->id_organisasi, 3);
-            $nextNumber = $lastNumber + 1;
-        }
+            $nextNumber = $lastNumber ? $lastNumber + 1 : 1;
+            $newId = 'ORG' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
 
-        return 'ORG' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
+            $exists = Organisasi::withTrashed()->where('id_organisasi', $newId)->exists();
+        } while ($exists);
+
+        return $newId;
     }
+
 
     public function register(Request $request)
     {

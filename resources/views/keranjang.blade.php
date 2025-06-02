@@ -10,12 +10,14 @@ use App\Http\Helper\Helper;
     <title>Keranjang Saya</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
     <style>
         body {
@@ -102,7 +104,8 @@ use App\Http\Helper\Helper;
             </div>
         </div>
 
-    
+
+
         <!-- Modal Tambah Alamat -->
         <div class="modal fade" id="alamatModal" tabindex="-1" aria-labelledby="alamatModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -111,8 +114,7 @@ use App\Http\Helper\Helper;
                         @csrf
                         <div class="modal-header">
                             <h5 class="modal-title" id="alamatModalLabel">Tambah Alamat</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Tutup"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                         </div>
                         <div class="modal-body">
                             <div class="mb-3">
@@ -159,10 +161,11 @@ use App\Http\Helper\Helper;
                             <div class="card mb-3 shadow-sm">
                                 <div class="row g-0 align-items-center">
                                     <div class="col-md-3">
-                                        <img src="{{ asset('images/' . $item->barang->foto_produk) }}"
+                                        <img src="{{ asset('storage/' . ($item->barang?->foto_produk[0] ?? 'images/default.png')) }}"
                                             class="img-fluid rounded-start p-3"
-                                            style="height: 150px; object-fit: contain;"
-                                            alt="{{ $item->barang->nama_barang }}">
+                                            alt="{{ $item->barang->nama_barang ?? 'Tanpa nama' }}"
+                                            style="height: 150px; object-fit: contain;">
+
                                     </div>
                                     <div class="col-md-6">
                                         <div class="card-body">
@@ -184,8 +187,7 @@ use App\Http\Helper\Helper;
                         @endforeach
                         <!-- Modal hapus -->
                         @foreach ($keranjangItems as $item)
-                            <div class="modal fade" id="hapusModal{{ $item->id_keranjang }}" tabindex="-1"
-                                aria-hidden="true">
+                            <div class="modal fade" id="hapusModal{{ $item->id_keranjang }}" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -199,8 +201,7 @@ use App\Http\Helper\Helper;
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary"
                                                 data-bs-dismiss="modal">Batal</button>
-                                            <form action="{{ route('keranjang.destroy', $item->id_keranjang) }}"
-                                                method="POST">
+                                            <form action="{{ route('keranjang.destroy', $item->id_keranjang) }}" method="POST">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="btn btn-danger w-100">Hapus</button>
                                             </form>
@@ -227,8 +228,8 @@ use App\Http\Helper\Helper;
                         <label for="tukarPoin" class="form-label fw-semibold">Tukar Poin</label>
                         <input type="number" class="form-control" id="tukarPoin" name="tukar_poin" min="0"
                             max="{{ $poinPembeli }}" value="0">
-                        <div class="form-text">Poin Anda saat ini: <strong
-                                id="poinTersedia">{{ $poinPembeli }}</strong> poin</div>
+                        <div class="form-text">Poin Anda saat ini: <strong id="poinTersedia">{{ $poinPembeli }}</strong>
+                            poin</div>
                     </div>
 
                     {{-- Hasil perhitungan dinamis --}}
@@ -258,10 +259,8 @@ use App\Http\Helper\Helper;
                         </div>
                         <form method="POST" action="{{ route('checkout') }}" id="formCheckout">
                             @csrf
-                            <input type="hidden" name="alamat_pengiriman" id="inputAlamatPengiriman"
-                                value="">
-                            <input type="hidden" name="metode_pengiriman" id="inputMetodePengiriman"
-                                value="">
+                            <input type="hidden" name="alamat_pengiriman" id="inputAlamatPengiriman" value="">
+                            <input type="hidden" name="metode_pengiriman" id="inputMetodePengiriman" value="">
                             <input type="hidden" id="hiddenTukarPoin" name="tukar_poin" value="0">
 
                             <button type="submit" class="btn btn-success btn-lg">Checkout</button>
@@ -302,7 +301,7 @@ use App\Http\Helper\Helper;
 
     <!-- tampilkan alamat saat pilih Kurir -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             const metodeSelect = document.getElementById("metodePengiriman");
             const inputMetode = document.getElementById("inputMetodePengiriman");
             const inputAlamat = document.getElementById("inputAlamatPengiriman");
@@ -346,7 +345,7 @@ use App\Http\Helper\Helper;
             }
 
             if (metodeSelect && alamatBox) {
-                metodeSelect.addEventListener("change", function() {
+                metodeSelect.addEventListener("change", function () {
                     const metode = this.value;
                     inputMetode.value = metode;
 
@@ -367,7 +366,7 @@ use App\Http\Helper\Helper;
 
             // submit form untuk isi input hidden
             if (checkoutForm) {
-                checkoutForm.addEventListener("submit", function() {
+                checkoutForm.addEventListener("submit", function () {
                     document.getElementById("hiddenTukarPoin").value = tukarPoinInput.value;
                     inputMetode.value = metodeSelect.value;
                     inputAlamat.value = ambilAlamatTerpilih();
