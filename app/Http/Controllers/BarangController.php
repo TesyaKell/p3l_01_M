@@ -193,34 +193,47 @@ class BarangController extends Controller
                 continue;
             }
 
-            $tanggalAkhir = Carbon::parse($item->tanggal_akhir, 'Asia/Jakarta')->toDateString();
-            $tanggalBatas = Carbon::parse($item->tanggal_batas, 'Asia/Jakarta')->toDateString();
+            // Anggap:
+            // - di database, `tanggal_akhir` adalah TANGGAL H-3 (3 hari sebelum benar-benar berakhir).
+            // - `tanggal_batas` adalah TANGGAL H (hari terakhir masa titip).
+            //
+            // Jika struktur kolom Anda terbalik, tinggal tukar penggunaan variabel di bawah.
 
-            if ($tanggalAkhir === $today || $tanggalBatas === $today) {
-                $title = ($tanggalAkhir === $today)
-                    ? "Masa Titip Barang {$item->nama_barang} Berakhir Hari Ini!"
-                    : "Masa Titip Barang {$item->nama_barang} Akan Berakhir Hari Ini!";
+            $hMinus3        = Carbon::parse($item->tanggal_batas, 'Asia/Jakarta')->toDateString(); // karena ini H-3
+            $tanggalBatas   = Carbon::parse($item->tanggal_akhir, 'Asia/Jakarta')->toDateString(); // karena ini hari H
 
-                $body = ($tanggalAkhir === $today)
-                    ? "Masa titip untuk {$item->nama_barang} berakhir hari ini ({$tanggalAkhir}). Silakan ambil tindakan."
-                    : "Masa titip untuk {$item->nama_barang} akan berakhir hari ini ({$tanggalBatas}). Silakan persiapkan tindakan.";
+            // 1) Kapan today == hMinus3? (yaitu 3 hari sebelum benar-benar berakhir)
+            //    --> Kirim pesan “sisa 3 hari, berakhir pada tanggal_batas”.
+            if ($hMinus3 === $today) {
+                $title = "Masa Titip Barang {$item->nama_barang} Sisa 3 Hari Lagi";
+                $body  = "Masa titip untuk {$item->nama_barang} sisa 3 hari, berakhir pada {$tanggalBatas}. Silakan ambil tindakan.";
+            }
+            // 2) Kapan today == tanggalBatas? (hari H)
+            //    --> Kirim pesan “berakhir hari ini (tanggal_batas)”.
+            elseif ($tanggalBatas === $today) {
+                $title = "Masa Titip Barang {$item->nama_barang} Berakhir Hari Ini!";
+                $body  = "Masa titip untuk {$item->nama_barang} berakhir hari ini ({$tanggalBatas}). Silakan ambil barang di gudang.";
+            } else {
+                // Bukan saat notifikasi (bukan H-3, bukan H), lanjutkan ke item berikut
+                continue;
+            }
 
-                try {
-                    \Log::info("Mengirim notif ke penitip {$penitip->id_penitip} dengan token {$penitip->fcm_token}");
-                    $penitip->notify(new MobileNotif($title, $body));
-                    \Log::info("Notifikasi terkirim ke penitip {$penitip->id_penitip}");
-                    $notificationsSent++;
-                } catch (\Exception $e) {
-                    \Log::error("Gagal mengirim notifikasi untuk penitip {$penitip->id_penitip}: {$e->getMessage()}");
-                }
+            try {
+                \Log::info("Mengirim notif ke penitip {$penitip->id_penitip} dengan token {$penitip->fcm_token}");
+                $penitip->notify(new MobileNotif($title, $body));
+                \Log::info("Notifikasi terkirim ke penitip {$penitip->id_penitip}");
+                $notificationsSent++;
+            } catch (\Exception $e) {
+                \Log::error("Gagal mengirim notifikasi untuk penitip {$penitip->id_penitip}: {$e->getMessage()}");
             }
         }
 
         return response()->json([
             'success' => true,
             'message' => "Notifikasi diproses, {$notificationsSent} notifikasi dikirim.",
-            'today' => $today,
+            'today'   => $today,
         ]);
     }
+
 
 }
