@@ -10,6 +10,7 @@ use App\Http\Helper\Helper;
     <title>Keranjang Saya</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -102,6 +103,7 @@ use App\Http\Helper\Helper;
             </div>
         </div>
 
+
         <!-- Modal Tambah Alamat -->
         <div class="modal fade" id="alamatModal" tabindex="-1" aria-labelledby="alamatModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -154,12 +156,9 @@ use App\Http\Helper\Helper;
                 @else
                     <div class="list-group">
                         @foreach ($keranjangItems as $item)
-                            @php
-                                $totalHarga += $item->barang->harga;
-                            @endphp
+                            @php $totalHarga += $item->barang->harga; @endphp
                             <div class="card mb-3 shadow-sm">
                                 <div class="row g-0 align-items-center">
-                                    <!-- Gambar Produk -->
                                     <div class="col-md-3">
                                         <img src="{{ asset('storage/' . ($item->barang?->foto_produk[0] ?? 'images/default.png')) }}"
                                             class="img-fluid rounded-start p-3"
@@ -167,19 +166,47 @@ use App\Http\Helper\Helper;
                                             style="height: 150px; object-fit: contain;">
 
                                     </div>
-
-                                    <!-- Nama Barang -->
                                     <div class="col-md-6">
                                         <div class="card-body">
                                             <h5 class="card-title mb-0">{{ $item->barang->nama_barang }}</h5>
                                         </div>
                                     </div>
-
-                                    <!-- Harga Barang -->
-                                    <div class="col-md-3 text-end pe-4">
-                                        <p class="fw-bold harga mb-0">
-                                            Rp{{ number_format($item->barang->harga, 0, ',', '.') }}
-                                        </p>
+                                    <div class="col-md-3 pe-4">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <p class="fw-bold harga mb-0">
+                                                Rp{{ number_format($item->barang->harga, 0, ',', '.') }}</p>
+                                            <button class="btn btn-outline-danger btn-sm ms-2" data-bs-toggle="modal"
+                                                data-bs-target="#hapusModal{{ $item->id_keranjang }}">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                        <!-- Modal hapus -->
+                        @foreach ($keranjangItems as $item)
+                            <div class="modal fade" id="hapusModal{{ $item->id_keranjang }}" tabindex="-1"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Konfirmasi Hapus</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Tutup"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Yakin ingin menghapus <strong>{{ $item->barang->nama_barang }}</strong>?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Batal</button>
+                                            <form action="{{ route('keranjang.destroy', $item->id_keranjang) }}"
+                                                method="POST">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="btn btn-danger w-100">Hapus</button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

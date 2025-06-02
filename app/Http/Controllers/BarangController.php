@@ -133,7 +133,7 @@ class BarangController extends Controller
         $user = Helper::getLoggedInUser('pembeli');
 
         if (!$user) {
-            return response()->json(['message' => 'Silakan login terlebih dahulu sebagai pembeli.'], 401);
+            return redirect()->back()->with('error', 'Silakan login terlebih dahulu sebagai pembeli.');
         }
 
         $request->validate([
@@ -145,7 +145,7 @@ class BarangController extends Controller
             ->exists();
 
         if ($exists) {
-            return response()->json(['message' => 'Barang ini sudah ada di keranjang Anda.'], 409);
+            return redirect()->back()->with('error', 'Barang ini sudah ada di keranjang Anda.');
         }
 
         \App\Models\Keranjang::create([
@@ -153,9 +153,8 @@ class BarangController extends Controller
             'kode_barang' => $request->kode_barang,
         ]);
 
-        return response()->json(['message' => 'Barang berhasil dimasukkan ke keranjang!'], 200);
+        return redirect()->back()->with('success', 'Barang berhasil dimasukkan ke keranjang!');
     }
-
 
 
     public function search(Request $request)

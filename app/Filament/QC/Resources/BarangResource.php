@@ -193,7 +193,6 @@ class BarangResource extends Resource
                 ->image()
                 ->multiple()
                 ->preserveFilenames()
-                ->directory('produk')
                 ->enableOpen()
                 ->enableDownload()
                 ->maxFiles(5)

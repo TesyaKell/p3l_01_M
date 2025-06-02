@@ -57,6 +57,7 @@ class EditBarang extends EditRecord
             ->modalSubmitActionLabel('Ya, Simpan')
             ->modalCancelActionLabel('Batal')
             ->action(function () {
+                $this->save();
                 $data = $this->form->getState();
                 $this->handleRecordUpdate($this->getRecord(), $data);
                 return redirect()->route('filament.qc.resources.barangs.index');
