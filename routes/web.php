@@ -260,7 +260,6 @@ Route::post('/logout', function () {
 
 Route::post('/logout', [ProfilController::class, 'logout'])->name('logout.custom');
 
-Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerc');
 
 
 Route::get('/merchandise', [MerchandiseController::class, 'index'])->name('merchandise.index');
@@ -316,3 +315,7 @@ Route::post('/transaksi/upload/{id}', [transaksiController::class, 'uploadBuktiP
 
 
 Route::get('/test-notifikasi', [BarangController::class, 'notifikasi']);
+
+
+Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerch.index');
+Route::patch('/claim-merch/{id}/selesaikan', [ClaimMerchController::class, 'selesaikan'])->name('claimMerch.selesaikan');

@@ -40,11 +40,102 @@
             align-items: center;
             justify-content: center;
         }
+
+        /* Gaya Alert Kustom */
+        .alert {
+            position: relative;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-icon {
+            font-size: 1.2rem;
+        }
+
+        .alert-dismissible .btn-close {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            padding: 0.5rem;
+            opacity: 0.7;
+        }
+
+        .alert-dismissible .btn-close:hover {
+            opacity: 1;
+        }
+
+        /* Animasi masuk */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Animasi keluar */
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+        }
+
+        .alert.fade.show {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .alert.fade:not(.show) {
+            animation: fadeOut 0.5s ease forwards;
+        }
     </style>
 </head>
 
 <body class="bg-light">
     <div class="container py-4">
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill alert-icon"></i>
+                <span>{{ session('success') }}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
+                <span>{{ session('error') }}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         <!-- Header -->
         <div class="row mb-4">
             <div class="col-12">
@@ -102,7 +193,6 @@
             </div>
         </div>
 
-
         <!-- Table -->
         <div class="card">
             <div class="card-body">
@@ -119,7 +209,9 @@
                             <th>Nama Merchandise</th>
                             <th>Nama Pembeli</th>
                             <th>Tanggal Request</th>
+                            <th>Tanggal ACC</th>
                             <th>Status</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -129,6 +221,11 @@
                                 <td>{{ $claim->merchandise->nama ?? 'N/A' }}</td>
                                 <td>{{ $claim->pembeli->nama_pembeli ?? 'N/A' }}</td>
                                 <td>{{ $claim->tanggal_request }}</td>
+                                @if ($claim->tanggal_acc)
+                                    <td>{{ $claim->tanggal_acc }}</td>
+                                @else
+                                    <td class="text-muted">Belum ACC</td>
+                                @endif
                                 <td>
                                     @php
                                         $status = ucfirst($claim->status);
@@ -140,12 +237,22 @@
                                     @endphp
                                     <span class="badge {{ $badgeClass }} badge-status">{{ $status }}</span>
                                 </td>
+                                <td>
+                                    @if ($claim->status === 'Proses Pengambilan')
+                                        <form action="{{ route('claimMerch.selesaikan', $claim->id_claim_merch) }}"
+                                            method="POST" class="d-inline">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="btn btn-sm btn-success selesaikan-btn"
+                                                onclick="return confirm('Apakah Anda yakin ingin menyelesaikan klaim ini?')">
+                                                <i class="bi bi-check-circle me-1"></i>Selesaikan
+                                            </button>
+                                        </form>
+                                    @endif
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
-
-
-
                 </table>
             </div>
         </div>
@@ -178,7 +285,16 @@
             });
         });
     </script>
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    bootstrap.Alert.getOrCreateInstance(alert).close();
+                }, 5000); // Hilang setelah 5 detik
+            });
+        });
+    </script>
 </body>
 
 </html>
