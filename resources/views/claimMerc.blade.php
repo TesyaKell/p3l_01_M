@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <style>
@@ -663,7 +664,14 @@
                                 </tr>
                             @endforeach
                         </tbody>
+
                     </table>
+                    <div class="mt-10 text-center">
+                        <button onclick="window.history.back()"
+                            class="btn btn-sm btn-success selesaikan-btn px-6 py-3 gradient-bg text-white rounded-lg hover:bg-pink-700 shadow-md transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>Kembali
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

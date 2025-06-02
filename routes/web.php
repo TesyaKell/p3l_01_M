@@ -317,5 +317,6 @@ Route::post('/transaksi/upload/{id}', [transaksiController::class, 'uploadBuktiP
 Route::get('/test-notifikasi', [BarangController::class, 'notifikasi']);
 
 
-Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerch.index');
+//Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerch.index');
 Route::patch('/claim-merch/{id}/selesaikan', [ClaimMerchController::class, 'selesaikan'])->name('claimMerch.selesaikan');
+Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerc');

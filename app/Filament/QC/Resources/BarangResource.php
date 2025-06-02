@@ -127,7 +127,7 @@ class BarangResource extends Resource
                             ->afterStateUpdated(function ($state, \Filament\Forms\Set $set, $get) {
                                 $tanggalMasuk = Carbon::now();
                                 $tanggalBatas = $tanggalMasuk->copy()->addDays(30);
-                                $tanggalAkhir = $tanggalBatas->copy();  // sama dengan tanggal_batas
+                                $tanggalAkhir = $tanggalBatas->copy()->subDays(3);
 
                                 $set('tanggal_batas', $tanggalBatas->toDateTimeString());
                                 $set('tanggal_akhir', $tanggalAkhir->toDateTimeString());
@@ -145,7 +145,8 @@ class BarangResource extends Resource
                             ->afterStateHydrated(function ($state, \Filament\Forms\Set $set, $get) {
                                 if ($get('tanggal_masuk')) {
                                     $tanggalBatas = Carbon::parse($get('tanggal_masuk'))->addDays(30);
-                                    $tanggalAkhir = $tanggalBatas->copy();  // sama dengan tanggal_batas
+                                    $tanggalAkhir = $tanggalBatas->copy()->subDays(3);
+
                                     $set('tanggal_akhir', $tanggalAkhir->toDateTimeString());
                                 }
                             }),
@@ -388,7 +389,9 @@ class BarangResource extends Resource
                             Infolists\Components\TextEntry::make('penitip.nama_penitip')->label('Nama Penitip'),
                             Infolists\Components\TextEntry::make('penitip.no_telp')->label('Nomor Telepon'),
                             Infolists\Components\TextEntry::make('penitip.email')->label('Email'),
+                            Infolists\Components\TextEntry::make('penitip.alamat')->label('Alamat'),
                         ]),
+
                     ])
                     ->collapsible(),
             ]);
