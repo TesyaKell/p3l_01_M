@@ -129,11 +129,12 @@ class transaksiController extends Controller
                     'kode_barang' => $barang->kode_barang,
                     'no_nota' => $noNota,
                     'nama_barang' => $barang->nama_barang,
-                    'harga_jual_bersih' => $hargaJualBersih + $bonus,
+                    'harga_jual_bersih' => $hargaJualBersih,
                     'komisi_reusmart' => $komisiReusmart,
                     'komisi_hunter' => $komisiHunter,
                     'bonus' => $bonus,
-                    'total' => $hargaJualBersih,
+                    'total' => $hargaJualBersih + $bonus,
+                    'komisi_penitip' => $hargaJualBersih + $bonus,
                 ];
 
                 $totalHarga += $hargaBarang;
