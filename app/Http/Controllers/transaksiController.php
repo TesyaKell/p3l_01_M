@@ -161,8 +161,12 @@ class transaksiController extends Controller
             $tipeDelivery = $request->input('metode_pengiriman');
             $ongkir = ($tipeDelivery === 'kurir' && $totalHarga < 1500000) ? 100000 : 0;
 
-            $nilaiTukarPoin = $tukarPoin; // 1 poin = Rp1 (bukan 10.000)
+            $nilaiTukarPoin = $tukarPoin * 100;
             $totalPembayaran = max(0, $totalHarga + $ongkir - $nilaiTukarPoin);
+
+            // $nilaiTukarPoin = $tukarPoin * 100; // 1 poin = Rp100
+            // $totalPembayaran = max(0, $totalHarga + $ongkir - $nilaiTukarPoin);
+
 
             // Simpan transaksi
             $transaksi = Transaksi::create([
