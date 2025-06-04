@@ -4,6 +4,7 @@ use App\Models\Pembeli;
 use App\Models\Penitip;
 use App\Models\Transaksi;
 use App\Notifications\MobileNotif;
+use Carbon\Carbon;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
@@ -16,13 +17,14 @@ Schedule::command('auto:donasi-barang')->everyFiveMinutes();
 
 Schedule::call(function () {
     try {
+        $currentMinute = Carbon::now()->startOfMinute(); // e.g., 2025-06-04 22:04:00
+        $nextMinute = $currentMinute->copy()->addMinute(); // e.g., 2025-06-04 22:05:00
+
         $transaksi = Transaksi::where('status', 'Dikirim')
             ->where('tipe_delivery', 'kurir')
             ->whereNotNull('tanggal_ambil_kirim')
-            ->whereBetween('tanggal_ambil_kirim', [
-                now()->subMinutes(1)->toDateTimeString(),
-                now()->toDateTimeString()
-            ])
+            ->where('tanggal_ambil_kirim', '>=', $currentMinute->format('Y-m-d H:i:s'))
+            ->where('tanggal_ambil_kirim', '<', $nextMinute->format('Y-m-d H:i:s'))
             ->get();
 
         if ($transaksi->isEmpty()) {

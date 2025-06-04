@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\transaksiController;
 use App\Http\Controllers\UserController;
 use App\Models\Pegawai;
 use App\Models\Penitip;
@@ -11,6 +12,9 @@ Route::post('/login-mobile', [UserController::class, 'loginApi']);
 // contoh untuk testing notif
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout-mobile', [UserController::class, 'logoutApi']);
+    Route::get('/pengiriman-kurir', [transaksiController::class, 'getPengirimanKurir']);
+    Route::post('/pengiriman-kurir/{no_nota}', [transaksiController::class, 'selesaikanPengiriman']);
+    Route::get('/history-pengiriman-kurir', [transaksiController::class, 'getHistoryPengirimanKurir']);
 });
 Route::get('/test-fcm', function (Request $request) {
     //  cari dulu user nya yang mau ditarget
