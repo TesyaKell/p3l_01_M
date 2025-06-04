@@ -340,8 +340,13 @@ use App\Http\Helper\Helper;
                     tukarPoinInput.value = tukarPoin;
                 }
 
-                totalSetelahDiskon -= tukarPoin * 100;
-                totalEl.innerText = formatRupiah(totalSetelahDiskon);
+                if (tukarPoin < 0 && tukarPoinInput.value !== "") {
+                    tukarPoin = 0;
+                    tukarPoinInput.value = tukarPoin;
+                }
+
+                totalSetelahDiskon -= Math.max(0, tukarPoin) * 100;
+                totalEl.innerText = formatRupiah(Math.max(0, totalSetelahDiskon));
             }
 
             if (metodeSelect && alamatBox) {

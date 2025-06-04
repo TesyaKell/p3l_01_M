@@ -165,7 +165,7 @@
                         @if ($transaksi->tukar_poin > 0)
                             <p class="d-flex justify-content-between text-success"><span>Diskon Poin
                                     ({{ $transaksi->tukar_poin }} poin):</span> <span>-
-                                    Rp{{ number_format($transaksi->tukar_poin, 0, ',', '.') }}</span></p>
+                                    Rp{{ number_format($transaksi->tukar_poin * 100, 0, ',', '.') }}</span></p>
                         @endif
                         <p class="d-flex justify-content-between fw-bold h5 border-top pt-2"><span>Total
                                 Pembayaran:</span>
