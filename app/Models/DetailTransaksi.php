@@ -23,10 +23,16 @@ class DetailTransaksi extends Model
         'komisi_penitip',
     ];
 
+
     public function transaksi()
     {
         return $this->belongsTo(Transaksi::class, 'no_nota', 'no_nota');
     }
+    public function penitip()
+    {
+        return $this->belongsTo(Penitip::class, 'id_penitip');
+    }
+
 
     public function barang()
     {

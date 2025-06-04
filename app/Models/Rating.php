@@ -13,7 +13,7 @@ class Rating extends Model
 {
     protected $table = 'rating';
     protected $primaryKey = 'id_rating';
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected $fillable = [
         'id_detail_transaksi',
