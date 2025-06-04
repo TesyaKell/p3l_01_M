@@ -63,3 +63,48 @@ Schedule::call(function () {
     ->onFailure(function () {
         Log::error('Failed to send scheduled notifications.');
     });
+
+Schedule::call(function () {
+    try {
+        $expiredTransactions = Transaksi::with('detailTransaksi.barang', 'pembeli')
+            ->where('status', 'menunggu pembayaran')
+            ->where('tanggal_pesan', '<=', now()->subMinutes(15))
+            ->get();
+
+        foreach ($expiredTransactions as $transaksi) {
+            DB::beginTransaction();
+            try {
+                // Cancel the transaction
+                $transaksi->update(['status' => 'Batal']);
+
+                // Restore item availability
+                foreach ($transaksi->detailTransaksi as $detail) {
+                    if ($detail->barang) {
+                        $detail->barang->update([
+                            'status' => 'Tersedia',
+                            'tanggal_laku' => null,
+                        ]);
+                    }
+                }
+
+                // Restore buyer points
+                $pembeli = $transaksi->pembeli;
+                if ($pembeli) {
+                    $pembeli->update([
+                        'poin' => $pembeli->poin + $transaksi->tukar_poin - $transaksi->tambah_poin,
+                    ]);
+                }
+
+                DB::commit();
+                Log::info("Transaction {$transaksi->no_nota} auto-canceled due to timeout");
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error("Failed to auto-cancel transaction {$transaksi->no_nota}: " . $e->getMessage());
+            }
+        }
+
+    } catch (\Exception $e) {
+        Log::error('Auto-cancel scheduler error: ' . $e->getMessage());
+    }
+})->everyMinute()->name('auto-cancel-expired-transactions');

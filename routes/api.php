@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login-mobile', [UserController::class, 'loginApi']);
+Route::post('/transaksi/{no_nota}/cancel', [transaksiController::class, 'cancelTransaction'])->name('transaksi.cancel');
 // contoh untuk testing notif
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout-mobile', [UserController::class, 'logoutApi']);

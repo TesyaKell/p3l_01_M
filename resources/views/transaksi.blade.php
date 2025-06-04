@@ -11,7 +11,9 @@
     <title>Detail Transaksi - {{ $transaksi->no_nota }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -204,8 +206,7 @@
                             <label for="bukti_{{ $transaksi->no_nota }}" class="form-label">Upload Bukti
                                 Pembayaran:</label>
                             <input type="file" class="form-control bukti-input" name="bukti_pembayaran"
-                                id="bukti_{{ $transaksi->no_nota }}" required
-                                {{ $diffSeconds <= 0 ? 'disabled' : '' }}>
+                                id="bukti_{{ $transaksi->no_nota }}" required {{ $diffSeconds <= 0 ? 'disabled' : '' }}>
                         </div>
                         <button type="submit" class="btn btn-primary btn-kirim" disabled>Kirim Bukti
                             Pembayaran</button>
@@ -235,7 +236,7 @@
     {{-- Script hanya jika status 'menunggu pembayaran' --}}
     @if ($transaksi->status === 'menunggu pembayaran')
         <script>
-            document.addEventListener("DOMContentLoaded", function() {
+            document.addEventListener("DOMContentLoaded", function () {
                 const countdownEl = document.querySelector(".countdown");
                 const formUpload = document.getElementById("formUpload");
                 const fileInput = formUpload ? formUpload.querySelector('.bukti-input') : null;
@@ -252,10 +253,25 @@
                             fileInput.disabled = true; // Nonaktifkan input file
                             submitButton.disabled = true; // Nonaktifkan tombol kirim
                             clearInterval(timer); // Hentikan timer
-                            // PENTING: Pembatalan aktual terjadi di server (saat riwayat di-load
-                            // atau via scheduler). JS hanya menonaktifkan form.
-                            // Anda bisa menambahkan reload otomatis setelah beberapa detik jika mau.
-                            // setTimeout(() => window.location.reload(), 3000);
+                            fetch(`/transaksi/{{ $transaksi->no_nota }}/cancel`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                }
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        // Reload page to show updated status
+                                        setTimeout(() => window.location.reload(), 2000);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error canceling transaction:', error);
+                                    // Still reload to check server-side status
+                                    setTimeout(() => window.location.reload(), 2000);
+                                });
                         } else {
                             const minutes = Math.floor(seconds / 60);
                             const secs = seconds % 60;
@@ -270,7 +286,7 @@
                     const timer = setInterval(updateTimer, 1000);
 
                     // Listener untuk input file
-                    fileInput.addEventListener('change', function() {
+                    fileInput.addEventListener('change', function () {
                         // Hanya enable jika ada file DAN waktu belum habis (cek 'seconds' lagi)
                         submitButton.disabled = !this.files.length || (seconds <= 0);
                     });
