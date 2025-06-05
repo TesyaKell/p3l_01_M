@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailTransaksi;
+use App\Models\Pembeli;
+use App\Models\Penitip;
 use App\Models\Transaksi;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -333,6 +335,17 @@ class BarangController extends Controller
             foreach ($details as $detail) {
                 Barang::where('kode_barang', $detail->kode_barang)
                     ->update(['status' => 'Terdonasi']);
+                
+                //notifikasi
+                $penitipId = $detail->barang->id_penitip; 
+                $penitip = Penitip::find($penitipId);
+                if ($penitip && $penitip->id_penitip) {
+                    $penitip->notify(new MobileNotif(
+                        'Barang Didonasikan',
+                        "Barang '{$detail->barang->nama_barang}' didonasikan karena pembeli gagal membayar dalam waktu yang ditentukan."
+                    ))
+                    ;
+                }
             }
         }
 
@@ -347,6 +360,16 @@ class BarangController extends Controller
             foreach ($details as $detail) {
                 Barang::where('kode_barang', $detail->kode_barang)
                     ->update(['status' => 'Terdonasi']);
+
+                $pembeliId  = $transaksi->id_pembeli; 
+                $pembeli = Pembeli::find($pembeliId);
+                if ($pembeli && $pembeli->id_pembeli) {
+                    $pembeli->notify(new MobileNotif(
+                    'Barang Didonasikan',
+                    "Transaksi barang '{$detail->barang->nama_barang}' dibatalkan karena tidak diambil lebih dari 2 hari."
+                    ))
+                    ;
+                }
             }
         }
     }
