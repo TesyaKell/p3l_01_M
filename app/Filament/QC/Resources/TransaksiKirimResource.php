@@ -176,6 +176,8 @@ class TransaksiKirimResource extends Resource
                                     'Barang Anda dalam nota ' . $record->no_nota . ' akan dikirim oleh kurir.'
                                 ));
                             }
+
+
                         }
 
                     })

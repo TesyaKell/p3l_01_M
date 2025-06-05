@@ -300,6 +300,21 @@ class transaksiController extends Controller
             'tanggal_lunas' => now(),
         ]);
 
+        // Notifikasi untuk Pembeli berdasarkan tipe delivery
+        if ($transaksi->pembeli) {
+            if ($transaksi->tipe_delivery === 'ambil_tempat') {
+                $transaksi->pembeli->notify(new MobileNotif(
+                    'Barang Siap Diambil',
+                    'Pembayaran Anda telah dikonfirmasi. Barang pesanan Anda siap untuk diambil di tempat.'
+                ));
+            } else {
+                $transaksi->pembeli->notify(new MobileNotif(
+                    'Pembayaran Dikonfirmasi',
+                    'Pembayaran Anda telah dikonfirmasi. Barang pesanan Anda sedang dipersiapkan untuk pengiriman.'
+                ));
+            }
+        }
+
         foreach ($transaksi->detailTransaksi as $detail) {
             $barang = $detail->barang;
             if ($barang) {
@@ -404,7 +419,7 @@ class transaksiController extends Controller
 
         $transaksi = Transaksi::where('no_nota', $no_nota)->firstOrFail();
 
-        if (!$user || $transaksi->id_kurir_pegawai !== $user->id_pegawai) {
+        if (!$user || $transaksi->id_pegawai !== $user->id_pegawai) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized',
