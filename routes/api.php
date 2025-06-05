@@ -14,7 +14,7 @@ Route::post('/transaksi/{no_nota}/cancel', [transaksiController::class, 'cancelT
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout-mobile', [UserController::class, 'logoutApi']);
     Route::get('/pengiriman-kurir', [transaksiController::class, 'getPengirimanKurir']);
-    Route::post('/pengiriman-kurir/{no_nota}', [transaksiController::class, 'selesaikanPengiriman']);
+    Route::put('/pengiriman-kurir/{no_nota}', [transaksiController::class, 'selesaikanPengiriman']);
     Route::get('/history-pengiriman-kurir', [transaksiController::class, 'getHistoryPengirimanKurir']);
 });
 Route::get('/test-fcm', function (Request $request) {
