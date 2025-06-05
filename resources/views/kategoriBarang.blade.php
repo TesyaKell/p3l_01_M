@@ -34,13 +34,12 @@
                             class="text-decoration-none text-dark">
 
                             <div class="card h-100" style="cursor:pointer;">
-                                @if ($barang->foto_produk)
-                                    <img src="{{ asset('images/' . $barang->foto_produk) }}"
-                                        class="card-img-top p-2 rounded" alt="{{ $barang->nama_barang }}"
-                                        style="height: 200px; object-fit: contain;">
+                                @if (!empty($barang->foto_produk) && isset($barang->foto_produk[0]))
+                                    <img src="{{ asset('storage/' . $barang->foto_produk[0]) }}"
+                                        class="h-48 object-contain p-4 rounded-t-xl" alt="{{ $barang->nama_barang }}">
                                 @else
-                                    <img src="{{ asset('images/no-image.png') }}" class="card-img-top p-2 rounded"
-                                        alt="No image" style="height: 200px; object-fit: contain;">
+                                    <img src="{{ asset('images/no-image.png') }}"
+                                        class="h-48 object-contain p-4 rounded-t-xl" alt="No image">
                                 @endif
 
                                 <div class="card-body">
