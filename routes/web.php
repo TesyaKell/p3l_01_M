@@ -96,6 +96,10 @@ Route::get('/penitip/history', [PenitipController::class, 'historyPenjualanPenit
 //History transaksi pembelian
 Route::get('/pembeli/history', [PembeliController::class, 'historyTransaksiPembelian'])->name('historyTransaksiPembelian');
 
+//History transaksi pembeli dengan detail
+Route::get('/pembeli/history-transaksi', [PembeliController::class, 'historyTransaksi'])->name('pembeli.history.transaksi')->middleware('auth:pembeli');
+Route::get('/pembeli/transaksi/detail/{no_nota}', [PembeliController::class, 'detailTransaksi'])->name('pembeli.transaksi.detail')->middleware('auth:pembeli');
+
 
 // Menangani permintaan POST ke route /
 Route::post('/', [ProfilController::class, 'logout'])->name('logout');

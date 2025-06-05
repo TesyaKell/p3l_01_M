@@ -35,6 +35,10 @@ class PrintLaporanDonasiResource extends Resource
                 TextColumn::make('requestDonasi.organisasi.nama_organisasi')->label('Nama Organisasi')->searchable(),
                 TextColumn::make('tanggal_donasi')->label('Tanggal Donasi')->date('d M Y')->sortable(),
                 TextColumn::make('nama_penerima')->label('Nama Penerima')->searchable(),
+                TextColumn::make('requestDonasi.organisasi.alamat')->label('Alamat')->searchable()
+                    ->getStateUsing(function ($record) {
+                        return $record->requestDonasi?->organisasi?->alamat ?? 'Alamat tidak tersedia';
+                    }),
             ])
             ->actions([]);
     }

@@ -172,8 +172,8 @@ class TransaksiKirimResource extends Resource
                             $penitip = Penitip::find($barang->id_penitip);
                             if ($penitip) {
                                 $penitip->notify(new MobileNotif(
-                                    'Barang Anda Sedang Dikirim',
-                                    'Barang Anda dalam nota ' . $record->no_nota . ' sedang dikirim oleh kurir.'
+                                    'Barang Anda Akan Dikirim',
+                                    'Barang Anda dalam nota ' . $record->no_nota . ' akan dikirim oleh kurir.'
                                 ));
                             }
                         }

@@ -28,16 +28,17 @@ class DetailTransaksi extends Model
     {
         return $this->belongsTo(Transaksi::class, 'no_nota', 'no_nota');
     }
+
     public function penitip()
     {
         return $this->belongsTo(Penitip::class, 'id_penitip');
     }
 
-
     public function barang()
     {
         return $this->belongsTo(Barang::class, 'kode_barang', 'kode_barang');
     }
+
     public function getNamaBarangAttribute()
     {
         return $this->attributes['nama_barang'] ?? ($this->barang ? $this->barang->nama_barang : null);
