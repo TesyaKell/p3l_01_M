@@ -336,7 +336,7 @@ class BarangController extends Controller
                 Barang::where('kode_barang', $detail->kode_barang)
                     ->update(['status' => 'Terdonasi']);
                 
-                //notifikasi
+                //notifikasi ke setiap penitip
                 $penitipId = $detail->barang->id_penitip; 
                 $penitip = Penitip::find($penitipId);
                 if ($penitip && $penitip->id_penitip) {
@@ -346,7 +346,18 @@ class BarangController extends Controller
                     ))
                     ;
                 }
+                $pembeliId  = $transaksi->id_pembeli; 
+                $pembeli = Pembeli::find($pembeliId);
+                if ($pembeli && $pembeli->id_pembeli) {
+                    $pembeli->notify(new MobileNotif(
+                    'Barang Didonasikan',
+                    "Transaksi barang '{$detail->barang->nama_barang}' dibatalkan karena pembeli gagal membayar dalam waktu yang ditentukan ."
+                    ))
+                    ;
+                }
+                 
             }
+            
         }
 
         // 2. Transaksi sudah dijadwalkan ambil, tapi lewat > 2 hari
@@ -367,6 +378,16 @@ class BarangController extends Controller
                     $pembeli->notify(new MobileNotif(
                     'Barang Didonasikan',
                     "Transaksi barang '{$detail->barang->nama_barang}' dibatalkan karena tidak diambil lebih dari 2 hari."
+                    ))
+                    ;
+                }
+
+                $penitipId = $detail->barang->id_penitip; 
+                $penitip = Penitip::find($penitipId);
+                if ($penitip && $penitip->id_penitip) {
+                    $penitip->notify(new MobileNotif(
+                        'Barang Didonasikan',
+                        "Barang '{$detail->barang->nama_barang}' didonasikan karena tidak diambil lebih dari 2 hari."
                     ))
                     ;
                 }

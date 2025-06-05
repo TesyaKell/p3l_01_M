@@ -257,7 +257,7 @@ class TransaksiKirimResource extends Resource
                     ->visible(fn ($record) =>  $record->status !== 'Batal'),
 
 
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
 
             ->bulkActions([
