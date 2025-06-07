@@ -6,6 +6,7 @@ use App\Filament\Owner\Resources\LaporanKomisiBulananperProdukResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Carbon\Carbon;
+use Filament\Forms\Components\Select;
 use App\Models\DetailTransaksi;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
@@ -23,9 +24,9 @@ class ListLaporanKomisiBulananperProduks extends ListRecords
     public function mount(): void
     {
         parent::mount();
-        // Set default values to current month and year
-        $this->selectedMonth = date('m');
-        $this->selectedYear = date('Y');
+        // Initialize with session values or current date
+        $this->selectedMonth = session('selectedMonth', date('m')); // June 2025 as default (06)
+        $this->selectedYear = session('selectedYear', date('Y'));  // 2025 as default
     }
 
     protected function getHeaderActions(): array
@@ -51,35 +52,38 @@ class ListLaporanKomisiBulananperProduks extends ListRecords
                             '11' => 'November',
                             '12' => 'Desember',
                         ])
-                        ->default(fn () => $this->selectedMonth)
-                        ->required(),
-                    Forms\Components\Select::make('tahun')
-                        ->label('Tahun')
-                        ->options(function () {
-                            $years = [];
-                            $currentYear = date('Y');
-                            for ($i = $currentYear; $i >= $currentYear - 5; $i--) {
-                                $years[$i] = $i;
-                            }
-                            return $years;
-                        })
-                        ->default(fn () => $this->selectedYear)
-                        ->required(),
-                ])
-                ->action(function (array $data): void {
-                    $this->selectedMonth = $data['bulan'];
-                    $this->selectedYear = $data['tahun'];
-                    session(['selectedMonth' => $data['bulan'], 'selectedYear' => $data['tahun']]); // Store in session
-                    $this->resetTable();
-                    // Dispatch event to update the widget (adjust if needed)
-                    $this->dispatch('updateWidgets')->to(\App\Filament\Owner\Resources\LaporanKomisiBulananperProdukResource\Widgets\CommissionOverviewWidget::class);
+                         ->default($this->selectedMonth),
+                            Select::make('year')
+                                ->label('Tahun')
+                                ->options(function () {
+                                    $years = [];
+                                    $currentYear = date('Y');
+                                    for ($i = $currentYear; $i >= $currentYear - 5; $i--) {
+                                        $years[$i] = $i;
+                                    }
+                                    return $years;
+                                })
+                                ->default($this->selectedYear),
+                        ])
 
-                    Notification::make()
-                        ->title('Filter diterapkan')
-                        ->body('Menampilkan data untuk ' . Carbon::createFromDate($data['tahun'], $data['bulan'], 1)->format('F Y'))
-                        ->success()
-                        ->send();
-                }),
+                 ->action(function (array $data): void {
+                     $this->selectedMonth = $data['bulan'];
+                     $this->selectedYear = $data['year'];
+
+                     // Store in session
+                     session(['selected_month' => $this->selectedMonth]);
+                     session(['selected_year' => $this->selectedYear]);
+
+                     // Apply table filters
+                     $this->applyFilters();
+
+                     // Show notification
+                     $monthName = Carbon::createFromDate($this->selectedYear, $this->selectedMonth, 1)->format('F');
+                     Notification::make()
+                         ->title("Laporan bulan {$monthName} {$this->selectedYear} ditampilkan")
+                         ->success()
+                         ->send();
+                 }),
             Actions\Action::make('export_monthly_commission_report')
                 ->label('Export Laporan Komisi Bulanan')
                 ->icon('heroicon-o-document-arrow-down')
@@ -90,17 +94,26 @@ class ListLaporanKomisiBulananperProduks extends ListRecords
         ];
     }
 
-    protected function getTableQuery(): \Illuminate\Database\Eloquent\Builder|null
+    protected function applyFilters(): void
     {
-        return DetailTransaksi::query(); // Base query without filters, handled by table filters
+        $this->tableFilters['bulan']['value'] = $this->selectedMonth;
+        $this->tableFilters['tahun']['value'] = $this->selectedYear;
+    }
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            LaporanKomisiBulananperProdukResource\Widgets\CommissionOverviewWidget::class,
+        ];
     }
 
-    protected function applyFilters(array $filters): void
+    public function getViewData(): array
     {
-        $table = $this->getTable();
-        foreach ($filters as $filterName => $filterValue) {
-            $table->applyFilter($filterName, $filterValue);
-        }
+        $monthName = Carbon::createFromDate($this->selectedYear, $this->selectedMonth, 1)->locale('id')->format('F');
+
+        return [
+            'selectedMonthName' => $monthName,
+            'selectedYear' => $this->selectedYear,
+        ];
     }
 
     public function generateMonthlyCommissionReport($bulan = null, $tahun = null)
@@ -134,60 +147,10 @@ class ListLaporanKomisiBulananperProduks extends ListRecords
             'top_products' => $this->getTopCommissionProducts($bulan, $tahun),
         ];
 
-        $pdf = Pdf::loadView('laporan-komisi', $data);
+        $pdf = Pdf::loadView('laporan-komi si', $data);
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
         }, 'laporan-komisi-bulanan-' . $tahun . '-' . $bulan . '.pdf');
     }
 
-    protected function getTopCommissionProducts($bulan, $tahun)
-    {
-        return DB::table('detail_transaksi')
-            ->join('transaksi', 'detail_transaksi.no_nota', '=', 'transaksi.no_nota')
-            ->join('barang', 'detail_transaksi.kode_barang', '=', 'barang.kode_barang')
-            ->select(
-                'detail_transaksi.kode_barang',
-                'detail_transaksi.nama_barang',
-                'detail_transaksi.komisi_reusmart',
-                'detail_transaksi.komisi_hunter',
-                'detail_transaksi.komisi_penitip',
-                DB::raw('(detail_transaksi.komisi_reusmart + detail_transaksi.komisi_hunter + detail_transaksi.komisi_penitip) as total_komisi')
-            )
-            ->whereMonth('barang.tanggal_laku', $bulan)
-            ->whereYear('barang.tanggal_laku', $tahun)
-            ->where('transaksi.status', 'Selesai')
-            ->orderBy('total_komisi', 'desc')
-            ->limit(10)
-            ->get();
-    }
-
-    protected function getStatistikKomisiHarian($bulan, $tahun)
-    {
-        return DB::table('detail_transaksi')
-            ->join('transaksi', 'detail_transaksi.no_nota', '=', 'transaksi.no_nota')
-            ->join('barang', 'detail_transaksi.kode_barang', '=', 'barang.kode_barang')
-            ->select(
-                DB::raw('DAY(barang.tanggal_laku) as hari'),
-                DB::raw('SUM(detail_transaksi.komisi_reusmart) as total_komisi_reusmart'),
-                DB::raw('SUM(detail_transaksi.komisi_hunter) as total_komisi_hunter'),
-                DB::raw('SUM(detail_transaksi.komisi_penitip) as total_komisi_penitip'),
-                DB::raw('COUNT(*) as jumlah_produk')
-            )
-            ->whereMonth('barang.tanggal_laku', $bulan)
-            ->whereYear('barang.tanggal_laku', $tahun)
-            ->where('transaksi.status', 'Selesai')
-            ->groupBy(DB::raw('DAY(barang.tanggal_laku)'))
-            ->orderBy('hari')
-            ->get();
-    }
-
-    // protected function getHeaderWidgets(): array
-    // {
-    //     return [
-    //         LaporanKomisiBulananperProdukResource\Widgets\CommissionOverviewWidget::class::make([
-    //             'selectedMonth' => $this->selectedMonth,
-    //             'selectedYear' => $this->selectedYear,
-    //         ]),
-    //     ];
-    // }
 }

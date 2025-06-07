@@ -17,8 +17,8 @@ class CommissionOverviewWidget extends BaseWidget
     {
         try {
             // Use the selected month and year from the page, with fallback to current date
-            $bulan = $this->selectedMonth ?? date('m'); // June 2025 as default (06)
-            $tahun = $this->selectedYear ?? date('Y');  // 2025 as default
+            $bulan = session('selected_month', date('m'));
+            $tahun = session('selected_year', date('Y'));
 
             // Format bulan untuk tampilan
             $bulanLabel = Carbon::createFromDate($tahun, $bulan, 1)->format('F Y');
@@ -109,6 +109,4 @@ class CommissionOverviewWidget extends BaseWidget
             ];
         }
     }
-
-    protected $listeners = ['updateWidgets' => '$refresh'];
 }
