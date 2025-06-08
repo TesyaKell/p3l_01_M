@@ -347,3 +347,6 @@ Route::get('/laporan/penitip/pdf', [App\Http\Controllers\LaporanOwnerController:
 Route::get('/laporan/donasi/preview', [App\Http\Controllers\LaporanOwnerController::class, 'donasiPreview'])->name('laporan.donasi.preview');
 Route::get('/laporan/request/preview', [App\Http\Controllers\LaporanOwnerController::class, 'requestPreview'])->name('laporan.request.preview');
 
+Route::get('/barang', [BarangController::class, 'mobile']);
+Route::get('/r', [BarangController::class, 'ratingMobile']);
+Route::get('/rating', [BarangController::class, 'averageRating']);
