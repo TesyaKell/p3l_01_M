@@ -19,6 +19,8 @@ class LaporanBarangWaktuTitipanHabisResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationLabel = 'Laporan Barang yang Masa Penitipannya Sudah Habis ';
+    protected static ?string $navigationGroup = 'Laporan';
     public static function form(Form $form): Form
     {
         return $form
