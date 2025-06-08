@@ -51,11 +51,11 @@ class DonasiResource extends Resource
                         return $query
                             ->when(
                                 $data['dari_tanggal'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('tanggal_donasi', '>=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('tanggal_donasi', '>=', $date),
                             )
                             ->when(
                                 $data['sampai_tanggal'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('tanggal_donasi', '<=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('tanggal_donasi', '<=', $date),
                             );
                     }),
             ])

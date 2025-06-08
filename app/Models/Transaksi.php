@@ -39,12 +39,12 @@ class Transaksi extends Model
 
     public function pegawai()
     {
-        return $this->belongsTo(Pegawai::class, 'id_kurir_pegawai');
+        return $this->belongsTo(Pegawai::class, 'id_kurir_pegawai', 'id_pegawai');
     }
+
 
     public function detailTransaksi()
     {
         return $this->hasMany(DetailTransaksi::class, 'no_nota', 'no_nota');
     }
-
 }

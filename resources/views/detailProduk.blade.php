@@ -91,7 +91,7 @@ use App\Http\Helper\Helper;
             margin-bottom: 15px;
         }
 
-        .product-details {
+        <<<<<<<<< Temporary merge branch 1 .product-details {
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -539,16 +539,12 @@ use App\Http\Helper\Helper;
                                         @csrf
                                         <input type="hidden" name="kode_barang" value="{{ $barang->kode_barang }}">
                                         <input type="hidden" name="quantity" id="cart-quantity" value="1">
-
                                         <div class="button-group">
                                             <button type="submit" class="btn btn-pink btn-cart">
                                                 <i class="bi bi-cart-plus me-2"></i>
                                                 <span>Masukkan Ke Keranjang</span>
                                             </button>
-
                                         </div>
-
-
                                     </form>
                                 </div>
 

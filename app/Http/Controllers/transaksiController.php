@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pembeli;
 use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
+use Auth;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Penitip;
@@ -14,6 +16,7 @@ use App\Http\Helper\Helper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\Sanctum;
+use Illuminate\Http\JsonResponse;
 
 class transaksiController extends Controller
 {
@@ -130,7 +133,8 @@ class transaksiController extends Controller
                     'komisi_reusmart' => $komisiReusmart,
                     'komisi_hunter' => $komisiHunter,
                     'bonus' => $bonus,
-                    'total' => $hargaJualBersih,
+                    'total' => $hargaJualBersih + $bonus,
+                    'komisi_penitip' => $hargaJualBersih + $bonus,
                 ];
 
                 $totalHarga += $hargaBarang;
@@ -157,8 +161,12 @@ class transaksiController extends Controller
             $tipeDelivery = $request->input('metode_pengiriman');
             $ongkir = ($tipeDelivery === 'kurir' && $totalHarga < 1500000) ? 100000 : 0;
 
-            $nilaiTukarPoin = $tukarPoin; // 1 poin = Rp1 (bukan 10.000)
+            $nilaiTukarPoin = $tukarPoin * 100;
             $totalPembayaran = max(0, $totalHarga + $ongkir - $nilaiTukarPoin);
+
+            // $nilaiTukarPoin = $tukarPoin * 100; // 1 poin = Rp100
+            // $totalPembayaran = max(0, $totalHarga + $ongkir - $nilaiTukarPoin);
+
 
             // Simpan transaksi
             $transaksi = Transaksi::create([
@@ -173,7 +181,7 @@ class transaksiController extends Controller
                 'alamat_pengiriman' => $request->input('alamat_pengiriman'),
                 'total_harga_jual_bersih' => $totalHarga,
                 'total_pembayaran' => $totalPembayaran,
-                'komisi_penitip' => array_sum(array_column($detailTransaksiData, 'harga_jual_bersih')) + $totalBonus,
+                //'komisi_penitip' => array_sum(array_column($detailTransaksiData, 'harga_jual_bersih')) + $totalBonus,
                 'status' => 'menunggu pembayaran',
                 'tukar_poin' => $tukarPoin,
             ]);
@@ -189,10 +197,6 @@ class transaksiController extends Controller
             $pembeli->update(['poin' => $poinSetelah]);
             $barang->update(['tanggal_laku' => now()]);
 
-
-            //CEK DULU
-            // $detailTransaksiData->update(['komisi_reusmart' => $komisiReusmart]);
-            // $detailTransaksiData->update(['komisi_hunter' => $komisiHunter]);
 
             // Hapus semua item keranjang
             Keranjang::where('id_pembeli', $pembeli->id_pembeli)->delete();
@@ -296,6 +300,21 @@ class transaksiController extends Controller
             'tanggal_lunas' => now(),
         ]);
 
+        // Notifikasi untuk Pembeli berdasarkan tipe delivery
+        if ($transaksi->pembeli) {
+            if ($transaksi->tipe_delivery === 'ambil_tempat') {
+                $transaksi->pembeli->notify(new MobileNotif(
+                    'Barang Siap Diambil',
+                    'Pembayaran Anda telah dikonfirmasi. Barang pesanan Anda siap untuk diambil di tempat.'
+                ));
+            } else {
+                $transaksi->pembeli->notify(new MobileNotif(
+                    'Pembayaran Dikonfirmasi',
+                    'Pembayaran Anda telah dikonfirmasi. Barang pesanan Anda sedang dipersiapkan untuk pengiriman.'
+                ));
+            }
+        }
+
         foreach ($transaksi->detailTransaksi as $detail) {
             $barang = $detail->barang;
             if ($barang) {
@@ -347,4 +366,179 @@ class transaksiController extends Controller
         return redirect()->route('verifikasi.pembayaran')->with('success', 'Transaksi berhasil ditandai sebagai "Tidak Diverifikasi".');
     }
 
+    public function getPengirimanKurir(): JsonResponse
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        $transaksi = Transaksi::with(['detailTransaksi.barang'])
+            ->where('tipe_delivery', 'kurir')
+            ->where('status', 'Dikirim')
+            ->where('id_kurir_pegawai', $user->id_pegawai)
+            ->orderByDesc('tanggal_lunas')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $transaksi,
+        ]);
+    }
+    public function getHistoryPengirimanKurir(): JsonResponse
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        $transaksi = Transaksi::with(['detailTransaksi.barang'])
+            ->where('tipe_delivery', 'kurir')
+            ->where('status', '=', 'Selesai')
+            ->where('id_kurir_pegawai', $user->id_pegawai)
+            ->orderByDesc('tanggal_ambil_kirim')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $transaksi,
+        ]);
+    }
+
+    public function selesaikanPengiriman(Request $request, $no_nota)
+    {
+        $user = auth()->user();
+
+        $transaksi = Transaksi::where('no_nota', $no_nota)->firstOrFail();
+
+        if (!$user || $transaksi->id_pegawai !== $user->id_pegawai) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        if ($transaksi->status !== 'Dikirim') {
+            return response()->json([
+                'success' => true,
+                'data' => $transaksi,
+            ]);
+        }
+
+        // Update status transaksi
+        $transaksi->update([
+            'status' => 'Selesai',
+            //'tanggal_ambil_kirim' => now(),
+        ]);
+
+        // Update status barang
+        foreach ($transaksi->detailTransaksi as $detail) {
+            if ($detail->barang) {
+                $detail->barang->update([
+                    'tanggal_ambil' => now(),
+                ]);
+            }
+        }
+
+        // Kirim notifikasi ke penitip
+        foreach ($transaksi->detailTransaksi as $detail) {
+            if ($detail->barang && $detail->barang->id_penitip) {
+                $penitip = Penitip::find($detail->barang->id_penitip);
+                $pembeli = Pembeli::find($transaksi->id_pembeli);
+                if ($penitip) {
+                    $penitip->notify(new MobileNotif(
+                        'Barang Anda Telah Dikirim!',
+                        'Barang kamu telah berhasil dikirim oleh kurir.'
+                    ));
+                }
+
+                if ($pembeli) {
+                    $pembeli->notify(new MobileNotif(
+                        'Pengiriman Selesai',
+                        'Barang Anda telah berhasil diterima.'
+                    ));
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pengiriman selesai.',
+            'data' => $transaksi,
+        ]);
+    }
+
+    public function cancelTransaction($no_nota)
+    {
+        try {
+            $transaksi = Transaksi::with('detailTransaksi.barang', 'pembeli')->where('no_nota', $no_nota)->firstOrFail();
+
+            // Only cancel if still waiting for payment
+            if ($transaksi->status !== 'menunggu pembayaran') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Transaction cannot be canceled'
+                ]);
+            }
+
+            // Check if 15 minutes have passed
+            $limit = Carbon::parse($transaksi->tanggal_pesan)->addMinutes(15);
+            if (now()->lessThan($limit)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Timer has not expired yet'
+                ]);
+            }
+
+            DB::beginTransaction();
+            try {
+                // Cancel the transaction
+                $transaksi->update(['status' => 'Batal']);
+
+                // Restore item availability
+                foreach ($transaksi->detailTransaksi as $detail) {
+                    if ($detail->barang) {
+                        $detail->barang->update([
+                            'status' => 'Tersedia',
+                            'tanggal_laku' => null,
+                        ]);
+                    }
+                }
+
+                // Restore buyer points
+                $pembeli = $transaksi->pembeli;
+                if ($pembeli) {
+                    $pembeli->update([
+                        'poin' => $pembeli->poin + $transaksi->tukar_poin - $transaksi->tambah_poin,
+                    ]);
+                }
+
+                DB::commit();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Transaction canceled successfully'
+                ]);
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Cancel transaction error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error canceling transaction'
+            ], 500);
+        }
+    }
 }

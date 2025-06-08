@@ -95,7 +95,7 @@ class MerchandiseController extends Controller
             return response()->json(['success' => false, 'message' => 'Claim not found']);
         }
 
-        if ($claim->status !== 'pending') {
+        if ($claim->status !== 'Diambil') {
             Log::warning('Claim already processed', ['id' => $id, 'status' => $claim->status]);
             return response()->json(['success' => false, 'message' => 'Claim already processed']);
         }

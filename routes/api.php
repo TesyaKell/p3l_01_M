@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\transaksiController;
 use App\Http\Controllers\UserController;
 use App\Models\Pegawai;
 use App\Models\Penitip;
@@ -8,9 +9,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login-mobile', [UserController::class, 'loginApi']);
+Route::post('/transaksi/{no_nota}/cancel', [transaksiController::class, 'cancelTransaction'])->name('transaksi.cancel');
 // contoh untuk testing notif
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout-mobile', [UserController::class, 'logoutApi']);
+    Route::get('/pengiriman-kurir', [transaksiController::class, 'getPengirimanKurir']);
+    Route::put('/pengiriman-kurir/{no_nota}', [transaksiController::class, 'selesaikanPengiriman']);
+    Route::get('/history-pengiriman-kurir', [transaksiController::class, 'getHistoryPengirimanKurir']);
 });
 Route::get('/test-fcm', function (Request $request) {
     //  cari dulu user nya yang mau ditarget

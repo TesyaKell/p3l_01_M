@@ -26,19 +26,13 @@ class Donasi extends Model
         return $this->belongsTo(Barang::class, 'kode_barang', 'kode_barang');
     }
 
-    public function request()
-    {
-        return $this->belongsTo(RequestDonasi::class, 'id_request');
-    }
-
     public function penitip()
     {
-        return $this->belongsTo(Penitip::class, 'id_penitip', 'id_penitip'); // Ensure the relationship is correct
+        return $this->belongsTo(Penitip::class, 'id_penitip', 'id_penitip');
     }
 
     public function requestDonasi()
     {
-        return $this->belongsTo(\App\Models\RequestDonasi::class, 'id_request');
+        return $this->belongsTo(\App\Models\RequestDonasi::class, 'id_request', 'id_request');
     }
-
 }

@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Notification;
 use Password;
 use Str;
+use App\Models\Transaksi;
 
 class PembeliController extends Controller
 {
@@ -25,11 +26,11 @@ class PembeliController extends Controller
         $user = Auth::guard('pembeli')->user();
 
         $detailTransaksiList = DB::table('detail_transaksi')
-           ->join('transaksi', 'detail_transaksi.no_nota', '=', 'transaksi.no_nota')
-           ->where('transaksi.id_pembeli', auth()->user()->id)
-           ->where('transaksi.status', 'Selesai')
-           ->select('detail_transaksi.*', 'transaksi.status', 'transaksi.no_nota')
-           ->get();
+            ->join('transaksi', 'detail_transaksi.no_nota', '=', 'transaksi.no_nota')
+            ->where('transaksi.id_pembeli', auth()->user()->id)
+            ->where('transaksi.status', 'Selesai')
+            ->select('detail_transaksi.*', 'transaksi.status', 'transaksi.no_nota')
+            ->get();
 
         // Retrieve ratings for the authenticated user
         $ratings = Rating::where('id_pembeli', auth()->user()->id)
@@ -222,6 +223,38 @@ class PembeliController extends Controller
             // 'tahun' => (int) $tahun,
             'tanggal_cetak' => now()->format('d/m/Y'),
         ]);
+    }
+
+    public function historyTransaksi()
+    {
+        $pembeli = auth('pembeli')->user();
+
+        if (!$pembeli) {
+            return redirect()->route('login.pembeli')->with('error', 'Silakan login sebagai pembeli.');
+        }
+
+        $transaksi = Transaksi::with(['detailTransaksi.barang'])
+            ->where('id_pembeli', $pembeli->id_pembeli)
+            ->orderBy('tanggal_pesan', 'desc')
+            ->get();
+
+        return view('pembeli.history_transaksi', compact('transaksi'));
+    }
+
+    public function detailTransaksi($no_nota)
+    {
+        $pembeli = auth('pembeli')->user();
+
+        if (!$pembeli) {
+            return redirect()->route('login.pembeli')->with('error', 'Silakan login sebagai pembeli.');
+        }
+
+        $transaksi = Transaksi::with(['detailTransaksi.barang', 'pembeli'])
+            ->where('no_nota', $no_nota)
+            ->where('id_pembeli', $pembeli->id_pembeli)
+            ->firstOrFail();
+
+        return view('pembeli.detail_transaksi', compact('transaksi'));
     }
 
 

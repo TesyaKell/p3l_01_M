@@ -17,6 +17,30 @@ use App\Http\Controllers\transaksiController;
 use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\KomentarController;
 use App\Http\Controllers\LaporanOwnerController;
+use App\Http\Controllers\CetakNotaTitipanController;
+use App\Http\Controllers\ClaimMerchController;
+use App\Http\Controllers\RatingController;
+
+Route::middleware(['auth:pembeli'])->group(function () {
+
+    Route::get('/history', [RatingController::class, 'index'])->name('history');
+
+    Route::prefix('rating')->name('rating.')->group(function () {
+        Route::post('/', [RatingController::class, 'store'])->name('store');
+        Route::put('/{id}', [RatingController::class, 'update'])->name('update');
+        Route::delete('/{id}', [RatingController::class, 'destroy'])->name('destroy');
+    });
+});
+
+
+//TRANSAKSI
+Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi');
+
+Route::post('/rate-product', [TransaksiController::class, 'rateProduct'])->name('pembeli.rateProduct');
+
+
+
+
 
 Route::prefix('owner/laporan')->middleware(['auth:pegawai'])->group(function () {
     Route::get('/donasi/pdf', [LaporanOwnerController::class, 'donasiPdf'])->name('owner.laporan.donasi.pdf');
@@ -27,8 +51,8 @@ Route::prefix('owner/laporan')->middleware(['auth:pegawai'])->group(function () 
 
 
 //transaksi verifikasi cs
-Route::get('/verifikasi-pembayaran', [TransaksiController::class, 'halamanVerifikasi'])->name('verifikasi.pembayaran');
-Route::put('/transaksi/{no_nota}/verifikasi', [TransaksiController::class, 'verifikasi'])->name('transaksi.verifikasi');
+Route::get('/verifikasi-pembayaran', [transaksiController::class, 'halamanVerifikasi'])->name('verifikasi.pembayaran');
+Route::put('/transaksi/{no_nota}/verifikasi', [transaksiController::class, 'verifikasi'])->name('transaksi.verifikasi');
 Route::put('/transaksi/{no_nota}/tidak-diverifikasi', [transaksiController::class, 'tidakDiverifikasi'])->name('transaksi.tidakDiverifikasi');
 
 
@@ -37,10 +61,14 @@ Route::post('/transaksi/upload/{id}', [transaksiController::class, 'uploadBuktiP
 Route::post('/checkout', [transaksiController::class, 'prosesCheckout'])->name('checkout');
 Route::get('/transaksi/{no_nota}', [transaksiController::class, 'show'])->name('transaksi.show');
 
+//TRANSAKSI
+Route::get('/transaksi', [transaksiController::class, 'index'])->name('transaksi');
 
 //Route::post('/keranjang/pilih-alamat', [KeranjangController::class, 'pilihAlamat'])->name('keranjang.pilihAlamat');
 Route::delete('/keranjang/{id}', [KeranjangController::class, 'destroy'])->name('keranjang.destroy');
+Route::post('/rate-product', [transaksiController::class, 'rateProduct'])->name('pembeli.rateProduct');
 
+//Route::post('/keranjang/pilih-alamat', [KeranjangController::class, 'pilihAlamat'])->name('keranjang.pilihAlamat');
 
 Route::post('/komentar', [KomentarController::class, 'store'])->name('komentar.store');
 
@@ -67,6 +95,10 @@ Route::get('/penitip/history', [PenitipController::class, 'historyPenjualanPenit
 
 //History transaksi pembelian
 Route::get('/pembeli/history', [PembeliController::class, 'historyTransaksiPembelian'])->name('historyTransaksiPembelian');
+
+//History transaksi pembeli dengan detail
+Route::get('/pembeli/history-transaksi', [PembeliController::class, 'historyTransaksi'])->name('pembeli.history.transaksi')->middleware('auth:pembeli');
+Route::get('/pembeli/transaksi/detail/{no_nota}', [PembeliController::class, 'detailTransaksi'])->name('pembeli.transaksi.detail')->middleware('auth:pembeli');
 
 
 // Menangani permintaan POST ke route /
@@ -241,7 +273,6 @@ Route::post('/logout', function () {
 
 Route::post('/logout', [ProfilController::class, 'logout'])->name('logout.custom');
 
-Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerc');
 
 
 Route::get('/merchandise', [MerchandiseController::class, 'index'])->name('merchandise.index');
@@ -294,5 +325,24 @@ Route::get('/search/requestdonasi', [RequestDonasiController::class, 'search'])-
 Route::get('/cetak-nota-titipan/{barang}', [CetakNotaTitipanController::class, 'cetak'])
     ->name('cetak-nota-titipan');
 
-
+Route::get('/cetak-nota-penjualan/{id}', [CetakNotaTitipanController::class, 'cetakNotaPenjualan'])->name('cetak-nota-penjualan');
 Route::post('/transaksi/upload/{id}', [transaksiController::class, 'uploadBuktiPembayaran'])->name('upload.bukti');
+
+Route::get('/test-notifikasi', [BarangController::class, 'notifikasi']);
+
+//Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerch.index');
+Route::patch('/claim-merch/{id}/selesaikan', [ClaimMerchController::class, 'selesaikan'])->name('claimMerch.selesaikan');
+Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerc');
+
+Route::delete('/delete/requestdonasi/{id}', [RequestDonasiController::class, 'delete'])->name('destroy.requestdonasi');
+Route::get('/search/requestdonasi/all', [RequestDonasiController::class, 'search'])->name('search.requestdonasi.fall');
+Route::get('/search/requestdonasi', [RequestDonasiController::class, 'searchById'])->name('search.requestdonasi');
+
+
+Route::get('/pembeli/transaksi', [PembeliController::class, 'historyTransaksiPembelian'])
+    ->name('pembeli.transaksi');
+
+Route::get('/laporan/penitip/preview', [App\Http\Controllers\LaporanOwnerController::class, 'penitipPreview'])->name('laporan.penitip.preview');
+Route::get('/laporan/penitip/pdf', [App\Http\Controllers\LaporanOwnerController::class, 'penitipPdf'])->name('laporan.penitip.pdf');
+Route::get('/laporan/donasi/preview', [App\Http\Controllers\LaporanOwnerController::class, 'donasiPreview'])->name('laporan.donasi.preview');
+Route::get('/laporan/request/preview', [App\Http\Controllers\LaporanOwnerController::class, 'requestPreview'])->name('laporan.request.preview');

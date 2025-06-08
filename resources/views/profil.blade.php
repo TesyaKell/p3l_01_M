@@ -191,11 +191,12 @@ use App\Models\Merchandise;
                         </div>
                     @endif
                     @if (@$guard === 'pembeli')
-                        <a href="{{ route('pembeli.transaksi') }}" class="btn btn-outline-primary">Lihat Riwayat Pembelian</a>
+                        <a href="{{ route('pembeli.transaksi') }}" class="btn btn-outline-primary">Lihat Riwayat
+                            Pembelian</a>
                     @endif
                 </div>
             </div>
-            <!-- Claimed Merchandise Section -->
+
             <!-- Claimed Merchandise Section -->
             @if (Helper::isLoggedIn() && $guard === 'pembeli')
                 <div class="my-6 sm:my-8 text-start">
@@ -214,7 +215,7 @@ use App\Models\Merchandise;
                                         {{ \Carbon\Carbon::parse($claim->tanggal_request)->format('Y-m-d H:i:s') }}</p>
                                     <div class="mt-auto">
                                         <span
-                                            class="status-badge {{ $claim->status === 'approved' ? 'status-approved' : 'status-pending' }} inline-block text-sm sm:text-base py-1 px-3 rounded-full">
+                                            class="status-badge {{ $claim->status === 'Selesai' ? 'status-approved' : 'status-pending' }} inline-block text-sm sm:text-base py-1 px-3 rounded-full">
                                             {{ ucfirst($claim->status) }}
                                         </span>
                                     </div>
@@ -264,12 +265,12 @@ use App\Models\Merchandise;
                             </div>
                             @if ($guard === 'pembeli')
                                 <div class="mb-4">
-                                    <label for="foto"
+                                    {{-- <label for="foto"
                                         class="block text-base sm:text-lg font-medium text-gray-700">Foto
                                         Profil</label>
                                     <input type="file"
                                         class="form-control w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                                        id="foto" name="foto" accept="image/*">
+                                        id="foto" name="foto" accept="image/*"> --}}
                                 </div>
                             @endif
                         </div>

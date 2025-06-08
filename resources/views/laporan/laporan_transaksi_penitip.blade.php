@@ -47,12 +47,12 @@
 
     @foreach ($barangGrouped as $idPenitip => $barangList)
         @php
-            $penitip = $barangList->first()->penitip;
+            $penitip = $barangList->first()?->penitip;
         @endphp
 
         <hr>
-        <p><strong>ID Penitip:</strong> {{ $penitip->id_penitip ?? '-' }}</p>
-        <p><strong>Nama Penitip:</strong> {{ $penitip->nama_penitip ?? '-' }}</p>
+        <p><strong>ID Penitip:</strong> {{ $penitipInfo->id_penitip ?? '-' }}</p>
+        <p><strong>Nama Penitip:</strong> {{ $penitipInfo->nama_penitip ?? '-' }}</p>
 
 
         <table>
@@ -68,7 +68,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($barangList as $barang)
+                @forelse ($barangList as $barang)
                     <tr>
                         <td>{{ $barang->kode_barang }}</td>
                         <td>{{ $barang->nama_barang }}</td>
@@ -78,14 +78,20 @@
                         <td>{{ number_format($barang->bonus ?? 0, 0, ',', '.') }}</td>
                         <td>{{ number_format(($barang->harga ?? 0) + ($barang->bonus ?? 0), 0, ',', '.') }}</td>
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="7" style="text-align: center">Tidak ada data transaksi untuk bulan dan tahun ini.
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     @endforeach
 
     @if ($barangGrouped->isEmpty())
-        <p>Tidak ada data.</p>
+        <p style="text-align: center; margin-top: 30px;">Tidak ada data barang yang ditemukan.</p>
     @endif
+
 </body>
 
 </html>
