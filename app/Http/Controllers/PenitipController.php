@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Barang;
 use Illuminate\Support\Facades\DB;
 use App\Models\Penitip;
 use App\Notifications\VerifyEmail;
@@ -285,6 +286,41 @@ class PenitipController extends Controller
         $penitip = Penitip::where('id_penitip', $id)->firstOrFail();
         $penitip->delete();
         return redirect()->back()->with('status', 'Profile Deleted successfully!');
+    }
+    public function dataSaldoPenitip()
+    {
+        
+    }
+
+    public function dataSaldoPenitipBanding()
+    {
+        $penitips = Penitip::withCount(['barang as barang_terjual_count' => function ($q) {
+            $q->where('status', 'Terjual');
+        }])
+        ->where('saldo', '>=', 500000)
+        ->having('barang_terjual_count', '>=', 2)
+        ->get();
+
+        // Buat array hasil
+        $result = [];
+
+        foreach ($penitips as $penitip) {
+            $barang = Barang::where('id_penitip', $penitip->id_penitip)
+                            ->where('status', 'Terjual')
+                            ->get();
+
+            $total = $barang->sum('harga');
+
+            $result[] = [
+                'id_penitip' => $penitip->id_penitip,
+                'nama_penitip' => $penitip->nama_penitip,
+                'saldo' => $penitip->saldo,
+                'barang_terjual_count' => $penitip->barang_terjual_count,
+                'total_penjualan' => $total,
+            ];
+        }
+
+        return view('data-saldo-penitip', compact('result'));
     }
 
     public function searchPenitip(Request $request)

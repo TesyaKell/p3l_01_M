@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Donasi;
 use App\Models\RequestDonasi;
+use DB;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -129,4 +130,54 @@ class LaporanOwnerController extends Controller
 
         return $pdf->download("laporan-transaksi-penitip-{$penitipId}-{$bulan}-{$tahun}.pdf");
     }
+    
+    public function penjualanKategoriPdf(Request $request)
+    {
+        $this->isOwner();
+        
+        $tahun = (int) $request->get('tahun');
+    
+        $data = DB::table('kategori_barang as k')
+            ->leftJoin('barang as b', 'k.id_kategori', '=', 'b.id_kategori')
+            ->select(
+                'k.nama_kategori',
+                DB::raw("COUNT(CASE WHEN b.status = 'Terjual' AND YEAR(b.tanggal_laku) = $tahun THEN 1 END) as terjual"),
+                DB::raw("COUNT(CASE WHEN b.status IN ('Terdonasi', 'Hangus', 'Gagal', 'Batal') AND YEAR(b.tanggal_masuk) = $tahun THEN 1 END) as gagal")
+            )
+            ->groupBy('k.nama_kategori')
+            ->get();
+    
+        $tanggalCetak = now()->translatedFormat('d F Y');
+    
+        $pdf = Pdf::loadView('laporan-penjualan-kategori', compact('data', 'tahun', 'tanggalCetak'));
+        return $pdf->stream("laporan-penjualan-kategori-{$tahun}.pdf");
+    }
+    public function barangWaktuTitipanHabisPdf(Request $request)
+{
+    $this->isOwner();
+
+    $bulan = (int) $request->get('bulan', now()->month);
+    $tahun = (int) $request->get('tahun', now()->year);
+
+    $data = DB::table('barang as b')
+        ->join('penitip as p', 'b.id_penitip', '=', 'p.id_penitip')
+        ->select(
+            'b.kode_barang',
+            'b.nama_barang',
+            'b.id_penitip',
+            'p.nama_penitip',
+            'b.tanggal_masuk',
+            'b.tanggal_akhir',
+            'b.tanggal_batas'
+        )
+        ->whereMonth('b.tanggal_akhir', $bulan)
+        ->whereYear('b.tanggal_akhir', $tahun)
+        ->get();
+
+    $tanggalCetak = now()->translatedFormat('d F Y');
+
+    return Pdf::loadView('laporan-barang-waktu-expired', compact('data', 'bulan', 'tahun', 'tanggalCetak'))
+        ->stream("laporan-barang-waktu-titipan-habis-{$bulan}-{$tahun}.pdf");
+}
+
 }

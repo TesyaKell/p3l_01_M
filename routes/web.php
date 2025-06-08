@@ -96,6 +96,7 @@ Route::get('/penitip/history', [PenitipController::class, 'historyPenjualanPenit
 //History transaksi pembelian
 Route::get('/pembeli/history', [PembeliController::class, 'historyTransaksiPembelian'])->name('historyTransaksiPembelian');
 
+Route::get('/all/saldo-penitip', [PenitipController::class, 'dataSaldoPenitipBanding'])->name('dataSaldoPenitip');
 
 // Menangani permintaan POST ke route /
 Route::post('/', [ProfilController::class, 'logout'])->name('logout');
@@ -322,6 +323,7 @@ Route::get('/cetak-nota-titipan/{barang}', [CetakNotaTitipanController::class, '
     ->name('cetak-nota-titipan');
 
 Route::get('/cetak-nota-penjualan/{id}', [CetakNotaTitipanController::class, 'cetakNotaPenjualan'])->name('cetak-nota-penjualan');
+
 Route::post('/transaksi/upload/{id}', [transaksiController::class, 'uploadBuktiPembayaran'])->name('upload.bukti');
 
 Route::get('/test-notifikasi', [BarangController::class, 'notifikasi']);
@@ -343,3 +345,9 @@ Route::get('/laporan/penitip/pdf', [App\Http\Controllers\LaporanOwnerController:
 Route::get('/laporan/donasi/preview', [App\Http\Controllers\LaporanOwnerController::class, 'donasiPreview'])->name('laporan.donasi.preview');
 Route::get('/laporan/request/preview', [App\Http\Controllers\LaporanOwnerController::class, 'requestPreview'])->name('laporan.request.preview');
 
+
+//laporan penjualan kategori per tahun
+Route::get('/laporan/penjualan/kategori/preview', [App\Http\Controllers\LaporanOwnerController::class, 'penjualanKategoriPdf'])->name('laporan-penjualan-kategori.pdf');
+
+//laporan barang titipan expired
+Route::get('/laporan/titipan-barang-habis', [App\Http\Controllers\LaporanOwnerController::class, 'barangWaktuTitipanHabisPdf'])->name('laporan-waktu-titipan-expired.pdf');
