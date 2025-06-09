@@ -8,6 +8,7 @@ use App\Models\Barang;
 use App\Models\Penitip;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -76,6 +77,11 @@ class RequestAmbilResource extends Resource
                     ->requiresConfirmation()
                     ->action(function ($record) {
                         app(BarangController::class)->terimaBarangDiambil($record->kode_barang);
+                        Notification::make()
+                                ->title('Berhasil Diambil')
+                                ->body('Pengambilan Barang oleh Penitip Berhasil')
+                                ->success()
+                                ->send();
                     }),
 
                 Action::make('tolak')
@@ -84,6 +90,11 @@ class RequestAmbilResource extends Resource
                     ->requiresConfirmation()
                     ->action(function ($record) {
                         app(BarangController::class)->tolakBarangDiambil($record->kode_barang);
+                        Notification::make()
+                                ->title('Berhasil Didonasikan')
+                                ->body('Barang Berhasil Didonasikan')
+                                ->success()
+                                ->send();
                     }),
                 Tables\Actions\EditAction::make(),
             ])

@@ -100,6 +100,7 @@ Route::get('/pembeli/history', [PembeliController::class, 'historyTransaksiPembe
 Route::get('/pembeli/history-transaksi', [PembeliController::class, 'historyTransaksi'])->name('pembeli.history.transaksi')->middleware('auth:pembeli');
 Route::get('/pembeli/transaksi/detail/{no_nota}', [PembeliController::class, 'detailTransaksi'])->name('pembeli.transaksi.detail')->middleware('auth:pembeli');
 
+Route::get('/all/saldo-penitip', [PenitipController::class, 'dataSaldoPenitipBanding'])->name('dataSaldoPenitip');
 
 // Menangani permintaan POST ke route /
 Route::post('/', [ProfilController::class, 'logout'])->name('logout');
@@ -326,6 +327,7 @@ Route::get('/cetak-nota-titipan/{barang}', [CetakNotaTitipanController::class, '
     ->name('cetak-nota-titipan');
 
 Route::get('/cetak-nota-penjualan/{id}', [CetakNotaTitipanController::class, 'cetakNotaPenjualan'])->name('cetak-nota-penjualan');
+
 Route::post('/transaksi/upload/{id}', [transaksiController::class, 'uploadBuktiPembayaran'])->name('upload.bukti');
 
 Route::get('/test-notifikasi', [BarangController::class, 'notifikasi']);
@@ -350,3 +352,9 @@ Route::get('/laporan/request/preview', [App\Http\Controllers\LaporanOwnerControl
 Route::get('/barang', [BarangController::class, 'mobile']);
 Route::get('/r', [BarangController::class, 'ratingMobile']);
 Route::get('/rating', [BarangController::class, 'averageRating']);
+
+//laporan penjualan kategori per tahun
+Route::get('/laporan/penjualan/kategori/preview', [App\Http\Controllers\LaporanOwnerController::class, 'penjualanKategoriPdf'])->name('laporan-penjualan-kategori.pdf');
+
+//laporan barang titipan expired
+Route::get('/laporan/titipan-barang-habis', [App\Http\Controllers\LaporanOwnerController::class, 'barangWaktuTitipanHabisPdf'])->name('laporan-waktu-titipan-expired.pdf');

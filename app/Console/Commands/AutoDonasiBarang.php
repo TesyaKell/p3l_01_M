@@ -11,14 +11,14 @@ class AutoDonasiBarang extends Command
      *
      * @var string
      */
-    protected $signature = 'app:auto-donasi-barang';
+    protected $signature = 'auto:donasi-barang';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Otomatis mendonasikan barang jika tidak dibayar/diambil tepat waktu';
 
     /**
      * Execute the console command.

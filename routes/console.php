@@ -13,7 +13,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('auto:donasi-barang')->everyFiveMinutes();
+Schedule::command('auto:donasi-barang')->everyMinute();
 
 Schedule::call(function () {
     try {

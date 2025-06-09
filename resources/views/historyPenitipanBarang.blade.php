@@ -124,6 +124,7 @@
                             @endif
                             <div class="d-flex mt-3 gap-2">
                                 @if ($barang->status == 'Tersedia' and $barang->akhir < now() and $barang->opsi != 'Diperpanjang')
+
                                     <!-- Tombol Perpanjang -->
                                     <!-- <a href="#" class="btn btn-outline-secondary btn-success text-white me-2"
                                         data-bs-toggle="modal" data-bs-target="#modalPerpanjang">
