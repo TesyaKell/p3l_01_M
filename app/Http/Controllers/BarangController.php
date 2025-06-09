@@ -14,9 +14,59 @@ use App\Models\KategoriBarang;
 use App\Models\Kategori;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\MobileNotif;
+use Illuminate\Support\Facades\DB;
 
 class BarangController extends Controller
 {
+    public function mobile()
+    {
+        // Ambil semua data barang
+        $barang = Barang::where('status', 'Tersedia')->get();
+        return response()->json($barang);
+    }
+
+    public function averageRating()
+    {
+        $penitips = \App\Models\Penitip::whereHas('barang')
+            ->with('barang')
+            ->get()
+            ->map(function ($penitip) {
+                return [
+                    'id' => $penitip->id,
+                    'nama_penitip' => $penitip->nama_penitip,
+                    'average_rating' => round($penitip->averageRating() ?? 0.0, 1),
+                    'total_ratings' => $penitip->totalRatings() ?? 0,
+                ];
+            })
+            ->sortByDesc('average_rating')
+            ->take(7)
+            ->values();
+
+        if ($penitips->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No penitips found',
+                'data' => [],
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Top rated penitips',
+            'data' => $penitips,
+        ], 200);
+    }
+
+
+
+    public function totalRatings()
+    {
+        return DB::table('rating')
+            ->join('detail_transaksi', 'rating.id_detail_transaksi', '=', 'detail_transaksi.id_detail_transaksi')
+            ->join('barang', 'detail_transaksi.kode_barang', '=', 'barang.kode_barang')
+            ->where('barang.id_penitip', $this->id_penitip)
+            ->count();
+    }
     public function tes()
     {
         $kategoriList = KategoriBarang::all();

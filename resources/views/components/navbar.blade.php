@@ -107,12 +107,17 @@ use App\Http\Helper\Helper;
                                     @php
                                         $penitipCurrent = Auth::guard('penitip')->user();
                                     @endphp
-                                    <li><a class="dropdown-item" href="{{ route('historyBarang', ['id_penitip' => Helper::getLoggedInUser()->id_penitip ]) }}">History
+                                    <li><a class="dropdown-item"
+                                            href="{{ route('historyBarang', ['id_penitip' => Helper::getLoggedInUser()->id_penitip]) }}">History
                                             Barang</a>
                                     </li>
                                     <li><a class="dropdown-item" href="{{ route('historyPenjualanPenitip') }}">History
                                             Penjualan</a>
                                     </li>
+                                @endif
+                                @if (Helper::getLoggedInUser() && Helper::getLoggedInUser()->nama_pembeli)
+                                    <li><a class="dropdown-item"
+                                            href="{{ route('pembeli.history.transaksi') }}">History Transaksi</a></li>
                                 @endif
                                 @if (Helper::getLoggedInUser() && Helper::getLoggedInUser()->nama_organisasi)
                                     <li><a class="dropdown-item" href="{{ route('homepage.organisasi') }}">Request

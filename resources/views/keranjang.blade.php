@@ -263,7 +263,7 @@ use App\Http\Helper\Helper;
                             <input type="hidden" name="metode_pengiriman" id="inputMetodePengiriman" value="">
                             <input type="hidden" id="hiddenTukarPoin" name="tukar_poin" value="0">
 
-                            <button type="submit" class="btn btn-success btn-lg">Checkout</button>
+                            <button type="submit" class="btn btn-success btn-lg" id="btnCheckout" disabled>Checkout</button>
 
                             @if (session('error'))
                                 <div class="alert alert-danger">{{ session('error') }}</div>
@@ -312,7 +312,7 @@ use App\Http\Helper\Helper;
             const ongkirEl = document.getElementById("ongkir");
             const totalEl = document.getElementById("totalPembayaran");
             const checkoutForm = document.getElementById("formCheckout");
-
+            const btnCheckout = document.getElementById("btnCheckout");
 
             const subtotalValue = {{ $totalHarga }};
             let ongkirValue = 0;
@@ -330,6 +330,19 @@ use App\Http\Helper\Helper;
                 return '';
             }
 
+            function updateCheckoutButton() {
+                const metodeTerpilih = metodeSelect.value;
+                if (metodeTerpilih) {
+                    btnCheckout.disabled = false;
+                    btnCheckout.classList.remove('btn-secondary');
+                    btnCheckout.classList.add('btn-success');
+                } else {
+                    btnCheckout.disabled = true;
+                    btnCheckout.classList.remove('btn-success');
+                    btnCheckout.classList.add('btn-secondary');
+                }
+            }
+
             function updateTotal() {
                 let tukarPoin = parseInt(tukarPoinInput.value) || 0;
                 let totalSetelahDiskon = subtotalValue + ongkirValue;
@@ -340,8 +353,13 @@ use App\Http\Helper\Helper;
                     tukarPoinInput.value = tukarPoin;
                 }
 
-                totalSetelahDiskon -= tukarPoin;
-                totalEl.innerText = formatRupiah(totalSetelahDiskon);
+                if (tukarPoin < 0 && tukarPoinInput.value !== "") {
+                    tukarPoin = 0;
+                    tukarPoinInput.value = tukarPoin;
+                }
+
+                totalSetelahDiskon -= Math.max(0, tukarPoin) * 100;
+                totalEl.innerText = formatRupiah(Math.max(0, totalSetelahDiskon));
             }
 
             if (metodeSelect && alamatBox) {
@@ -359,14 +377,24 @@ use App\Http\Helper\Helper;
 
                     ongkirEl.innerText = formatRupiah(ongkirValue);
                     updateTotal();
+                    updateCheckoutButton();
                 });
             }
 
             tukarPoinInput.addEventListener("input", updateTotal);
 
+            // Initialize checkout button state
+            updateCheckoutButton();
+
             // submit form untuk isi input hidden
             if (checkoutForm) {
-                checkoutForm.addEventListener("submit", function () {
+                checkoutForm.addEventListener("submit", function (e) {
+                    if (!metodeSelect.value) {
+                        e.preventDefault();
+                        alert('Silakan pilih metode pengiriman terlebih dahulu!');
+                        return false;
+                    }
+                    
                     document.getElementById("hiddenTukarPoin").value = tukarPoinInput.value;
                     inputMetode.value = metodeSelect.value;
                     inputAlamat.value = ambilAlamatTerpilih();

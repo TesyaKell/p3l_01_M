@@ -75,6 +75,7 @@
                 <th>Tanggal Donasi</th>
                 <th>Nama Organisasi</th>
                 <th>Nama Penerima</th>
+                <th>Alamat</th>
             </tr>
         </thead>
         <tbody>
@@ -87,6 +88,7 @@
                     <td>{{ \Carbon\Carbon::parse($item->tanggal_donasi)->format('d-m-Y') }}</td>
                     <td>{{ $item->requestDonasi->organisasi->nama_organisasi ?? '-' }}</td>
                     <td>{{ $item->nama_penerima }}</td>
+                    <td>{{ $item->requestDonasi->organisasi->alamat ?? 'Alamat tidak tersedia' }}</td>
                 </tr>
             @endforeach
         </tbody>

@@ -72,8 +72,8 @@ class Barang extends Model
     }
     public function hitungDurasi(): int
     {
-        $tanggalMasuk = $this->tanggal_masuk ? \Carbon\Carbon::parse($this->tanggal_masuk) : null;
-        $tanggalAmbil = $this->tanggal_ambil ? \Carbon\Carbon::parse($this->tanggal_ambil) : now();
+        $tanggalMasuk = $this->tanggal_masuk ? Carbon::parse($this->tanggal_masuk) : null;
+        $tanggalAmbil = $this->tanggal_ambil ? Carbon::parse($this->tanggal_ambil) : now();
 
         if (!$tanggalMasuk) {
             return 0;

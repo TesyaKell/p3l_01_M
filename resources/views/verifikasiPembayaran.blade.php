@@ -37,6 +37,7 @@
                         <th>No Nota</th>
                         <th>Nama Pembeli</th>
                         <th>Tanggal Pesan</th>
+                        <th>Barang Dibeli</th>
                         <th>Total Pembayaran</th>
                     </tr>
                 </thead>
@@ -46,6 +47,18 @@
                             <td>{{ $transaksi->no_nota }}</td>
                             <td>{{ $transaksi->pembeli->nama_pembeli ?? '-' }}</td>
                             <td>{{ $transaksi->tanggal_pesan }}</td>
+                            <td>
+                                @if ($transaksi->detailTransaksi && $transaksi->detailTransaksi->count() > 0)
+                                    @foreach ($transaksi->detailTransaksi as $detail)
+                                        {{ $detail->barang->nama_barang ?? ($detail->nama_barang ?? '-') }}
+                                        @if (!$loop->last)
+                                            ,
+                                        @endif
+                                    @endforeach
+                                @else
+                                    -
+                                @endif
+                            </td>
                             <td>Rp {{ number_format($transaksi->total_pembayaran, 0, ',', '.') }}</td>
                         </tr>
                     @endforeach
@@ -61,6 +74,7 @@
                         <th>No Nota</th>
                         <th>Nama Pembeli</th>
                         <th>Tanggal Verifikasi</th>
+                        <th>Barang Dibeli</th>
                         <th>Total Pembayaran</th>
                         <th>Status</th>
                     </tr>
@@ -71,6 +85,18 @@
                             <td>{{ $transaksi->no_nota }}</td>
                             <td>{{ $transaksi->pembeli->nama_pembeli ?? '-' }}</td>
                             <td>{{ $transaksi->tanggal_lunas }}</td>
+                            <td>
+                                @if ($transaksi->detailTransaksi && $transaksi->detailTransaksi->count() > 0)
+                                    @foreach ($transaksi->detailTransaksi as $detail)
+                                        {{ $detail->barang->nama_barang ?? ($detail->nama_barang ?? '-') }}
+                                        @if (!$loop->last)
+                                            ,
+                                        @endif
+                                    @endforeach
+                                @else
+                                    -
+                                @endif
+                            </td>
                             <td>Rp {{ number_format($transaksi->total_pembayaran, 0, ',', '.') }}</td>
                             <td><span class="badge bg-success">Diverifikasi</span></td>
                         </tr>
@@ -81,6 +107,18 @@
                             <td>{{ $transaksi->no_nota }}</td>
                             <td>{{ $transaksi->pembeli->nama_pembeli ?? '-' }}</td>
                             <td>{{ $transaksi->tanggal_lunas ?? '-' }}</td>
+                            <td>
+                                @if ($transaksi->detailTransaksi && $transaksi->detailTransaksi->count() > 0)
+                                    @foreach ($transaksi->detailTransaksi as $detail)
+                                        {{ $detail->barang->nama_barang ?? ($detail->nama_barang ?? '-') }}
+                                        @if (!$loop->last)
+                                            ,
+                                        @endif
+                                    @endforeach
+                                @else
+                                    -
+                                @endif
+                            </td>
                             <td>Rp {{ number_format($transaksi->total_pembayaran, 0, ',', '.') }}</td>
                             <td><span class="badge bg-danger">Tidak Diverifikasi</span></td>
                         </tr>

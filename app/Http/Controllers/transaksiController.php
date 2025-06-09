@@ -161,8 +161,12 @@ class transaksiController extends Controller
             $tipeDelivery = $request->input('metode_pengiriman');
             $ongkir = ($tipeDelivery === 'kurir' && $totalHarga < 1500000) ? 100000 : 0;
 
-            $nilaiTukarPoin = $tukarPoin; // 1 poin = Rp1 (bukan 10.000)
+            $nilaiTukarPoin = $tukarPoin * 100;
             $totalPembayaran = max(0, $totalHarga + $ongkir - $nilaiTukarPoin);
+
+            // $nilaiTukarPoin = $tukarPoin * 100; // 1 poin = Rp100
+            // $totalPembayaran = max(0, $totalHarga + $ongkir - $nilaiTukarPoin);
+
 
             // Simpan transaksi
             $transaksi = Transaksi::create([
@@ -296,6 +300,21 @@ class transaksiController extends Controller
             'tanggal_lunas' => now(),
         ]);
 
+        // Notifikasi untuk Pembeli berdasarkan tipe delivery
+        if ($transaksi->pembeli) {
+            if ($transaksi->tipe_delivery === 'ambil_tempat') {
+                $transaksi->pembeli->notify(new MobileNotif(
+                    'Barang Siap Diambil',
+                    'Pembayaran Anda telah dikonfirmasi. Barang pesanan Anda siap untuk diambil di tempat.'
+                ));
+            } else {
+                $transaksi->pembeli->notify(new MobileNotif(
+                    'Pembayaran Dikonfirmasi',
+                    'Pembayaran Anda telah dikonfirmasi. Barang pesanan Anda sedang dipersiapkan untuk pengiriman.'
+                ));
+            }
+        }
+
         foreach ($transaksi->detailTransaksi as $detail) {
             $barang = $detail->barang;
             if ($barang) {
@@ -400,7 +419,7 @@ class transaksiController extends Controller
 
         $transaksi = Transaksi::where('no_nota', $no_nota)->firstOrFail();
 
-        if (!$user || $transaksi->id_kurir_pegawai !== $user->id_pegawai) {
+        if (!$user || $transaksi->id_pegawai !== $user->id_pegawai) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized',
@@ -455,5 +474,71 @@ class transaksiController extends Controller
             'message' => 'Pengiriman selesai.',
             'data' => $transaksi,
         ]);
+    }
+
+    public function cancelTransaction($no_nota)
+    {
+        try {
+            $transaksi = Transaksi::with('detailTransaksi.barang', 'pembeli')->where('no_nota', $no_nota)->firstOrFail();
+
+            // Only cancel if still waiting for payment
+            if ($transaksi->status !== 'menunggu pembayaran') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Transaction cannot be canceled'
+                ]);
+            }
+
+            // Check if 15 minutes have passed
+            $limit = Carbon::parse($transaksi->tanggal_pesan)->addMinutes(15);
+            if (now()->lessThan($limit)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Timer has not expired yet'
+                ]);
+            }
+
+            DB::beginTransaction();
+            try {
+                // Cancel the transaction
+                $transaksi->update(['status' => 'Batal']);
+
+                // Restore item availability
+                foreach ($transaksi->detailTransaksi as $detail) {
+                    if ($detail->barang) {
+                        $detail->barang->update([
+                            'status' => 'Tersedia',
+                            'tanggal_laku' => null,
+                        ]);
+                    }
+                }
+
+                // Restore buyer points
+                $pembeli = $transaksi->pembeli;
+                if ($pembeli) {
+                    $pembeli->update([
+                        'poin' => $pembeli->poin + $transaksi->tukar_poin - $transaksi->tambah_poin,
+                    ]);
+                }
+
+                DB::commit();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Transaction canceled successfully'
+                ]);
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Cancel transaction error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error canceling transaction'
+            ], 500);
+        }
     }
 }

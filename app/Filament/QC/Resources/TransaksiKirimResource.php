@@ -50,16 +50,16 @@ class TransaksiKirimResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->limit(13)// comment untuk tampilkan full
-                    ->tooltip(fn ($record) => $record->tanggal_pesan)// comment untuk tampilkan full
-                    ,
+                    ->tooltip(fn($record) => $record->tanggal_pesan)// comment untuk tampilkan full
+                ,
                 Tables\Columns\TextColumn::make('tanggal_lunas')
                     ->label('Tanggal Lunas')
                     ->dateTime()
                     ->sortable()
                     ->placeholder('Belum Lunas')
                     ->limit(13)// comment untuk tampilkan full
-                    ->tooltip(fn ($record) => $record->tanggal_lunas)// comment untuk tampilkan full
-                    ,
+                    ->tooltip(fn($record) => $record->tanggal_lunas)// comment untuk tampilkan full
+                ,
                 Tables\Columns\TextColumn::make('tipe_delivery')
                     ->label('Tipe Pengiriman')
                     ->colors([
@@ -72,42 +72,42 @@ class TransaksiKirimResource extends Resource
                     ->sortable()
                     ->placeholder('Belum Dijadwalkan')
                     ->limit(13)// comment untuk tampilkan full
-                    ->tooltip(fn ($record) => $record->tanggal_ambil_kirim)// comment untuk tampilkan full
-                    ,
-                    
+                    ->tooltip(fn($record) => $record->tanggal_ambil_kirim)// comment untuk tampilkan full
+                ,
+
 
                 // Tables\Columns\BadgeColumn::make('tambah_poin')->label('+ Poin')->color('success')->numeric(),
                 // Tables\Columns\BadgeColumn::make('poin_sebelum')->label('Poin Sebelum')->color('info')->numeric(),
                 // Tables\Columns\BadgeColumn::make('poin_setelah')->label('Poin Setelah')->color('info')->numeric(),
-                
+
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Status')
-                    ->color(fn ($state) => match ($state) {
+                    ->color(fn($state) => match ($state) {
                         'Selesai' => 'success',
                         'Dikirim', 'Disiapkan' => 'info',
                         'Menunggu Pickup', 'Menunggu Konfirmasi', 'Menunggu Pembayaran' => 'primary',
                         'Batal' => 'danger',
                         default => 'secondary',
                     })
-                    ,
+                ,
                 Tables\Columns\TextColumn::make('ongkir')->label('Ongkir')->money('IDR'),
-                
+
                 Tables\Columns\TextColumn::make('alamat_pengiriman')->label('Alamat')->placeholder('-'),
-                
+
                 Tables\Columns\TextColumn::make('total_harga_jual_bersih')->label('Total Harga Jual Bersih')->money('IDR'),
                 Tables\Columns\TextColumn::make('bukti_pembayaran')
                     ->label('Bukti')
                     ->placeholder('-')
                     ->limit(20)//
-                    ->tooltip(fn ($record) => $record->bukti_pembayaran)//
-                    ,
-                
+                    ->tooltip(fn($record) => $record->bukti_pembayaran)//
+                ,
+
                 // Tables\Columns\TextColumn::make('komisi_penitip')->label('Komisi Penitip')->money('IDR'),
-                
+
                 Tables\Columns\TextColumn::make('total_pembayaran')->label('Total Pembayaran')->money('IDR'),
                 // Tables\Columns\BadgeColumn::make('tukar_poin')->label('Tukar Poin')->color('danger')->placeholder('Tidak Menukar'),
-                
-                ])
+
+            ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
@@ -135,31 +135,59 @@ class TransaksiKirimResource extends Resource
                             ->relationship(
                                 'pegawai',
                                 'nama_pegawai',
-                                modifyQueryUsing: fn ($query) => $query->where('kode_jabatan', 'J06')
-                            )
+                                modifyQueryUsing: fn($query) => $query->where('kode_jabatan', 'J06')
+                            ) // asumsi ada relasi ke model Kurir
                             ->searchable()
                             ->preload()
                             ->required(),
-                    ])
-                    ->action(function ($record, array $data) {
-                        $jadwal = \Carbon\Carbon::parse($data['tanggal_ambil_kirim']);
-                        $now = \Carbon\Carbon::now();
-
-                        // Jika sekarang lewat jam 4 sore dan tanggal pengiriman = hari ini, tolak
-                        if ($now->format('H') >= 16 && $jadwal->isSameDay($now) && $jadwal->format('H') >= 16) {
-                            Notification::make()
-                                ->title('Pengiriman tidak valid')
-                                ->body('Pengiriman tidak bisa dijadwalkan di hari yang sama setelah jam 16:00.')
-                                ->danger()
-                                ->send();
-                            return;
-                        }
-
-                        // Simpan data pengiriman
-                        $record->tanggal_ambil_kirim = $jadwal;
+                    ])->action(function ($record, array $data) {
+                        $record->tanggal_ambil_kirim = $data['tanggal_ambil_kirim'];
                         $record->id_kurir_pegawai = $data['id_kurir_pegawai'];
                         $record->status = 'Dikirim';
                         $record->save();
+
+                        // Notifikasi untuk Kurir
+                        $kurir = $record->pegawai;
+                        if ($kurir) {
+                            $kurir->notify(new MobileNotif(
+                                'Jadwal Pengiriman Baru',
+                                'Anda telah dijadwalkan mengirim barang untuk nota ' . $record->no_nota
+                            ));
+                        }
+
+                        // Notifikasi untuk Pembeli
+                        if ($record->pembeli) {
+                            $record->pembeli->notify(new MobileNotif(
+                                'Barang Sedang Dikirim',
+                                'Barang pesanan Anda sedang dalam proses pengiriman.'
+                            ));
+                        }
+
+                        // Notifikasi untuk Penitip dari setiap detail barang
+                        $detailList = DetailTransaksi::where('no_nota', $record->no_nota)->get();
+                        foreach ($detailList as $detail) {
+                            $barang = Barang::where('kode_barang', $detail->kode_barang)->first();
+                            if (!$barang)
+                                continue;
+
+                            $penitip = Penitip::find($barang->id_penitip);
+                            if ($penitip) {
+                                $penitip->notify(new MobileNotif(
+                                    'Barang Anda Akan Dikirim',
+                                    'Barang Anda dalam nota ' . $record->no_nota . ' akan dikirim oleh kurir.'
+                                ));
+                            }
+
+
+                        }
+
+                    })
+                    ->modalHeading('Penjadwalan Pengiriman')
+                    ->modalButton('Simpan')
+                    ->requiresConfirmation()
+                    ->visible(fn($record) => $record->tipe_delivery === 'kurir' and $record->status === 'Disiapkan'),
+                //berhasil update tapi belum kirim notifikasi
+
 
                         // Notifikasi ke pembeli
                         if ($record->pembeli  && filled($record->pembeli->fcm_token)) {
@@ -207,6 +235,7 @@ class TransaksiKirimResource extends Resource
                         DateTimePicker::make('tanggal_ambil_kirim')
                             ->label('Jadwal Pengambilan')
                             ->required(),
+
                     ])
                     ->action(function ($record, array $data) {
                         $jadwal = \Carbon\Carbon::parse($data['tanggal_ambil_kirim']);
@@ -341,14 +370,14 @@ class TransaksiKirimResource extends Resource
                 ->requiresConfirmation()
                 ->visible(fn ($record) =>  $record->status === 'Menunggu Pickup'),
 
-                //berhasil update tapi belum kirim notifikasi
+      //berhasil update tapi belum kirim notifikasi
                 Tables\Actions\Action::make('cetakNota')
                     ->label('Cetak Nota')
                     ->icon('heroicon-o-printer')
-                    ->url(fn ($record) => route('cetak-nota-penjualan', $record->no_nota))
+                    ->url(fn($record) => route('cetak-nota-penjualan', $record->no_nota))
                     ->openUrlInNewTab()
                     ->color('gray')
-                    ->visible(fn ($record) =>  $record->status !== 'Batal'),
+                    ->visible(fn($record) => $record->status !== 'Batal'),
 
 
                 // Tables\Actions\EditAction::make(),

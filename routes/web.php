@@ -96,6 +96,10 @@ Route::get('/penitip/history', [PenitipController::class, 'historyPenjualanPenit
 //History transaksi pembelian
 Route::get('/pembeli/history', [PembeliController::class, 'historyTransaksiPembelian'])->name('historyTransaksiPembelian');
 
+//History transaksi pembeli dengan detail
+Route::get('/pembeli/history-transaksi', [PembeliController::class, 'historyTransaksi'])->name('pembeli.history.transaksi')->middleware('auth:pembeli');
+Route::get('/pembeli/transaksi/detail/{no_nota}', [PembeliController::class, 'detailTransaksi'])->name('pembeli.transaksi.detail')->middleware('auth:pembeli');
+
 Route::get('/all/saldo-penitip', [PenitipController::class, 'dataSaldoPenitipBanding'])->name('dataSaldoPenitip');
 
 // Menangani permintaan POST ke route /
@@ -345,6 +349,9 @@ Route::get('/laporan/penitip/pdf', [App\Http\Controllers\LaporanOwnerController:
 Route::get('/laporan/donasi/preview', [App\Http\Controllers\LaporanOwnerController::class, 'donasiPreview'])->name('laporan.donasi.preview');
 Route::get('/laporan/request/preview', [App\Http\Controllers\LaporanOwnerController::class, 'requestPreview'])->name('laporan.request.preview');
 
+Route::get('/barang', [BarangController::class, 'mobile']);
+Route::get('/r', [BarangController::class, 'ratingMobile']);
+Route::get('/rating', [BarangController::class, 'averageRating']);
 
 //laporan penjualan kategori per tahun
 Route::get('/laporan/penjualan/kategori/preview', [App\Http\Controllers\LaporanOwnerController::class, 'penjualanKategoriPdf'])->name('laporan-penjualan-kategori.pdf');
