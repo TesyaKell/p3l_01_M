@@ -348,5 +348,10 @@ Route::get('/laporan/donasi/preview', [App\Http\Controllers\LaporanOwnerControll
 Route::get('/laporan/request/preview', [App\Http\Controllers\LaporanOwnerController::class, 'requestPreview'])->name('laporan.request.preview');
 
 Route::get('/barang', [BarangController::class, 'mobile']);
-Route::get('/r', [BarangController::class, 'ratingMobile']);
 Route::get('/rating', [BarangController::class, 'averageRating']);
+Route::middleware('auth:sanctum')->get('/riwayat-transaksi', [TransaksiController::class, 'coba']);
+
+Route::middleware('auth:sanctum')->get('/status-donasi', [BarangController::class, 'statusDonasi']);
+
+
+Route::middleware('auth:sanctum')->get('/riwayat-penitipan', [BarangController::class, 'coba']);

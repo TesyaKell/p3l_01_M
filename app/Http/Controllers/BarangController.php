@@ -44,7 +44,7 @@ class BarangController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'No penitips found',
-                'data' => [],
+                //'data' => [],
             ], 200);
         }
 
@@ -53,6 +53,26 @@ class BarangController extends Controller
             'message' => 'Top rated penitips',
             'data' => $penitips,
         ], 200);
+    }
+
+    public function coba(Request $request)
+    {
+        $penitip = $request->user();
+
+        if (!($penitip instanceof \App\Models\Penitip)) {
+            \Log::info('Token: ' . $request->bearerToken());
+            \Log::info('Penitip: ' . json_encode($penitip));
+            return response()->json(['error' => 'Penitip not found'], 404);
+        }
+        $barangTersedia = Barang::with(['penitip'])
+            ->where('id_penitip', $penitip->id_penitip)
+            ->get()
+            ->map(function ($barang) {
+                $barang->average_rating = $barang->penitip->averageRating();
+                $barang->total_ratings = $barang->penitip->totalRatings();
+                return $barang;
+            });
+        return response()->json(['barangTersedia' => $barangTersedia]);
     }
 
 
@@ -82,6 +102,31 @@ class BarangController extends Controller
 
         return view('homeProduk', compact('kategoriList', 'barangTersedia'));
     }
+
+    public function statusDonasi()
+    {
+        $penitip = \App\Models\Penitip::whereHas('barang')->first();
+
+        if (!$penitip) {
+            return response()->json(['error' => 'Penitip not found'], 404);
+        }
+
+        $barang = Barang::where('tanggal_akhir', '>', Carbon::now()->subDays(7))
+         ->whereHas('penitip', function ($query) use ($penitip) {
+             $query->where('id_penitip', $penitip->id_penitip);
+         })
+            ->where('status', 'Tersedia')
+            ->get();
+        // Ambil semua kategori barang
+        $kategoriList = KategoriBarang::all();
+
+
+        return response()->json([
+            'barangTersedia' => $barang,
+            'activeStatus' => 'tersedia',
+        ]);
+    }
+
     public function index()
     {
         $barang = Barang::where('status', 'tersedia')->get();

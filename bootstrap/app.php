@@ -11,17 +11,29 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
-   ->withSchedule(function (Illuminate\Console\Scheduling\Schedule $schedule) {
-       $schedule->command('barang:notify')->everyMinute()
-           ->withoutOverlapping()
-           ->evenInMaintenanceMode()
-           ->onSuccess(function () {
-               \Log::info('✅ barang:notify berhasil dijalankan pada ' . now());
-           })
-           ->onFailure(function () {
-               \Log::error('❌ barang:notify gagal dijalankan pada ' . now());
-           });
-   })
+  ->withSchedule(function (Illuminate\Console\Scheduling\Schedule $schedule) {
+      $schedule->command('barang:notify')->everyMinute()
+          ->withoutOverlapping()
+          ->evenInMaintenanceMode()
+          ->onSuccess(function () {
+              \Log::info('✅ barang:notify berhasil dijalankan pada ' . now());
+          })
+          ->onFailure(function () {
+              \Log::error('❌ barang:notify gagal dijalankan pada ' . now());
+          });
+
+      $schedule->command('statusDonasi:notify')->everyMinute()
+          ->withoutOverlapping()
+          ->evenInMaintenanceMode()
+          ->onSuccess(function () {
+              \Log::info('✅ statusDonasi:notify berhasil dijalankan pada ' . now());
+          })
+          ->onFailure(function () {
+              \Log::error('❌ statusDonasi:notify gagal dijalankan pada ' . now());
+          });
+  })
+
+
 
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias(['logged_in' => \App\Http\Middleware\CustomAuthMiddleware::class]);

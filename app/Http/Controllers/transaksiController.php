@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Pembeli;
 
+use App\Models\Pembeli;
 use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
 use Auth;
@@ -269,6 +269,22 @@ class transaksiController extends Controller
         $pembeli->save();
         return view('transaksi', compact('transaksiList'));
     }
+
+    public function coba(Request $request)
+    {
+        $pembeli = $request->user();
+
+        if (!$pembeli) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $transaksiList = Transaksi::with('detailTransaksi')
+                          ->where('id_pembeli', $pembeli->id_pembeli)
+                          ->get();
+
+        return response()->json(['transaksiList' => $transaksiList]);
+    }
+
 
     public function halamanVerifikasi()
     {
