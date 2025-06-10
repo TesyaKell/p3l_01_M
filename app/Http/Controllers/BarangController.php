@@ -105,27 +105,40 @@ class BarangController extends Controller
 
     public function statusDonasi()
     {
-        $penitip = \App\Models\Penitip::whereHas('barang')->first();
+        \Log::info("📣 Memulai proses statusDonasi() pada " . now());
 
-        if (!$penitip) {
-            return response()->json(['error' => 'Penitip not found'], 404);
-        }
-
-        $barang = Barang::where('tanggal_akhir', '>', Carbon::now()->subDays(7))
-         ->whereHas('penitip', function ($query) use ($penitip) {
-             $query->where('id_penitip', $penitip->id_penitip);
-         })
+        // Ambil barang yang sudah lewat 7 hari & status masih 'Tersedia'
+        $barangList = Barang::with('penitip')
+            ->where('tanggal_akhir', '<=', Carbon::now()->subDays(7))
             ->where('status', 'Tersedia')
             ->get();
-        // Ambil semua kategori barang
-        $kategoriList = KategoriBarang::all();
 
+        foreach ($barangList as $barang) {
+            $barang->status = 'Donasi';
+            $barang->save();
 
-        return response()->json([
-            'barangTersedia' => $barang,
-            'activeStatus' => 'tersedia',
-        ]);
+            \Log::info("✅ Barang {$barang->nama_barang} status diubah jadi Donasi");
+
+            // Kirim notifikasi ke penitip
+            $penitip = $barang->penitip;
+
+            if ($penitip) {
+                $title = "Barang anda telah di Donasi";
+                $message = "Barang '{$barang->nama_barang}' telah melebihi 7 hari dan telah di donasi.";
+
+                try {
+                    $penitip->notify(new MobileNotif($title, $message));
+                    \Log::info("Mengirim notif ke penitip {$penitip->id_penitip} dengan token {$penitip->fcm_token}");
+                    \Log::info("📲 Notifikasi dikirim ke penitip ID {$penitip->id_penitip}");
+                } catch (\Exception $e) {
+                    \Log::error("❌ Gagal kirim notifikasi: " . $e->getMessage());
+                }
+            }
+        }
+
+        return response()->json(['message' => 'Status barang diperbarui dan notifikasi dikirim']);
     }
+
 
     public function index()
     {
@@ -337,9 +350,10 @@ class BarangController extends Controller
             }
 
             try {
-                \Log::info("Mengirim notif ke penitip {$penitip->id_penitip} dengan token {$penitip->fcm_token}");
                 $penitip->notify(new MobileNotif($title, $body));
                 \Log::info("Notifikasi terkirim ke penitip {$penitip->id_penitip}");
+                \Log::info("Mengirim notif ke penitip {$penitip->id_penitip} dengan token {$penitip->fcm_token}");
+
                 $notificationsSent++;
             } catch (\Exception $e) {
                 \Log::error("Gagal mengirim notifikasi untuk penitip {$penitip->id_penitip}: {$e->getMessage()}");
