@@ -358,3 +358,7 @@ Route::get('/laporan/penjualan/kategori/preview', [App\Http\Controllers\LaporanO
 
 //laporan barang titipan expired
 Route::get('/laporan/titipan-barang-habis', [App\Http\Controllers\LaporanOwnerController::class, 'barangWaktuTitipanHabisPdf'])->name('laporan-waktu-titipan-expired.pdf');
+
+// Add these routes for Owner Donation Report
+Route::get('/owner/laporan/donasi/preview', [App\Http\Controllers\LaporanOwnerController::class, 'donasiPreviewWithYear'])->name('owner.laporan.donasi.preview');
+Route::get('/owner/laporan/donasi/pdf', [App\Http\Controllers\LaporanOwnerController::class, 'donasiPdfWithYear'])->name('owner.laporan.donasi.pdf');
