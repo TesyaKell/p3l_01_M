@@ -130,11 +130,11 @@ class transaksiController extends Controller
                     'no_nota' => $noNota,
                     'nama_barang' => $barang->nama_barang,
                     'harga_jual_bersih' => $hargaJualBersih,
-                    'komisi_reusmart' => 0,
-                    'komisi_hunter' => 0,
+                    'komisi_reusmart' => $komisiReusmart,
+                    'komisi_hunter' => $komisiHunter,
                     'bonus' => $bonus,
                     'total' => $hargaJualBersih + $bonus,
-                    'komisi_penitip' => 0,
+                    'komisi_penitip' => $hargaJualBersih + $bonus,
                 ];
 
                 $totalHarga += $hargaBarang;
@@ -148,13 +148,14 @@ class transaksiController extends Controller
                 // ));
             }
 
-            // mestinya ini ditaruh di penyelesaiian transaksi, bukan saat create nanti ku ubah
-
             // Poin
             $poinSebelum = $pembeli->poin ?? 0;
+            $poinDasar = floor($totalHarga / 10000);
+            $bonusPoin = $totalHarga > 500000 ? floor($poinDasar * 0.2) : 0;
+            $totalPoin = $poinDasar + $bonusPoin;
 
             $tukarPoin = (int) $request->input('tukar_poin', 0);
-            
+            $poinSetelah = max(0, $poinSebelum + $totalPoin - $tukarPoin);
 
             // Ongkir dan total pembayaran
             $tipeDelivery = $request->input('metode_pengiriman');
@@ -173,8 +174,8 @@ class transaksiController extends Controller
                 'id_pembeli' => $pembeli->id_pembeli,
                 'tanggal_pesan' => now(),
                 'poin_sebelum' => $poinSebelum,
-                'tambah_poin' => 0,
-                'poin_setelah' => 0,
+                'tambah_poin' => $totalPoin,
+                'poin_setelah' => $poinSetelah,
                 'tipe_delivery' => $tipeDelivery,
                 'ongkir' => $ongkir,
                 'alamat_pengiriman' => $request->input('alamat_pengiriman'),
@@ -192,8 +193,8 @@ class transaksiController extends Controller
                 Barang::where('kode_barang', $detail['kode_barang'])->update(['status' => 'Terjual']);
             }
 
-            // Update poin pembeli di pindah ke transaklsi Kirim Request
-            
+            // Update poin pembeli
+            $pembeli->update(['poin' => $poinSetelah]);
             $barang->update(['tanggal_laku' => now()]);
 
 
