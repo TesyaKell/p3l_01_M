@@ -197,8 +197,7 @@ use App\Http\Helper\Helper;
                             ->get()
                             ->sortByDesc(function ($penitip) {
                                 return $penitip->averageRating();
-                            })
-                            ->take(7);
+                            });
                         $active = true;
                     @endphp
                     @forelse ($penitips as $penitip)

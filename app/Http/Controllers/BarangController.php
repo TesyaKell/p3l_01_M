@@ -37,7 +37,6 @@ class BarangController extends Controller
                 ];
             })
             ->sortByDesc('average_rating')
-            ->take(7)
             ->values();
 
         if ($penitips->isEmpty()) {
@@ -53,7 +52,84 @@ class BarangController extends Controller
             'message' => 'Top rated penitips',
             'data' => $penitips,
         ], 200);
+
     }
+
+    public function topSeller()
+    {
+        $bulanLaluAwal = now()->subMonth()->startOfMonth();
+        $bulanLaluAkhir = now()->subMonth()->endOfMonth();
+
+        // Ambil semua penitip + transaksi selesai bulan lalu
+        $penitips = \App\Models\Penitip::with(['barang.detailTransaksi.transaksi'])->get();
+
+        // Hitung total penjualan per penitip
+        $penjualanData = $penitips->map(function ($penitip) use ($bulanLaluAwal, $bulanLaluAkhir) {
+            $totalPenjualan = $penitip->barang->flatMap(function ($barang) use ($bulanLaluAwal, $bulanLaluAkhir) {
+                return $barang->detailTransaksi->filter(function ($dt) use ($bulanLaluAwal, $bulanLaluAkhir) {
+                    return $dt->transaksi &&
+                           $dt->transaksi->status === 'Selesai' &&
+                           $dt->transaksi->tanggal_lunas &&
+                           $dt->transaksi->tanggal_lunas >= $bulanLaluAwal &&
+                           $dt->transaksi->tanggal_lunas <= $bulanLaluAkhir;
+                });
+            })->sum('total');
+
+            return [
+                'id_penitip' => $penitip->id_penitip,
+                'nama_penitip' => $penitip->nama_penitip,
+                'total_penjualan' => $totalPenjualan,
+            ];
+        });
+
+        $sorted = $penjualanData->sortByDesc('total_penjualan')->values();
+
+        if ($sorted->isEmpty() || $sorted->first()['total_penjualan'] <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Belum ada transaksi selesai di bulan lalu',
+            ], 200);
+        }
+
+        $topSeller = $sorted->first();
+
+        // Ambil rating penitip lewat relasi
+        $ratingData = DB::table('rating')
+            ->join('detail_transaksi', 'rating.id_detail_transaksi', '=', 'detail_transaksi.id_detail_transaksi')
+            ->join('barang', 'detail_transaksi.kode_barang', '=', 'barang.kode_barang')
+            ->where('barang.id_penitip', $topSeller['id_penitip'])
+            ->selectRaw('AVG(rating.bintang) as average_rating, COUNT(rating.id_rating) as total_ratings')
+            ->first();
+
+        // Reset semua top seller sebelum update yang baru
+        \App\Models\Penitip::where('top_seller', true)->update(['top_seller' => false]);
+
+        // Tandai sebagai top seller
+        \App\Models\Penitip::where('id_penitip', $topSeller['id_penitip'])->update([
+            'top_seller' => true,
+        ]);
+
+        // Hitung bonus
+        $bonusPoin = round($topSeller['total_penjualan'] * 0.01);
+        if ($bonusPoin > 0) {
+            \App\Models\Penitip::where('id_penitip', $topSeller['id_penitip'])->increment('poin', $bonusPoin);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Top seller bulan lalu berhasil dihitung',
+            'top_seller' => [
+                'id_penitip' => $topSeller['id_penitip'],
+                'nama_penitip' => $topSeller['nama_penitip'],
+                'total_penjualan' => $topSeller['total_penjualan'],
+                'bonus_poin' => $bonusPoin,
+                'status' => 'TOP SELLER',
+                'average_rating' => round($ratingData->average_rating ?? 0, 2),
+                'total_ratings' => $ratingData->total_ratings ?? 0,
+            ],
+        ], 200);
+    }
+
 
     public function coba(Request $request)
     {
