@@ -17,6 +17,14 @@ class MerchandiseController extends Controller
 
         return view('merchandise', compact('merchandises'));
     }
+    public function dataMerchandise()
+    {
+        $merchandises = Merchandise::whereExist()->get();
+
+        return response()->json([
+            'merchandise' => $merchandises
+        ]);
+    }
 
     public function redeem(Request $request)
     {

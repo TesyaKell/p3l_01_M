@@ -24,7 +24,14 @@ class BarangController extends Controller
         $barang = Barang::where('status', 'Tersedia')->get();
         return response()->json($barang);
     }
-
+    public function mobilebarang()
+    {
+        // Ambil semua data barang
+        $barang = Barang::where('status', 'Tersedia')->get();
+        return response()->json($barang);
+    }
+    
+    
     public function averageRating()
     {
         $penitips = \App\Models\Penitip::whereHas('barang')
@@ -67,6 +74,7 @@ class BarangController extends Controller
             ->where('barang.id_penitip', $this->id_penitip)
             ->count();
     }
+
     public function tes()
     {
         $kategoriList = KategoriBarang::all();

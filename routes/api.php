@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\BarangController;
+use App\Http\Controllers\ClaimMerchController;
+use App\Http\Controllers\DetailTransaksiController;
+use App\Http\Controllers\MerchandiseController;
 use App\Http\Controllers\transaksiController;
 use App\Http\Controllers\UserController;
 use App\Models\Pegawai;
@@ -10,6 +14,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/login-mobile', [UserController::class, 'loginApi']);
 Route::post('/transaksi/{no_nota}/cancel', [transaksiController::class, 'cancelTransaction'])->name('transaksi.cancel');
+
+Route::get('/home-barang',[BarangController::class, 'mobilebarang'])->name('ambilDataBarang');
+
+Route::get('/merchandise',[MerchandiseController::class, 'dataMerchandise'])->name('ambilDataMerchandise');
+
+Route::post('/claim-merchandise',[ClaimMerchController::class, 'tukarPoinMerchandise']);
+
+Route::get('history-komisi/hunter/{$id}',[DetailTransaksiController::class, 'getProfilDanTotalKomisi'])->name('ambilDataHistoriKomisi');
+
 // contoh untuk testing notif
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout-mobile', [UserController::class, 'logoutApi']);

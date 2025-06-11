@@ -180,6 +180,11 @@ class TransaksiKirimResource extends Resource
 
 
                         }
+                        Notification::make()
+                            ->title('Pengiriman dijadwalkan')
+                            ->body('Pengiriman berhasil dijadwalkan dan semua pihak telah diberi notifikasi.')
+                            ->success()
+                            ->send();
 
                     })
                     ->modalHeading('Penjadwalan Pengiriman')
@@ -189,44 +194,7 @@ class TransaksiKirimResource extends Resource
                 //berhasil update tapi belum kirim notifikasi
 
 
-                        // Notifikasi ke pembeli
-                        if ($record->pembeli  && filled($record->pembeli->fcm_token)) {
-                            $record->pembeli->notify(new MobileNotif(
-                                title: 'Pengiriman Dijadwalkan',
-                                body: 'Barang Anda akan dikirim pada ' . $jadwal->translatedFormat('l, d F Y H:i')
-                            ));
-                        }
-
-                        // Notifikasi ke semua penitip barang
-                        foreach ($record->detailTransaksi as $detail) {
-                            $barang = $detail->barang;
-                            if ($barang && filled($barang->penitip->fcm_token)) {
-                                $barang->penitip->notify(new MobileNotif(
-                                    title: 'Barang Anda Akan Dikirim',
-                                    body: 'Barang "' . $barang->nama_barang . '" akan dikirim ke pembeli pada ' . $jadwal->translatedFormat('d F Y')
-                                ));
-                            }
-                        }
-
-                        // Notifikasi ke kurir
-                        if ($record->pegawai && filled($record->pegawai->fcm_token)) {
-                            $record->pegawai->notify(new MobileNotif(
-                                title: 'Penugasan Pengiriman',
-                                body: 'Anda ditugaskan untuk mengirim barang pesanan No. ' . $record->no_nota . ' pada ' . $jadwal->translatedFormat('d F Y H:i')
-                            ));
-                        }
-
-                        Notification::make()
-                            ->title('Pengiriman dijadwalkan')
-                            ->body('Pengiriman berhasil dijadwalkan dan semua pihak telah diberi notifikasi.')
-                            ->success()
-                            ->send();
-                    })
-                    ->modalHeading('Penjadwalan Pengiriman')
-                    ->modalButton('Simpan')
-                    ->requiresConfirmation()
-                    ->visible(fn ($record) => $record->tipe_delivery === 'kurir' && $record->status === 'Disiapkan'),
-                
+                    
                 Action::make('aturPengambilan')
                     ->label('Atur Pengambilan')
                     ->icon('heroicon-o-truck')
@@ -236,8 +204,7 @@ class TransaksiKirimResource extends Resource
                             ->label('Jadwal Pengambilan')
                             ->required(),
 
-                    ])
-                    ->action(function ($record, array $data) {
+                    ])->action(function ($record, array $data) {
                         $jadwal = \Carbon\Carbon::parse($data['tanggal_ambil_kirim']);
                         $now = \Carbon\Carbon::now();
 
@@ -296,8 +263,10 @@ class TransaksiKirimResource extends Resource
                     $record->save();
                     
                     $detailList = DetailTransaksi::where('no_nota', $record->no_nota)->get();
-
-
+                    
+                    $totalHarga = 0;
+                    $totalBonus = 0;
+                    
                     foreach ($detailList as $detail) {
                         $barang = Barang::where('kode_barang', $detail->kode_barang)->first();
                         if (!$barang) continue;
@@ -316,14 +285,15 @@ class TransaksiKirimResource extends Resource
                             $komisiReusmart = $total_harga_barang * 0.20;
                             $komisiPenitip = $total_harga_barang * 0.80;
                         }
+                        
                         $komisiHunter = $barang->id_hunter_pegawai ? $total_harga_barang * 0.05 : 0;
                         $hargaJualBersih = $total_harga_barang - $komisiReusmart - $komisiHunter;
-
+                        
                         $tanggalMasuk = Carbon::parse($barang->tanggal_masuk);
                         $tanggalLaku = Carbon::parse($barang->tanggal_laku);
                         $selisihHari = $tanggalMasuk->diffInDays($tanggalLaku, false);
                         $bonus = ($selisihHari >= 0 && $selisihHari < 7) ? $komisiReusmart * 0.1 : 0;
-
+                        
                         $detail->update ([
                             'harga_jual_bersih' => $hargaJualBersih,
                             'komisi_reusmart' => $komisiReusmart,
@@ -332,14 +302,16 @@ class TransaksiKirimResource extends Resource
                             'total' => $hargaJualBersih + $bonus,
                             'komisi_penitip' => $komisiPenitip + $bonus,
                         ]);
-
+                        $totalHarga += $barang->harga;
+                        $totalBonus += $bonus;
+                        
                         $penitip = Penitip::find($barang->id_penitip);
                         if ($penitip && filled($penitip->fcm_token)) {
                             // Update saldo
                             $penitip->update([
                                 'saldo' => $penitip->saldo + $detail->komisi_penitip,
                             ]);
-
+                            
                             // Kirim notifikasi ke Penitip
                             $penitip->notify(new MobileNotif(
                                 title: 'Barang Anda Terjual!',
@@ -347,8 +319,24 @@ class TransaksiKirimResource extends Resource
                             ));
                         }
                     }
+                    $pembeli = Pembeli::where('id_pembeli', $record->id_pembeli)->get();
 
+                    $poinSebelum = $pembeli->poin ?? 0;
+                    $poinDasar = floor($totalHarga / 10000);
+                    $bonusPoin = $totalHarga > 500000 ? floor($poinDasar * 0.2) : 0;
+                    $totalPoinDapat = $poinDasar + $bonusPoin;
+
+                    $tukarPoin = $record->tukar_poin;
+                    $poinSetelah = max(0, $poinSebelum + $totalPoinDapat - $tukarPoin);
+
+                    $record->poin_sebelum = $poinSebelum;
+                    $record->tambah_poin = $totalPoinDapat;
+                    $record->poin_setelah = $poinSetelah;
+                    $record->tukar_poin = $tukarPoin;
                     
+                    $pembeli->update([
+                        'poin' => $poinSetelah
+                    ]);
 
                     // Notifikasi ke Pembeli (jika relasi tersedia)
                     if ($record->pembeli && filled($record->pembeli->fcm_token)) {
