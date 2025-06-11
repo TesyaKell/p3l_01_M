@@ -31,6 +31,16 @@ return Application::configure(basePath: dirname(__DIR__))
           ->onFailure(function () {
               \Log::error('❌ statusDonasi:notify gagal dijalankan pada ' . now());
           });
+
+      $schedule->command('topSeller:notify')->everyMinute()
+        ->withoutOverlapping()
+        ->evenInMaintenanceMode()
+        ->onSuccess(function () {
+            \Log::info('✅ topSeller:notify berhasil dijalankan pada ' . now());
+        })
+        ->onFailure(function () {
+            \Log::error('❌ topSeller:notify gagal dijalankan pada ' . now());
+        });
   })
 
 

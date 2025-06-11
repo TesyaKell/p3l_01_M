@@ -111,8 +111,16 @@ class BarangController extends Controller
 
         // Hitung bonus
         $bonusPoin = round($topSeller['total_penjualan'] * 0.01);
+
         if ($bonusPoin > 0) {
-            \App\Models\Penitip::where('id_penitip', $topSeller['id_penitip'])->increment('poin', $bonusPoin);
+            $penitip = \App\Models\Penitip::find($topSeller['id_penitip']);
+
+            // Validasi: hanya tambahkan poin jika belum pernah diberi untuk bulan ini
+            // Misalnya: anggap poin bulan lalu belum termasuk bonusPoin
+            // Jika poin saat ini masih < bonusPoin berarti belum dikasih
+            if ($penitip->poin < $bonusPoin) {
+                $penitip->increment('poin', $bonusPoin);
+            }
         }
 
         return response()->json([
