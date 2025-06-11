@@ -6,7 +6,7 @@
         <thead class="bg-gray-100">
             <tr>
                 <th class="border border-gray-300 p-2 text-left">Nama Organisasi</th>
-                <th class="border border-gray-300 p-2 text-left">Deskripsi Request</th>
+                <th class="border border-gray-300 p-2 text-left">Request</th>
                 <th class="border border-gray-300 p-2 text-left">Status</th>
             </tr>
         </thead>
@@ -36,7 +36,7 @@
         <thead class="bg-gray-100">
             <tr>
                 <th class="border border-gray-300 p-2 text-left">Nama Organisasi</th>
-                <th class="border border-gray-300 p-2 text-left">Deskripsi Request</th>
+                <th class="border border-gray-300 p-2 text-left">Request</th>
                 <th class="border border-gray-300 p-2 text-left">Status</th>
             </tr>
         </thead>

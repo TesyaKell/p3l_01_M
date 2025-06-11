@@ -3,21 +3,29 @@
 namespace App\Filament\Owner\Resources\PrintLaporanRequestResource\Pages;
 
 use App\Filament\Owner\Resources\PrintLaporanRequestResource;
-use Filament\Resources\Pages\Page;
+use Filament\Resources\Pages\ListRecords;
+use Filament\Actions\Action;
 use App\Models\RequestDonasi;
 
-class ListPrintLaporanRequests extends Page
+class ListPrintLaporanRequests extends ListRecords
 {
     protected static string $resource = PrintLaporanRequestResource::class;
 
-    protected static string $view = 'laporan.print-laporan-request';
-
-    public $requestsDiproses;
-    public $requestsDiterima;
-
-    public function mount(): void
+    protected function getHeaderActions(): array
     {
-        $this->requestsDiproses = RequestDonasi::where('status', 'Diproses')->with('organisasi')->get();
-        $this->requestsDiterima = RequestDonasi::where('status', 'Diterima')->with('organisasi')->get();
+        return [
+            Action::make('preview_diproses')
+                ->label('Unduh Laporan Request Donasi')
+                ->button()
+                ->color('info')
+                ->action(function (): void {
+                    $this->redirect(route('owner.laporan.request.preview', ['status' => 'Diproses']));
+                }),
+        ];
+    }
+
+    protected function getTableActions(): array
+    {
+        return [];
     }
 }

@@ -95,19 +95,20 @@ class LaporanOwnerController extends Controller
     {
         $this->isOwner();
 
-        $status = $request->query('status', 'Diproses'); // Default ke 'Diproses'
-        $data = RequestDonasi::where('status', $status)->with('organisasi')->get();
+        // Only show "Diproses" status
+        $data = RequestDonasi::where('status', 'Diproses')->with('organisasi')->get();
 
         $pdf = Pdf::loadView('laporan.request_pdf', compact('data'));
-        return $pdf->download("laporan_request_donasi_{$status}.pdf");
+        return $pdf->download("laporan_request_donasi_Diproses.pdf");
     }
 
     public function requestPreview(Request $request)
     {
         $this->isOwner();
 
-        $status = $request->query('status', 'Diproses');
-        $data = RequestDonasi::where('status', $status)->with('organisasi')->get();
+        // Only show "Diproses" status
+        $status = 'Diproses';
+        $data = RequestDonasi::where('status', 'Diproses')->with('organisasi')->get();
 
         return view('laporan.request_preview', compact('data', 'status'));
     }
@@ -217,4 +218,26 @@ class LaporanOwnerController extends Controller
             ->stream("laporan-barang-waktu-titipan-habis-{$bulan}-{$tahun}.pdf");
     }
 
+    public function requestPreviewGabungan()
+    {
+        $this->isOwner();
+
+        // Only get "Diproses" status, remove "Diterima" 
+        $dataDisproses = RequestDonasi::where('status', 'Diproses')->with('organisasi')->get();
+        $dataDiterima = collect(); // Empty collection since we only want "Diproses"
+
+        return view('laporan.request_preview_gabungan', compact('dataDisproses', 'dataDiterima'));
+    }
+
+    public function requestPdfGabungan()
+    {
+        $this->isOwner();
+
+        // Only get "Diproses" status, remove "Diterima"
+        $dataDisproses = RequestDonasi::where('status', 'Diproses')->with('organisasi')->get();
+        $dataDiterima = collect(); // Empty collection since we only want "Diproses"
+
+        $pdf = Pdf::loadView('laporan.request_pdf_gabungan', compact('dataDisproses', 'dataDiterima'));
+        return $pdf->download('laporan-request-donasi-diproses.pdf');
+    }
 }
