@@ -17,7 +17,8 @@ class PrintLaporanDonasiResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationLabel = 'Laporan Donasi';
-    protected static ?string $navigationGroup = 'Donasi Management';
+    //protected static ?string $navigationGroup = 'Donasi Management';
+    protected static ?string $navigationGroup = 'Laporan';
     protected static ?int $navigationSort = 5;
 
     public static function form(Forms\Form $form): Forms\Form
