@@ -451,6 +451,63 @@ class transaksiController extends Controller
 
         $transaksi = Transaksi::where('no_nota', $no_nota)->firstOrFail();
 
+        $detailList = DetailTransaksi::where('no_nota', $transaksi->no_nota)->get();
+        
+        $totalHarga = 0;
+        $totalBonus = 0;
+        
+        foreach ($detailList as $detail) {
+            $barang = Barang::where('kode_barang', $detail->kode_barang)->first();
+            if (!$barang) continue;
+            
+            $total_harga_barang = $barang->harga;
+            if ($barang->opsi_barang === 'Diperpanjang' && $barang->id_hunter_pegawai) {
+                $komisiReusmart = $total_harga_barang * 0.25;
+                $komisiPenitip = $total_harga_barang * 0.70;
+            } elseif ($barang->opsi_barang === 'Diperpanjang') {
+                $komisiReusmart = $total_harga_barang * 0.30;
+                $komisiPenitip = $total_harga_barang * 0.70;
+            } elseif ($barang->id_hunter_pegawai) {
+                $komisiReusmart = $total_harga_barang * 0.15;
+                $komisiPenitip = $total_harga_barang * 0.80;
+            } else {
+                $komisiReusmart = $total_harga_barang * 0.20;
+                $komisiPenitip = $total_harga_barang * 0.80;
+            }
+            
+            $komisiHunter = $barang->id_hunter_pegawai ? $total_harga_barang * 0.05 : 0;
+            $hargaJualBersih = $total_harga_barang - $komisiReusmart - $komisiHunter;
+            
+            $tanggalMasuk = Carbon::parse($barang->tanggal_masuk);
+            $tanggalLaku = Carbon::parse($barang->tanggal_laku);
+            $selisihHari = $tanggalMasuk->diffInDays($tanggalLaku, false);
+            $bonus = ($selisihHari >= 0 && $selisihHari < 7) ? $komisiReusmart * 0.1 : 0;
+            
+            $detail->update ([
+                'harga_jual_bersih' => $hargaJualBersih,
+                'komisi_reusmart' => $komisiReusmart,
+                'komisi_hunter' => $komisiHunter,
+                'bonus' => $bonus,
+                'total' => $hargaJualBersih + $bonus,
+                'komisi_penitip' => $komisiPenitip + $bonus,
+            ]);
+            $totalHarga += $barang->harga;
+            $totalBonus += $bonus;
+            
+        }
+        $pembeli = Pembeli::where('id_pembeli', $transaksi->id_pembeli)->first();
+
+        $poinSebelum = $pembeli->poin ?? 0;
+        $poinDasar = floor($totalHarga / 10000);
+        $bonusPoin = $totalHarga > 500000 ? floor($poinDasar * 0.2) : 0;
+        $totalPoinDapat = $poinDasar + $bonusPoin;
+
+        $tukarPoin = $transaksi->tukar_poin;
+        $poinSetelah = max(0, $poinSebelum + $totalPoinDapat - $tukarPoin);
+        
+        $pembeli->update([
+            'poin' => $poinSetelah
+        ]);
 
         if ($transaksi->status !== 'Dikirim') {
             return response()->json([
@@ -462,6 +519,10 @@ class transaksiController extends Controller
         // Update status transaksi
         $transaksi->update([
             'status' => 'Selesai',
+            'poin_sebelum' => $poinSebelum,
+            'tambah_poin' => $totalPoinDapat,
+            'poin_setelah' => $poinSetelah,
+            'tukar_poin' => $tukarPoin,
             //'tanggal_ambil_kirim' => now(),
         ]);
 

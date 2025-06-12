@@ -258,10 +258,7 @@ class TransaksiKirimResource extends Resource
                 ->icon('heroicon-o-truck')
                 ->color('info')
                 ->requiresConfirmation()
-                ->action(function ($record) {
-                    $record->status = 'Selesai';
-                    $record->save();
-                    
+                ->action(function ($record) {                    
                     $detailList = DetailTransaksi::where('no_nota', $record->no_nota)->get();
                     
                     $totalHarga = 0;
@@ -345,6 +342,8 @@ class TransaksiKirimResource extends Resource
                             body: 'Barang pesanan Anda telah dikonfirmasi sebagai berhasil diambil.'
                         ));
                     }
+                    $record->status = 'Selesai';
+                    $record->save();
                     Notification::make()
                         ->title('Barang berhasil dikonfirmasi')
                         ->body('Status telah diperbarui menjadi Selesai.')

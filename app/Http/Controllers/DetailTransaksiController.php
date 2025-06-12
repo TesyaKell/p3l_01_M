@@ -27,6 +27,10 @@ class DetailTransaksiController extends Controller
                 'no_nota' => $item->no_nota,
                 'komisi_hunter' => $item->komisi_hunter ?? 0,
                 'tanggal' => $item->created_at?->format('Y-m-d') ?? '-',
+                'batas_garansi' => $item->batas_garansi?->format('Y-m-d') ?? '-',
+                'garansi' => $item->barang->garansi ?? '-',
+                'status' => $item->barang->status ?? '-',
+                'foto' => $item->barang->foto_produk ?? [],
             ];
         });
          $total = DB::table('detail_transaksi')
