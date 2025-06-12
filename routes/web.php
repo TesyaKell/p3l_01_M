@@ -100,6 +100,7 @@ Route::get('/pembeli/history', [PembeliController::class, 'historyTransaksiPembe
 Route::get('/pembeli/history-transaksi', [PembeliController::class, 'historyTransaksi'])->name('pembeli.history.transaksi')->middleware('auth:pembeli');
 Route::get('/pembeli/transaksi/detail/{no_nota}', [PembeliController::class, 'detailTransaksi'])->name('pembeli.transaksi.detail')->middleware('auth:pembeli');
 
+Route::get('/all/saldo-penitip', [PenitipController::class, 'dataSaldoPenitipBanding'])->name('dataSaldoPenitip');
 
 // Menangani permintaan POST ke route /
 Route::post('/', [ProfilController::class, 'logout'])->name('logout');
@@ -184,6 +185,16 @@ Route::get('/login', function () {
     return redirect()->route('jabatan');
 })->name('login');
 
+Route::get('/barang', [BarangController::class, 'mobile']);
+
+Route::get('/topSeller', [BarangController::class, 'topSeller']);
+
+Route::middleware('auth:sanctum')->get('/riwayat-transaksi', [TransaksiController::class, 'coba']);
+
+Route::middleware('auth:sanctum')->get('/status-donasi', [BarangController::class, 'statusDonasi']);
+
+
+Route::middleware('auth:sanctum')->get('/riwayat-penitipan', [BarangController::class, 'coba']);
 
 // Login routes
 Route::post('/login/pembeli', [PembeliController::class, 'login'])->name('login.pembeli.post');
@@ -324,6 +335,7 @@ Route::get('/cetak-nota-titipan/{barang}', [CetakNotaTitipanController::class, '
     ->name('cetak-nota-titipan');
 
 Route::get('/cetak-nota-penjualan/{id}', [CetakNotaTitipanController::class, 'cetakNotaPenjualan'])->name('cetak-nota-penjualan');
+
 Route::post('/transaksi/upload/{id}', [transaksiController::class, 'uploadBuktiPembayaran'])->name('upload.bukti');
 
 Route::get('/test-notifikasi', [BarangController::class, 'notifikasi']);
@@ -350,12 +362,19 @@ Route::get('/laporan/donasi/preview', [App\Http\Controllers\LaporanOwnerControll
 Route::get('/laporan/request/preview', [App\Http\Controllers\LaporanOwnerController::class, 'requestPreview'])->name('laporan.request.preview');
 
 Route::get('/barang', [BarangController::class, 'mobile']);
+Route::get('/r', [BarangController::class, 'ratingMobile']);
+Route::get('/rating', [BarangController::class, 'averageRating']);
 
-Route::get('/topSeller', [BarangController::class, 'topSeller']);
+//laporan penjualan kategori per tahun
+Route::get('/laporan/penjualan/kategori/preview', [App\Http\Controllers\LaporanOwnerController::class, 'penjualanKategoriPdf'])->name('laporan-penjualan-kategori.pdf');
 
-Route::middleware('auth:sanctum')->get('/riwayat-transaksi', [TransaksiController::class, 'coba']);
+//laporan barang titipan expired
+Route::get('/laporan/titipan-barang-habis', [App\Http\Controllers\LaporanOwnerController::class, 'barangWaktuTitipanHabisPdf'])->name('laporan-waktu-titipan-expired.pdf');
 
-Route::middleware('auth:sanctum')->get('/status-donasi', [BarangController::class, 'statusDonasi']);
+// Add these routes for Owner Donation Report
+Route::get('/owner/laporan/donasi/preview', [App\Http\Controllers\LaporanOwnerController::class, 'donasiPreviewWithYear'])->name('owner.laporan.donasi.preview');
+Route::get('/owner/laporan/donasi/pdf', [App\Http\Controllers\LaporanOwnerController::class, 'donasiPdfWithYear'])->name('owner.laporan.donasi.pdf');
 
-
-Route::middleware('auth:sanctum')->get('/riwayat-penitipan', [BarangController::class, 'coba']);
+// Update existing route to only handle "Diproses"
+Route::get('/owner/laporan/request/preview', [App\Http\Controllers\LaporanOwnerController::class, 'requestPreview'])->name('owner.laporan.request.preview');
+Route::get('/owner/laporan/request/pdf', [App\Http\Controllers\LaporanOwnerController::class, 'requestPdf'])->name('owner.laporan.request.pdf');

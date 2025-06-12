@@ -10,6 +10,7 @@ use App\Models\Penitip;
 use App\Models\Transaksi;
 use App\Models\Pembeli;
 use App\Notifications\MobileNotif;
+use Carbon\Carbon;
 use Filament\Tables\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Forms;
@@ -120,7 +121,7 @@ class TransaksiKirimResource extends Resource
                     ]),
             ])
             ->actions([
-                Action::make('aturPengiriman')
+                 Action::make('aturPengiriman')
                     ->label('Atur Pengiriman')
                     ->icon('heroicon-o-truck')
                     ->color('info')
@@ -179,6 +180,11 @@ class TransaksiKirimResource extends Resource
 
 
                         }
+                        Notification::make()
+                            ->title('Pengiriman dijadwalkan')
+                            ->body('Pengiriman berhasil dijadwalkan dan semua pihak telah diberi notifikasi.')
+                            ->success()
+                            ->send();
 
                     })
                     ->modalHeading('Penjadwalan Pengiriman')
@@ -187,6 +193,8 @@ class TransaksiKirimResource extends Resource
                     ->visible(fn($record) => $record->tipe_delivery === 'kurir' and $record->status === 'Disiapkan'),
                 //berhasil update tapi belum kirim notifikasi
 
+
+                    
                 Action::make('aturPengambilan')
                     ->label('Atur Pengambilan')
                     ->icon('heroicon-o-truck')
@@ -195,77 +203,162 @@ class TransaksiKirimResource extends Resource
                         DateTimePicker::make('tanggal_ambil_kirim')
                             ->label('Jadwal Pengambilan')
                             ->required(),
+
                     ])->action(function ($record, array $data) {
-                        $record->tanggal_ambil_kirim = $data['tanggal_ambil_kirim'];
+                        $jadwal = \Carbon\Carbon::parse($data['tanggal_ambil_kirim']);
+                        $now = \Carbon\Carbon::now();
+
+                        // Jika sekarang lewat jam 4 sore dan tanggal pengiriman = hari ini, tolak
+                        if ($now->format('H') >= 20 && $jadwal->isSameDay($now)) {
+                            Notification::make()
+                                ->title('Pengambilan tidak valid')
+                                ->body('Pengambilan tidak bisa dijadwalkan di hari yang sama setelah jam 20:00.')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
+                        // Simpan data pengiriman
+                        $record->tanggal_ambil_kirim = $jadwal;
                         $record->status = 'Menunggu Pickup';
                         $record->save();
 
-                        // Notifikasi untuk Pembeli
-                        if ($record->pembeli) {
+                        // Notifikasi ke pembeli
+                        if ($record->pembeli  && filled($record->pembeli->fcm_token)) {
                             $record->pembeli->notify(new MobileNotif(
-                                'Barang Siap Diambil',
-                                'Silakan ambil barang pesanan Anda sesuai jadwal yang telah ditentukan.'
+                                title: 'Pengambilan Dijadwalkan',
+                                body: 'Barang Anda dapat diambil pada tanggal' . $jadwal->translatedFormat('l, d F Y H:i')
                             ));
                         }
 
-                        // Notifikasi untuk Penitip dari setiap detail barang
-                        $detailList = DetailTransaksi::where('no_nota', $record->no_nota)->get();
-                        foreach ($detailList as $detail) {
-                            $barang = Barang::where('kode_barang', $detail->kode_barang)->first();
-                            if (!$barang)
-                                continue;
-
-                            $penitip = Penitip::find($barang->id_penitip);
-                            if ($penitip) {
-                                $penitip->notify(new MobileNotif(
-                                    'Barang Anda Siap Diambil',
-                                    'Barang Anda dalam nota ' . $record->no_nota . ' siap diambil oleh pembeli.'
+                        // Notifikasi ke semua penitip barang
+                        foreach ($record->detailTransaksi as $detail) {
+                            $barang = $detail->barang;
+                            if ($barang && filled($barang->penitip->fcm_token)) {
+                                $barang->penitip->notify(new MobileNotif(
+                                    title: 'Barang Anda Akan Diambil',
+                                    body: 'Barang "' . $barang->nama_barang . '" dapat diambil pada ' . $jadwal->translatedFormat('d F Y')
                                 ));
                             }
                         }
 
+                        Notification::make()
+                            ->title('Pengambilan dijadwalkan')
+                            ->body('Pengambilan berhasil dijadwalkan dan semua pihak telah diberi notifikasi.')
+                            ->success()
+                            ->send();
                     })
                     ->modalHeading('Penjadwalan Pengambilan')
                     ->modalButton('Simpan')
                     ->requiresConfirmation()
-                    ->visible(fn($record) => $record->tipe_delivery === 'ambil_tempat' and $record->status === 'Disiapkan'),
-                //berhasil update tapi belum kirim notifikasi
+                    ->visible(fn ($record) => $record->tipe_delivery === 'ambil_tempat' && $record->status === 'Disiapkan'),
 
                 Action::make('konfirmasiPengambilan')
-                    ->label('Konfirmasi Pengambilan')
-                    ->icon('heroicon-o-truck')
-                    ->color('info')
-                    ->requiresConfirmation()
-                    ->action(function ($record) {
-                        $record->status = 'Selesai';
-                        $record->save();
-                        $detailList = DetailTransaksi::where('no_nota', $record->no_nota)->get();
-                        foreach ($detailList as $detail) {
-                            $barang = Barang::where('kode_barang', $detail->kode_barang)->first();
-                            if (!$barang)
-                                continue;
-
-                            $penitip = Penitip::where('id_penitip', $barang->id_penitip)->first();
-                            if (!$penitip)
-                                continue;
-
+                ->label('Konfirmasi Pengambilan')
+                ->icon('heroicon-o-truck')
+                ->color('info')
+                ->requiresConfirmation()
+                ->action(function ($record) {
+                    $record->status = 'Selesai';
+                    $record->save();
+                    
+                    $detailList = DetailTransaksi::where('no_nota', $record->no_nota)->get();
+                    
+                    $totalHarga = 0;
+                    $totalBonus = 0;
+                    
+                    foreach ($detailList as $detail) {
+                        $barang = Barang::where('kode_barang', $detail->kode_barang)->first();
+                        if (!$barang) continue;
+                        
+                        $total_harga_barang = $barang->harga;
+                        if ($barang->opsi_barang === 'Diperpanjang' && $barang->id_hunter_pegawai) {
+                            $komisiReusmart = $total_harga_barang * 0.25;
+                            $komisiPenitip = $total_harga_barang * 0.70;
+                        } elseif ($barang->opsi_barang === 'Diperpanjang') {
+                            $komisiReusmart = $total_harga_barang * 0.30;
+                            $komisiPenitip = $total_harga_barang * 0.70;
+                        } elseif ($barang->id_hunter_pegawai) {
+                            $komisiReusmart = $total_harga_barang * 0.15;
+                            $komisiPenitip = $total_harga_barang * 0.80;
+                        } else {
+                            $komisiReusmart = $total_harga_barang * 0.20;
+                            $komisiPenitip = $total_harga_barang * 0.80;
+                        }
+                        
+                        $komisiHunter = $barang->id_hunter_pegawai ? $total_harga_barang * 0.05 : 0;
+                        $hargaJualBersih = $total_harga_barang - $komisiReusmart - $komisiHunter;
+                        
+                        $tanggalMasuk = Carbon::parse($barang->tanggal_masuk);
+                        $tanggalLaku = Carbon::parse($barang->tanggal_laku);
+                        $selisihHari = $tanggalMasuk->diffInDays($tanggalLaku, false);
+                        $bonus = ($selisihHari >= 0 && $selisihHari < 7) ? $komisiReusmart * 0.1 : 0;
+                        
+                        $detail->update ([
+                            'harga_jual_bersih' => $hargaJualBersih,
+                            'komisi_reusmart' => $komisiReusmart,
+                            'komisi_hunter' => $komisiHunter,
+                            'bonus' => $bonus,
+                            'total' => $hargaJualBersih + $bonus,
+                            'komisi_penitip' => $komisiPenitip + $bonus,
+                        ]);
+                        $totalHarga += $barang->harga;
+                        $totalBonus += $bonus;
+                        
+                        $penitip = Penitip::find($barang->id_penitip);
+                        if ($penitip && filled($penitip->fcm_token)) {
+                            // Update saldo
                             $penitip->update([
                                 'saldo' => $penitip->saldo + $detail->komisi_penitip,
                             ]);
+                            
+                            // Kirim notifikasi ke Penitip
+                            $penitip->notify(new MobileNotif(
+                                title: 'Barang Anda Terjual!',
+                                body: 'Barang "' . $barang->nama_barang . '" telah berhasil dibeli.'
+                            ));
                         }
-                        Notification::make()
-                            ->title('Barang berhasil dikonfirmasi')
-                            ->body('Status telah diperbarui menjadi Selesai.')
-                            ->success()
-                            ->send();
-                        //notification hanya ke pegawai saja belum ke pembeli dan penitip
-                    })
-                    ->modalHeading('Konfirmasi Pengambilan Barang')
-                    ->modalSubheading('Yakin ingin menandai barang ini sebagai telah selesai diambil?')
-                    ->modalButton('Ya, Selesaikan')
-                    ->requiresConfirmation()
-                    ->visible(fn($record) => $record->status === 'Menunggu Pickup'),
-                //berhasil update tapi belum kirim notifikasi
+                    }
+                    $pembeli = Pembeli::where('id_pembeli', $record->id_pembeli)->get();
+
+                    $poinSebelum = $pembeli->poin ?? 0;
+                    $poinDasar = floor($totalHarga / 10000);
+                    $bonusPoin = $totalHarga > 500000 ? floor($poinDasar * 0.2) : 0;
+                    $totalPoinDapat = $poinDasar + $bonusPoin;
+
+                    $tukarPoin = $record->tukar_poin;
+                    $poinSetelah = max(0, $poinSebelum + $totalPoinDapat - $tukarPoin);
+
+                    $record->poin_sebelum = $poinSebelum;
+                    $record->tambah_poin = $totalPoinDapat;
+                    $record->poin_setelah = $poinSetelah;
+                    $record->tukar_poin = $tukarPoin;
+                    
+                    $pembeli->update([
+                        'poin' => $poinSetelah
+                    ]);
+
+                    // Notifikasi ke Pembeli (jika relasi tersedia)
+                    if ($record->pembeli && filled($record->pembeli->fcm_token)) {
+                        $record->pembeli->notify(new MobileNotif(
+                            title: 'Pengambilan Berhasil!',
+                            body: 'Barang pesanan Anda telah dikonfirmasi sebagai berhasil diambil.'
+                        ));
+                    }
+                    Notification::make()
+                        ->title('Barang berhasil dikonfirmasi')
+                        ->body('Status telah diperbarui menjadi Selesai.')
+                        ->success()
+                        ->send();
+                    //notification hanya ke pegawai saja belum ke pembeli dan penitip
+                })
+                ->modalHeading('Konfirmasi Pengambilan Barang')
+                ->modalSubheading('Yakin ingin menandai barang ini sebagai telah selesai diambil?')
+                ->modalButton('Ya, Selesaikan')
+                ->requiresConfirmation()
+                ->visible(fn ($record) =>  $record->status === 'Menunggu Pickup'),
+
+      //berhasil update tapi belum kirim notifikasi
                 Tables\Actions\Action::make('cetakNota')
                     ->label('Cetak Nota')
                     ->icon('heroicon-o-printer')
@@ -275,7 +368,7 @@ class TransaksiKirimResource extends Resource
                     ->visible(fn($record) => $record->status !== 'Batal'),
 
 
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
 
             ->bulkActions([

@@ -451,12 +451,6 @@ class transaksiController extends Controller
 
         $transaksi = Transaksi::where('no_nota', $no_nota)->firstOrFail();
 
-        if (!$user || $transaksi->id_pegawai !== $user->id_pegawai) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized',
-            ], 401);
-        }
 
         if ($transaksi->status !== 'Dikirim') {
             return response()->json([

@@ -48,12 +48,30 @@
     @foreach ($barangGrouped as $idPenitip => $barangList)
         @php
             $penitip = $barangList->first()?->penitip;
+
+            $totalHargaBersih = 0;
+            $totalBonus = 0;
+            $totalPendapatan = 0;
+
+            foreach ($barangList as $barang) {
+                $detailTransaksi = $barang->detailTransaksi;
+                if ($detailTransaksi) {
+                    $detail =
+                        is_object($detailTransaksi) && method_exists($detailTransaksi, 'first')
+                            ? $detailTransaksi->first()
+                            : $detailTransaksi;
+                    if ($detail) {
+                        $totalHargaBersih += $detail->harga_jual_bersih ?? 0;
+                        $totalBonus += $detail->bonus ?? 0;
+                        $totalPendapatan += ($detail->harga_jual_bersih ?? 0) + ($detail->bonus ?? 0);
+                    }
+                }
+            }
         @endphp
 
         <hr>
         <p><strong>ID Penitip:</strong> {{ $penitipInfo->id_penitip ?? '-' }}</p>
         <p><strong>Nama Penitip:</strong> {{ $penitipInfo->nama_penitip ?? '-' }}</p>
-
 
         <table>
             <thead>
@@ -69,14 +87,22 @@
             </thead>
             <tbody>
                 @forelse ($barangList as $barang)
+                    @php
+                        $detailTransaksi = $barang->detailTransaksi;
+                        $detail =
+                            is_object($detailTransaksi) && method_exists($detailTransaksi, 'first')
+                                ? $detailTransaksi->first()
+                                : $detailTransaksi;
+                    @endphp
                     <tr>
                         <td>{{ $barang->kode_barang }}</td>
                         <td>{{ $barang->nama_barang }}</td>
                         <td>{{ \Carbon\Carbon::parse($barang->tanggal_masuk)->format('d-m-Y') }}</td>
                         <td>{{ \Carbon\Carbon::parse($barang->tanggal_laku)->format('d-m-Y') }}</td>
-                        <td>{{ number_format($barang->harga ?? 0, 0, ',', '.') }}</td>
-                        <td>{{ number_format($barang->bonus ?? 0, 0, ',', '.') }}</td>
-                        <td>{{ number_format(($barang->harga ?? 0) + ($barang->bonus ?? 0), 0, ',', '.') }}</td>
+                        <td>{{ number_format($detail->harga_jual_bersih ?? 0, 0, ',', '.') }}</td>
+                        <td>{{ number_format($detail->bonus ?? 0, 0, ',', '.') }}</td>
+                        <td>{{ number_format(($detail->harga_jual_bersih ?? 0) + ($detail->bonus ?? 0), 0, ',', '.') }}
+                        </td>
                     </tr>
                 @empty
                     <tr>
@@ -84,6 +110,15 @@
                         </td>
                     </tr>
                 @endforelse
+
+                @if ($barangList->isNotEmpty())
+                    <tr style="font-weight: bold; background-color: #f8f9fa;">
+                        <td colspan="4" style="text-align: center;">TOTAL</td>
+                        <td>{{ number_format($totalHargaBersih, 0, ',', '.') }}</td>
+                        <td>{{ number_format($totalBonus, 0, ',', '.') }}</td>
+                        <td>{{ number_format($totalPendapatan, 0, ',', '.') }}</td>
+                    </tr>
+                @endif
             </tbody>
         </table>
     @endforeach

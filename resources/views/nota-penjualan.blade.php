@@ -97,7 +97,7 @@
                 <tr>
                     <td>Potongan {{ $transaksi->tukar_poin ?? 0 }} poin</td>
                     @php
-                        $diskon = $transaksi->tukar_poin * 10000;
+                        $diskon = $transaksi->tukar_poin * 100;
                     @endphp
                     <td class="text-right">- {{ number_format($diskon, 0, ',', '.') }}</td>
                     @php

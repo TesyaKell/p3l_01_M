@@ -86,7 +86,7 @@
 <body>
     <div class="header-actions">
         <a href="{{ url()->previous() }}" class="btn btn-secondary">Kembali</a>
-        <a href="{{ route('owner.laporan.request.pdf', ['status' => $status]) }}" class="btn btn-primary">Download PDF</a>
+        <a href="{{ route('owner.laporan.request.pdf') }}" class="btn btn-primary">Download PDF</a>
     </div>
 
     <div class="header">
@@ -94,7 +94,7 @@
         <p>Jl. Green Eco Park No. 456 Yogyakarta</p>
     </div>
 
-    <div class="title">Laporan Request Donasi ({{ $status }})</div>
+    <div class="title">Laporan Request Donasi (Diproses)</div>
     <div class="print-date">
         Tanggal cetak: {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
     </div>
@@ -103,9 +103,9 @@
         <thead>
             <tr>
                 <th>Id Organisasi</th>
-                <th>Nama Organisasi</th>
-                <th>Alamat Organisasi</th>
-                <th>Deskripsi Request</th>
+                <th>Nama</th>
+                <th>Alamat</th>
+                <th>Request</th>
             </tr>
         </thead>
         <tbody>
@@ -118,8 +118,8 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" style="text-align: center">Tidak ada data request donasi dengan status
-                        {{ $status }}.</td>
+                    <td colspan="4" style="text-align: center">Tidak ada data request donasi dengan status Diproses.
+                    </td>
                 </tr>
             @endforelse
         </tbody>

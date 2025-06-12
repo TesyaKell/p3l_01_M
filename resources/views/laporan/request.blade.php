@@ -45,7 +45,7 @@
         <thead>
             <tr>
                 <th>Organisasi</th>
-                <th>Deskripsi Request</th>
+                <th>Request</th>
                 <th>Status</th>
             </tr>
         </thead>

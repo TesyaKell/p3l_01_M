@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailTransaksi;
+use DB;
 use Illuminate\Http\Request;
 
 class DetailTransaksiController extends Controller
@@ -12,6 +13,34 @@ class DetailTransaksiController extends Controller
         $details = DetailTransaksi::with('transaksi')->get();
         return view('detail_transaksi.index', compact('details'));
     }
+   // app/Http/Controllers/KomisiController.php
+    public function getProfilDanTotalKomisi($id)
+    {
+        $komisi = DetailTransaksi::with('barang')
+        ->whereHas('barang', function ($q) use ($id) {
+            $q->where('id_hunter_pegawai', $id);
+        })
+        ->get()
+        ->map(function ($item) {
+            return [
+                'nama_barang' => $item->barang->nama_barang ?? '-',
+                'no_nota' => $item->no_nota,
+                'komisi_hunter' => $item->komisi_hunter ?? 0,
+                'tanggal' => $item->created_at->format('Y-m-d'),
+            ];
+        });
+         $total = DB::table('detail_transaksi')
+        ->join('barang', 'detail_transaksi.kode_barang', '=', 'barang.kode_barang')
+        ->where('barang.id_hunter_pegawai', $id)
+        ->sum('komisi_hunter');
+
+
+        return response()->json([
+            'komisi' => $komisi,
+            'total_komisi' => $total
+        ]);
+    }
+
 
     public function show($id)
     {

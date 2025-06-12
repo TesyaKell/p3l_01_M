@@ -81,7 +81,7 @@
         <p>Jl. Green Eco Park No. 456 Yogyakarta</p>
     </div>
 
-    <div class="title">Laporan Request Donasi</div>
+    <div class="title">Laporan Request Donasi (Diproses)</div>
     <div class="print-date">
         Tanggal cetak: {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
     </div>
@@ -89,10 +89,10 @@
     <table>
         <thead>
             <tr>
-                <th>Id Organisasi</th>
-                <th>Nama Organisasi</th>
-                <th>Alamat Organisasi</th>
-                <th>Deskripsi Request</th>
+                <th>ID Organisasi</th>
+                <th>Nama</th>
+                <th>Alamat</th>
+                <th>Request</th>
             </tr>
         </thead>
         <tbody>

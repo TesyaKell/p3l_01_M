@@ -60,9 +60,12 @@
         <p>Jl. Green Eco Park No. 456 Yogyakarta</p>
     </div>
 
-    <div class="title">Laporan Donasi</div>
+    <div class="title">LAPORAN Donasi Barang</div>
     <div class="date">
-        Tanggal cetak: {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
+        Tahun : {{ $tahun }}
+    </div>
+    <div class="date">
+        Tanggal cetak: {{ \Carbon\Carbon::parse($tanggalCetak)->format('d F Y') }}
     </div>
 
     <table>
@@ -73,22 +76,20 @@
                 <th>Id Penitip</th>
                 <th>Nama Penitip</th>
                 <th>Tanggal Donasi</th>
-                <th>Nama Organisasi</th>
+                <th>Organisasi</th>
                 <th>Nama Penerima</th>
-                <th>Alamat</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($data as $item)
                 <tr>
-                    <td>{{ $item->kode_barang }}</td>
+                    <td>{{ $item->barang->kode_barang ?? '-' }}</td>
                     <td>{{ $item->barang->nama_barang ?? '-' }}</td>
                     <td>{{ $item->id_penitip }}</td>
                     <td>{{ $item->penitip->nama_penitip ?? '-' }}</td>
-                    <td>{{ \Carbon\Carbon::parse($item->tanggal_donasi)->format('d-m-Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($item->tanggal_donasi)->format('d/m/Y') }}</td>
                     <td>{{ $item->requestDonasi->organisasi->nama_organisasi ?? '-' }}</td>
                     <td>{{ $item->nama_penerima }}</td>
-                    <td>{{ $item->requestDonasi->organisasi->alamat ?? 'Alamat tidak tersedia' }}</td>
                 </tr>
             @endforeach
         </tbody>

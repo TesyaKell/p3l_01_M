@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailTransaksi;
+use App\Models\Pembeli;
+use App\Models\Penitip;
 use App\Models\Transaksi;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -22,7 +24,14 @@ class BarangController extends Controller
         $barang = Barang::where('status', 'Tersedia')->get();
         return response()->json($barang);
     }
-
+    public function mobilebarang()
+    {
+        // Ambil semua data barang
+        $barang = Barang::where('status', 'Tersedia')->get();
+        return response()->json($barang);
+    }
+    
+    
     public function averageRating()
     {
         $penitips = \App\Models\Penitip::whereHas('barang')
@@ -169,6 +178,7 @@ class BarangController extends Controller
             ->where('barang.id_penitip', $this->id_penitip)
             ->count();
     }
+
     public function tes()
     {
         $kategoriList = KategoriBarang::all();
@@ -493,6 +503,13 @@ class BarangController extends Controller
         $barang->update([
             'status' => 'Terdonasi'
         ]);
+        if ($barang->penitip  && filled($barang->penitip->fcm_token)) {
+            $barang->penitip->notify(new MobileNotif(
+                title: 'Barang Telah Didonasikan',
+                body: 'Barang "' . $barang->nama_barang . '" milik Anda telah berhasil didonasikan karena tidak diambil.'
+            ));
+        }
+
     }
 
     public function searchBarangTitipan(Request $request, $id_penitip)
@@ -524,9 +541,31 @@ class BarangController extends Controller
             $details = DetailTransaksi::where('no_nota', $transaksi->no_nota)->get();
 
             foreach ($details as $detail) {
-                Barang::where('kode_barang', $detail->kode_barang)
-                    ->update(['status' => 'Terdonasi']);
+                $barang = Barang::where('kode_barang', $detail->kode_barang)->first();
+                if ($barang) {
+                    $barang->update(['status' => 'Terdonasi']);
+
+                    // Notifikasi ke penitip
+                    $penitip = Penitip::find($barang->id_penitip);
+                    if ($penitip && filled($penitip->fcm_token)) {
+                        $penitip->notify(new MobileNotif(
+                            'Barang Didonasikan',
+                            "Barang '{$barang->nama_barang}' didonasikan karena pembeli tidak membayar dalam 15 menit."
+                        ));
+                    }
+
+                    // Notifikasi ke pembeli
+                    $pembeli = Pembeli::find($transaksi->id_pembeli);
+                    if ($pembeli && filled($pembeli->fcm_token)) {
+                        $pembeli->notify(new MobileNotif(
+                            'Transaksi Gagal',
+                            "Barang '{$barang->nama_barang}' didonasikan karena Anda tidak menyelesaikan pembayaran tepat waktu."
+                        ));
+                    }
+                }
+                 
             }
+            $transaksi->update(['status' => 'Batal']);
         }
 
         // 2. Transaksi sudah dijadwalkan ambil, tapi lewat > 2 hari
@@ -538,9 +577,33 @@ class BarangController extends Controller
             $details = DetailTransaksi::where('no_nota', $transaksi->no_nota)->get();
 
             foreach ($details as $detail) {
-                Barang::where('kode_barang', $detail->kode_barang)
-                    ->update(['status' => 'Terdonasi']);
+                $barang = Barang::where('kode_barang', $detail->kode_barang)->first();
+                if ($barang) {
+                    $barang->update(['status' => 'Terdonasi']);
+
+                    // Notifikasi ke penitip
+                    $penitip = Penitip::find($barang->id_penitip);
+                    if ($penitip && filled($penitip->fcm_token)) {
+                        $penitip->notify(new MobileNotif(
+                            'Barang Didonasikan',
+                            "Barang '{$barang->nama_barang}' didonasikan karena tidak diambil lebih dari 2 hari."
+                        ));
+                    }
+
+                    // Notifikasi ke pembeli
+                    $pembeli = Pembeli::find($transaksi->id_pembeli);
+                    if ($pembeli && filled($pembeli->fcm_token)) {
+                        $pembeli->notify(new MobileNotif(
+                            'Transaksi Gagal',
+                            "Barang '{$barang->nama_barang}' didonasikan karena Anda tidak mengambilnya dalam 2 hari."
+                        ));
+                    }
+                }
             }
+            $transaksi->update(['status' => 'Batal']);
         }
+
+        //3. barang yang di request ambil tapi tidak diambil dalam 2 hari
+        // $barangRequested = Barang::where('status', 'Diambil')->get();
     }
 }
