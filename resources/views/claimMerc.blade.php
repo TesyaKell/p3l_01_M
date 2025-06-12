@@ -5,186 +5,140 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Klaim Merchandise</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        'custom-bg': '#f5f7ff',
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f5f7ff;
-            color: #333;
         }
 
-        .container {
-            max-width: 1280px;
+        /* DataTables custom styling */
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 0.5rem 0.75rem;
+            margin: 0 0.125rem;
+            border-radius: 0.375rem;
+            border: 1px solid #e5e7eb;
+            background: white;
+            color: #374151;
         }
 
-        /* Card Styling */
-        .card {
-            border: none;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+
+        .dataTables_wrapper .dataTables_info {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        /* Custom gradient backgrounds for stats cards */
+        .stats-gradient-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+
+        .stats-gradient-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .stats-gradient-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        /* Hover animations */
+        .hover-lift {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .card:hover {
+        .hover-lift:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
-        /* Stats Cards */
-        .stats-card {
-            border-radius: 16px;
-            padding: 1.5rem;
-            min-height: 160px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            position: relative;
-            overflow: hidden;
+        .table-row-hover {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .stats-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-            transform: rotate(30deg);
-            z-index: 0;
-        }
-
-        .stats-card .icon-wrapper {
-            z-index: 1;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1rem;
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-        }
-
-        .stats-card .icon-wrapper i {
-            font-size: 2rem;
-            color: white;
-        }
-
-        .stats-card h5 {
-            z-index: 1;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
-        .stats-card .stats-number {
-            z-index: 1;
-            font-size: 2.5rem;
-            font-weight: 700;
-        }
-
-        /* Table Styling */
-        .table tbody tr {
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-            border-radius: 10px;
-            transition: transform 0.2s ease;
-        }
-
-        .table tbody tr:hover {
+        .table-row-hover:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
-        }
-
-        .table tbody td {
-            vertical-align: middle;
-            border-top: none;
-        }
-
-        .table tbody tr td:first-child {
-            border-top-left-radius: 10px;
-            border-bottom-left-radius: 10px;
-        }
-
-        .table tbody tr td:last-child {
-            border-top-right-radius: 10px;
-            border-bottom-right-radius: 10px;
-        }
-
-        /* Search Box */
-        .search-box {
-            position: relative;
-            margin-bottom: 1.5rem;
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6c757d;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .stats-card {
-                margin-bottom: 1rem;
-            }
-
-            .table-responsive {
-                border-radius: 16px;
-                overflow: hidden;
-            }
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
     </style>
 </head>
 
-<body>
-    <div class="container py-5">
+<body class="font-poppins bg-custom-bg text-gray-800">
+    <div class="container mx-auto max-w-7xl px-4 py-8">
         @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i>
-                <div>
-                    <h5 class="mb-0 fw-bold">Berhasil!</h5>
-                    <p class="mb-0">{{ session('success') }}</p>
+            <div class="mb-6 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg flex items-start space-x-3 alert-dismissible"
+                role="alert">
+                <i class="bi bi-check-circle-fill text-green-600 mt-0.5"></i>
+                <div class="flex-1">
+                    <h5 class="font-semibold mb-1">Berhasil!</h5>
+                    <p class="text-sm">{{ session('success') }}</p>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="text-green-600 hover:text-green-800 ml-auto"
+                    onclick="this.parentElement.style.display='none'">
+                    <i class="bi bi-x-lg"></i>
+                </button>
             </div>
         @endif
         @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                <div>
-                    <h5 class="mb-0 fw-bold">Error!</h5>
-                    <p class="mb-0">{{ session('error') }}</p>
+            <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg flex items-start space-x-3 alert-dismissible"
+                role="alert">
+                <i class="bi bi-exclamation-triangle-fill text-red-600 mt-0.5"></i>
+                <div class="flex-1">
+                    <h5 class="font-semibold mb-1">Error!</h5>
+                    <p class="text-sm">{{ session('error') }}</p>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="text-red-600 hover:text-red-800 ml-auto"
+                    onclick="this.parentElement.style.display='none'">
+                    <i class="bi bi-x-lg"></i>
+                </button>
             </div>
         @endif
 
         <!-- Header -->
-        <div class="mb-4 border-bottom pb-4">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h1 class="display-6 mb-2">
-                        <i class="bi bi-box-seam me-2 text-primary"></i>
+        <div class="mb-8 border-b border-gray-200 pb-6">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                <div class="mb-4 md:mb-0">
+                    <h1 class="text-4xl font-bold text-gray-900 mb-2 flex items-center">
+                        <i class="bi bi-box-seam mr-3 text-blue-600"></i>
                         Daftar Klaim Merchandise
                     </h1>
-                    <p class="text-muted mb-0">Kelola dan pantau semua klaim merchandise dalam satu dashboard</p>
+                    <p class="text-gray-600">Kelola dan pantau semua klaim merchandise dalam satu dashboard</p>
                 </div>
-                <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                    <button class="btn btn-primary" onclick="location.reload()">
-                        <i class="bi bi-arrow-clockwise me-2"></i> Refresh Data
+                <div>
+                    <button
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors duration-200"
+                        onclick="location.reload()">
+                        <i class="bi bi-arrow-clockwise mr-2"></i> Refresh Data
                     </button>
                 </div>
             </div>
@@ -197,123 +151,149 @@
         @endphp
 
         <!-- Stats Cards -->
-        <div class="row mb-4">
-            <div class="col-md-4 mb-4 mb-md-0">
-                <div class="card h-100">
-                    <div class="stats-card bg-primary">
-                        <div class="icon-wrapper">
-                            <i class="bi bi-box-seam"></i>
-                        </div>
-                        <h5>Total Klaim</h5>
-                        <div class="stats-number">{{ $total }}</div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-2xl shadow-lg hover-lift overflow-hidden">
+                <div
+                    class="stats-gradient-primary text-white p-6 min-h-[160px] flex flex-col justify-center items-center relative">
+                    <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+                    <div
+                        class="relative z-10 w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4 shadow-lg">
+                        <i class="bi bi-box-seam text-2xl text-white"></i>
                     </div>
+                    <h5 class="relative z-10 font-medium mb-2">Total Klaim</h5>
+                    <div class="relative z-10 text-4xl font-bold">{{ $total }}</div>
                 </div>
             </div>
-            <div class="col-md-4 mb-4 mb-md-0">
-                <div class="card h-100">
-                    <div class="stats-card bg-success">
-                        <div class="icon-wrapper">
-                            <i class="bi bi-check-circle"></i>
-                        </div>
-                        <h5>Selesai</h5>
-                        <div class="stats-number">{{ $selesai }}</div>
+            <div class="bg-white rounded-2xl shadow-lg hover-lift overflow-hidden">
+                <div
+                    class="stats-gradient-success text-white p-6 min-h-[160px] flex flex-col justify-center items-center relative">
+                    <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+                    <div
+                        class="relative z-10 w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4 shadow-lg">
+                        <i class="bi bi-check-circle text-2xl text-white"></i>
                     </div>
+                    <h5 class="relative z-10 font-medium mb-2">Selesai</h5>
+                    <div class="relative z-10 text-4xl font-bold">{{ $selesai }}</div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card h-100">
-                    <div class="stats-card bg-warning">
-                        <div class="icon-wrapper">
-                            <i class="bi bi-hourglass-split"></i>
-                        </div>
-                        <h5>Proses Pengambilan</h5>
-                        <div class="stats-number">{{ $prosesPengambilan }}</div>
+            <div class="bg-white rounded-2xl shadow-lg hover-lift overflow-hidden">
+                <div
+                    class="stats-gradient-warning text-white p-6 min-h-[160px] flex flex-col justify-center items-center relative">
+                    <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+                    <div
+                        class="relative z-10 w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4 shadow-lg">
+                        <i class="bi bi-hourglass-split text-2xl text-white"></i>
                     </div>
+                    <h5 class="relative z-10 font-medium mb-2">Proses Pengambilan</h5>
+                    <div class="relative z-10 text-4xl font-bold">{{ $prosesPengambilan }}</div>
                 </div>
             </div>
         </div>
 
         <!-- Table Card -->
-        <div class="card">
-            <div class="card-body">
-                <div
-                    class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-                    <div class="d-flex mb-3 mb-md-0">
-                        <button class="btn btn-outline-primary me-2 active" data-status="all">
-                            <i class="bi bi-grid-3x3-gap me-2"></i>Semua
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div class="p-6">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6 space-y-4 md:space-y-0">
+                    <div class="flex flex-wrap gap-2">
+                        <button
+                            class="btn-filter bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center transition-colors duration-200 active"
+                            data-status="all">
+                            <i class="bi bi-grid-3x3-gap mr-2"></i>Semua
                         </button>
-                        <button class="btn btn-outline-primary me-2" data-status="Selesai">
-                            <i class="bi bi-check-circle me-2"></i>Selesai
+                        <button
+                            class="btn-filter bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg flex items-center transition-colors duration-200"
+                            data-status="Selesai">
+                            <i class="bi bi-check-circle mr-2"></i>Selesai
                         </button>
-                        <button class="btn btn-outline-primary" data-status="Proses Pengambilan">
-                            <i class="bi bi-hourglass-split me-2"></i>Proses Pengambilan
+                        <button
+                            class="btn-filter bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg flex items-center transition-colors duration-200"
+                            data-status="Proses Pengambilan">
+                            <i class="bi bi-hourglass-split mr-2"></i>Proses Pengambilan
                         </button>
                     </div>
-                    <div class="search-box">
-                        <i class="bi bi-search"></i>
-                        <input type="text" id="tableSearch" class="form-control" placeholder="Cari klaim...">
+                    <div class="relative">
+                        <i class="bi bi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="tableSearch"
+                            class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                            placeholder="Cari klaim...">
                     </div>
                 </div>
 
-                <div class="table-responsive">
-                    <table id="claimMerchTable" class="table">
+                <div class="overflow-x-auto">
+                    <table id="claimMerchTable" class="w-full">
                         <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nama Merchandise</th>
-                                <th>Nama Pembeli</th>
-                                <th>Tanggal Request</th>
-                                <th>Tanggal ACC</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
+                            <tr class="bg-gray-50">
+                                <th
+                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    ID</th>
+                                <th
+                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Nama Merchandise</th>
+                                <th
+                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Nama Pembeli</th>
+                                <th
+                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Tanggal Request</th>
+                                <th
+                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Tanggal ACC</th>
+                                <th
+                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status</th>
+                                <th
+                                    class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Aksi</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="bg-white divide-y divide-gray-200">
                             @foreach ($claimMerchList as $claim)
-                                <tr>
-                                    <td><strong>#{{ $claim->id_claim_merch }}</strong></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <span class="avatar bg-light-primary me-2 rounded">
-                                                <i class="bi bi-box text-primary"></i>
-                                            </span>
-                                            {{ $claim->merchandise->nama ?? 'N/A' }}
+                                <tr class="table-row-hover">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="font-semibold text-gray-900">#{{ $claim->id_claim_merch }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                                <i class="bi bi-box text-blue-600 text-sm"></i>
+                                            </div>
+                                            <span class="text-gray-900">{{ $claim->merchandise->nama ?? 'N/A' }}</span>
                                         </div>
                                     </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <span class="avatar bg-light-info me-2 rounded">
-                                                <i class="bi bi-person text-info"></i>
-                                            </span>
-                                            {{ $claim->pembeli->nama_pembeli ?? 'N/A' }}
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="w-8 h-8 bg-cyan-100 rounded-full flex items-center justify-center mr-3">
+                                                <i class="bi bi-person text-cyan-600 text-sm"></i>
+                                            </div>
+                                            <span
+                                                class="text-gray-900">{{ $claim->pembeli->nama_pembeli ?? 'N/A' }}</span>
                                         </div>
                                     </td>
-                                    <td>
-                                        <i class="bi bi-calendar-event me-1 text-muted"></i>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-600">
+                                        <i class="bi bi-calendar-event mr-2 text-gray-400"></i>
                                         {{ $claim->tanggal_request }}
                                     </td>
                                     @if ($claim->tanggal_acc)
-                                        <td>
-                                            <i class="bi bi-calendar-check me-1 text-success"></i>
+                                        <td class="px-6 py-4 whitespace-nowrap text-gray-600">
+                                            <i class="bi bi-calendar-check mr-2 text-green-500"></i>
                                             {{ $claim->tanggal_acc }}
                                         </td>
                                     @else
-                                        <td>
-                                            <span class="text-muted">
-                                                <i class="bi bi-clock me-1"></i>
-                                                Belum ACC
-                                            </span>
+                                        <td class="px-6 py-4 whitespace-nowrap text-gray-400">
+                                            <i class="bi bi-clock mr-2"></i>
+                                            Belum ACC
                                         </td>
                                     @endif
-                                    <td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
                                         @php
                                             $status = ucfirst($claim->status);
                                             $badgeClass = match ($status) {
-                                                'Selesai'
-                                                    => 'bg-success-subtle text-success border border-success-subtle',
+                                                'Selesai' => 'bg-green-100 text-green-800 border border-green-200',
                                                 'Proses Pengambilan'
-                                                    => 'bg-warning-subtle text-warning border border-warning-subtle',
-                                                default => 'bg-secondary-subtle text-secondary',
+                                                    => 'bg-yellow-100 text-yellow-800 border border-yellow-200',
+                                                default => 'bg-gray-100 text-gray-800 border border-gray-200',
                                             };
                                             $icon = match ($status) {
                                                 'Selesai' => 'bi-check-circle-fill',
@@ -321,30 +301,32 @@
                                                 default => 'bi-circle',
                                             };
                                         @endphp
-                                        <span class="badge {{ $badgeClass }} badge-status"
+                                        <span
+                                            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $badgeClass }}"
                                             data-status="{{ $status }}">
-                                            <i class="bi {{ $icon }} me-1"></i>
+                                            <i class="bi {{ $icon }} mr-1"></i>
                                             {{ $status }}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
                                         @if ($claim->status === 'Proses Pengambilan')
-                                            <button type="button" class="btn btn-sm btn-success selesaikan-btn"
-                                                data-bs-toggle="modal" data-bs-target="#confirmModal"
-                                                data-claim-id="{{ $claim->id_claim_merch }}">
-                                                <i class="bi bi-check-circle me-1"></i>Selesaikan
+                                            <button type="button"
+                                                class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-sm flex items-center transition-colors duration-200 selesaikan-btn"
+                                                onclick="openConfirmModal({{ $claim->id_claim_merch }})">
+                                                <i class="bi bi-check-circle mr-1"></i>Selesaikan
                                             </button>
                                         @else
-                                            <span class="text-muted">-</span>
+                                            <span class="text-gray-400">-</span>
                                         @endif
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
-                    <div class="mt-4 text-center">
-                        <button onclick="window.history.back()" class="btn btn-sm btn-success">
-                            <i class="bi bi-arrow-left me-2"></i>Kembali
+                    <div class="mt-6 text-center">
+                        <button onclick="window.history.back()"
+                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center mx-auto transition-colors duration-200">
+                            <i class="bi bi-arrow-left mr-2"></i>Kembali
                         </button>
                     </div>
                 </div>
@@ -353,23 +335,27 @@
     </div>
 
     <!-- Confirmation Modal -->
-    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="confirmModalLabel">
-                        <i class="bi bi-question-circle me-2"></i>
-                        Konfirmasi
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="mb-0">Apakah Anda yakin ingin menyelesaikan klaim ini?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary" id="confirmButton">Oke</button>
+    <div id="confirmModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-2xl bg-white">
+            <div class="bg-blue-600 text-white p-4 rounded-t-2xl -m-5 mb-4">
+                <h3 class="text-lg font-semibold flex items-center">
+                    <i class="bi bi-question-circle mr-2"></i>
+                    Konfirmasi
+                </h3>
+            </div>
+            <div class="mt-3 text-center">
+                <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menyelesaikan klaim ini?</p>
+                <div class="flex justify-center space-x-3">
+                    <button type="button"
+                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg transition-colors duration-200"
+                        onclick="closeConfirmModal()">
+                        Batal
+                    </button>
+                    <button type="button"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                        id="confirmButton">
+                        Oke
+                    </button>
                 </div>
             </div>
         </div>
@@ -381,12 +367,22 @@
         @method('PATCH')
     </form>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
+        let currentClaimId = null;
+
+        function openConfirmModal(claimId) {
+            currentClaimId = claimId;
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+            currentClaimId = null;
+        }
+
         $(document).ready(function() {
             // Initialize DataTable with custom options
             var table = $('#claimMerchTable').DataTable({
@@ -416,11 +412,13 @@
 
             // Filter functionality
             $('.btn-filter').on('click', function() {
-                $('.btn-filter').removeClass('active');
-                $(this).addClass('active');
+                $('.btn-filter').removeClass('active bg-blue-600 text-white').addClass(
+                    'bg-gray-100 hover:bg-gray-200 text-gray-700');
+                $(this).removeClass('bg-gray-100 hover:bg-gray-200 text-gray-700').addClass(
+                    'active bg-blue-600 text-white');
 
                 var status = $(this).data('status').trim();
-                console.log('Filtering by status:', status); // Debug
+                console.log('Filtering by status:', status);
                 if (status === 'all') {
                     table.column(5).search('').draw();
                 } else {
@@ -429,26 +427,19 @@
             });
 
             // Modal confirmation functionality
-            $('#confirmModal').on('show.bs.modal', function(event) {
-                var button = $(event.relatedTarget); // Button that triggered the modal
-                var claimId = button.data('claim-id'); // Extract claim ID
-                console.log('Claim ID:', claimId); // Debug
-                var form = $('#selesaikanForm');
-                form.attr('action', `/claim-merch/${claimId}/selesaikan`);
-            });
-
             $('#confirmButton').on('click', function() {
-                var form = $('#selesaikanForm');
-                var action = form.attr('action');
-                console.log('Submitting form to:', action); // Debug
-                if (action) {
+                if (currentClaimId) {
+                    var form = $('#selesaikanForm');
+                    form.attr('action', `/claim-merch/${currentClaimId}/selesaikan`);
+                    console.log('Submitting form to:', form.attr('action'));
+
                     $(this).html(
-                        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Memproses...'
+                        '<span class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>Memproses...'
                     );
                     $(this).prop('disabled', true);
                     form.submit();
                 } else {
-                    console.error('Form action not set');
+                    console.error('No claim ID set');
                     alert('Error: Tidak dapat menyelesaikan klaim. Silakan coba lagi.');
                 }
             });
@@ -457,10 +448,19 @@
             const alerts = document.querySelectorAll('.alert-dismissible');
             alerts.forEach(alert => {
                 setTimeout(() => {
-                    $(alert).fadeOut('slow', function() {
-                        bootstrap.Alert.getOrCreateInstance(alert).close();
-                    });
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-10px)';
+                    setTimeout(() => {
+                        alert.style.display = 'none';
+                    }, 300);
                 }, 5000);
+            });
+
+            // Close modal when clicking outside
+            $('#confirmModal').on('click', function(e) {
+                if (e.target === this) {
+                    closeConfirmModal();
+                }
             });
         });
     </script>

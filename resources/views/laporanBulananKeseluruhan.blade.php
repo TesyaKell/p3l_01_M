@@ -384,7 +384,6 @@
     </div>
 
     <div class="footer">
-        <p>Laporan ini digenerate secara otomatis pada {{ $tanggal_cetak }}</p>
         <p>© {{ $tahun }} ReUse Mart - Sistem Manajemen Penjualan</p>
     </div>
 </body>
