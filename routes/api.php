@@ -21,7 +21,7 @@ Route::get('/merchandise',[MerchandiseController::class, 'dataMerchandise'])->na
 
 Route::post('/claim-merchandise',[ClaimMerchController::class, 'tukarPoinMerchandise']);
 
-Route::get('history-komisi/hunter/{$id}',[DetailTransaksiController::class, 'getProfilDanTotalKomisi'])->name('ambilDataHistoriKomisi');
+Route::get('history-komisi/hunter/{id}',[DetailTransaksiController::class, 'getProfilDanTotalKomisi'])->name('ambilDataHistoriKomisi');
 
 // contoh untuk testing notif
 Route::middleware('auth:sanctum')->group(function () {

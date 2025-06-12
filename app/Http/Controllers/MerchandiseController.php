@@ -19,11 +19,8 @@ class MerchandiseController extends Controller
     }
     public function dataMerchandise()
     {
-        $merchandises = Merchandise::whereExist()->get();
-
-        return response()->json([
-            'merchandise' => $merchandises
-        ]);
+        $merchandise = Merchandise::where('id_merchandise','!=', null)->get();
+        return response()->json( $merchandise);
     }
 
     public function redeem(Request $request)

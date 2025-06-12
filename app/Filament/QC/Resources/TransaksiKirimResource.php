@@ -319,7 +319,7 @@ class TransaksiKirimResource extends Resource
                             ));
                         }
                     }
-                    $pembeli = Pembeli::where('id_pembeli', $record->id_pembeli)->get();
+                    $pembeli = Pembeli::where('id_pembeli', $record->id_pembeli)->first();
 
                     $poinSebelum = $pembeli->poin ?? 0;
                     $poinDasar = floor($totalHarga / 10000);
