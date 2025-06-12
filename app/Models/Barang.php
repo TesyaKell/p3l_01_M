@@ -111,7 +111,9 @@ class Barang extends Model
     public function getNamaBarangSafeAttribute()
     {
         return $this->nama_barang ?? '-';
+        return $this->belongsTo(\App\Models\Penitip::class, 'id_penitip');
     }
+
 
 
     public function detailTransaksi()

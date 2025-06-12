@@ -238,13 +238,12 @@
     </div>
 
     @if (isset($barang) && count($barang) > 0)
-        <div class="summary-section">
-            <div class="info">
-                <h3>Detail</h3>
-                <p><strong>Total Items:</strong> {{ $total_items ?? 0 }}</p>
-                <p><strong>Total Value:</strong> Rp {{ number_format($total_value ?? 0, 0, ',', '.') }}</p>
-                <p><strong>Jumlah Data Barang:</strong> {{ count($barang) }}</p>
-            </div>
+
+        <div class="info">
+            <h3>Detail</h3>
+            <p><strong>Total Items:</strong> {{ $total_items ?? 0 }}</p>
+            <p><strong>Total Value:</strong> Rp {{ number_format($total_value ?? 0, 0, ',', '.') }}</p>
+            <p><strong>Jumlah Data Barang:</strong> {{ count($barang) }}</p>
         </div>
 
         <div class="section-title">Detail Stok Tersedia Hari Ini</div>
@@ -296,10 +295,7 @@
         </div>
     @endif
 
-    <div class="footer">
-        <p><strong>CATATAN PENTING:</strong> Laporan ini hanya menampilkan barang yang berstatus "Tersedia" pada
-            tanggal {{ $tanggal_laporan }}</p>
-    </div>
+
 </body>
 
 </html>

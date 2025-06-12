@@ -527,7 +527,8 @@ use App\Http\Helper\Helper;
                                     <label class="quantity-label">Jumlah:</label>
                                     <div class="quantity-controls">
 
-                                        <input id="quantity" value="1" min="1" max="10" class="quantity-input" disabled>
+                                        <input id="quantity" value="1" min="1" max="10"
+                                            class="quantity-input" disabled>
 
 
                                     </div>
@@ -595,10 +596,8 @@ use App\Http\Helper\Helper;
                 @endforelse
 
                 {{-- Form Komentar --}}
-                @if (
-                        Helper::isLoggedIn(['pegawai', 'pembeli']) ||
-                        (Helper::isLoggedIn(['pegawai', 'pembeli']) && auth()->user()->jabatan === 'Customer Service')
-                    )
+                @if (Helper::isLoggedIn(['pegawai', 'pembeli']) ||
+                        (Helper::isLoggedIn(['pegawai', 'pembeli']) && auth()->user()->jabatan === 'Customer Service'))
                     <form action="{{ route('komentar.store') }}" method="POST" class="mt-4">
                         @csrf
                         <input type="hidden" name="kode_barang" value="{{ $barang->kode_barang }}">
@@ -620,13 +619,13 @@ use App\Http\Helper\Helper;
 
     <!-- Custom JavaScript for thumbnail navigation -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // Get all thumbnails
             const thumbnails = document.querySelectorAll('.carousel-thumbnail');
 
             // Add click event to each thumbnail
             thumbnails.forEach(thumbnail => {
-                thumbnail.addEventListener('click', function () {
+                thumbnail.addEventListener('click', function() {
                     // Get the slide index from data attribute
                     const slideIndex = this.getAttribute('data-bs-slide-to');
 
@@ -645,7 +644,7 @@ use App\Http\Helper\Helper;
 
             // Update thumbnail active class when carousel slides
             const productCarousel = document.getElementById('productCarousel');
-            productCarousel.addEventListener('slid.bs.carousel', function (event) {
+            productCarousel.addEventListener('slid.bs.carousel', function(event) {
                 const slideIndex = event.to;
                 thumbnails.forEach((thumb, index) => {
                     if (index === slideIndex) {

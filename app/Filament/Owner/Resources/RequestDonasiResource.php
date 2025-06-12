@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class RequestDonasiResource extends Resource
 {
@@ -18,6 +19,12 @@ class RequestDonasiResource extends Resource
     protected static ?string $navigationLabel = 'Permintaan Donasi';
     protected static ?int $navigationSort = 1;
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereMonth('created_at', 5);
+
+    }
     public static function form(Form $form): Form
     {
         return $form->schema([

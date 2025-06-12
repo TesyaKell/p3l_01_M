@@ -185,6 +185,16 @@ Route::get('/login', function () {
     return redirect()->route('jabatan');
 })->name('login');
 
+Route::get('/barang', [BarangController::class, 'mobile']);
+
+Route::get('/topSeller', [BarangController::class, 'topSeller']);
+
+Route::middleware('auth:sanctum')->get('/riwayat-transaksi', [TransaksiController::class, 'coba']);
+
+Route::middleware('auth:sanctum')->get('/status-donasi', [BarangController::class, 'statusDonasi']);
+
+
+Route::middleware('auth:sanctum')->get('/riwayat-penitipan', [BarangController::class, 'coba']);
 
 // Login routes
 Route::post('/login/pembeli', [PembeliController::class, 'login'])->name('login.pembeli.post');
@@ -276,8 +286,6 @@ Route::post('/logout', [ProfilController::class, 'logout'])->name('logout.custom
 
 
 
-Route::get('/merchandise', [MerchandiseController::class, 'index'])->name('merchandise.index');
-Route::post('/redeem-merchandise', [MerchandiseController::class, 'redeem'])->name('merchandise.redeem');
 
 //Route to jabatan - Pegawai - CS
 Route::get('/cshomepage', function () {
@@ -333,8 +341,12 @@ Route::post('/transaksi/upload/{id}', [transaksiController::class, 'uploadBuktiP
 Route::get('/test-notifikasi', [BarangController::class, 'notifikasi']);
 
 //Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerch.index');
+
 Route::patch('/claim-merch/{id}/selesaikan', [ClaimMerchController::class, 'selesaikan'])->name('claimMerch.selesaikan');
 Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerc');
+Route::get('/merchandise', [MerchandiseController::class, 'index'])->name('merchandise.index');
+Route::post('/redeem-merchandise', [MerchandiseController::class, 'redeem'])->name('merchandise.redeem');
+
 
 Route::delete('/delete/requestdonasi/{id}', [RequestDonasiController::class, 'delete'])->name('destroy.requestdonasi');
 Route::get('/search/requestdonasi/all', [RequestDonasiController::class, 'search'])->name('search.requestdonasi.fall');
@@ -362,3 +374,7 @@ Route::get('/laporan/titipan-barang-habis', [App\Http\Controllers\LaporanOwnerCo
 // Add these routes for Owner Donation Report
 Route::get('/owner/laporan/donasi/preview', [App\Http\Controllers\LaporanOwnerController::class, 'donasiPreviewWithYear'])->name('owner.laporan.donasi.preview');
 Route::get('/owner/laporan/donasi/pdf', [App\Http\Controllers\LaporanOwnerController::class, 'donasiPdfWithYear'])->name('owner.laporan.donasi.pdf');
+
+// Update existing route to only handle "Diproses"
+Route::get('/owner/laporan/request/preview', [App\Http\Controllers\LaporanOwnerController::class, 'requestPreview'])->name('owner.laporan.request.preview');
+Route::get('/owner/laporan/request/pdf', [App\Http\Controllers\LaporanOwnerController::class, 'requestPdf'])->name('owner.laporan.request.pdf');

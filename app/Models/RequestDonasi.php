@@ -9,7 +9,7 @@ class RequestDonasi extends Model
 {
     protected $table = 'request_donasi';
     protected $primaryKey = 'id_request';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'id_organisasi',

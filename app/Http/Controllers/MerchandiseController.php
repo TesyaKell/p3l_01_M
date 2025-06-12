@@ -66,7 +66,7 @@ class MerchandiseController extends Controller
                 'id_pembeli' => $user->id_pembeli,
                 'id_merchandise' => $merchandise->id_merchandise,
                 'tanggal_request' => now(),
-                'status' => 'Proses Diambil' // Approve immediately
+                'status' => 'Proses Pengambilan' // Approve immediately
             ]);
 
             \DB::commit();

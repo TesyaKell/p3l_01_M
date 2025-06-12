@@ -26,8 +26,6 @@ class CurrentStockOverviewWidget extends BaseWidget
         $barangBaru = $currentStock->where('tanggal_masuk', '>=', $today->copy()->subDays(30))->count();
         $barangLama = $currentStock->where('tanggal_masuk', '<', $today->copy()->subDays(60))->count();
 
-        // Extension status
-        $totalDiperpanjang = $currentStock->where('opsi', 'Diperpanjang')->count();
 
         // Items with hunters
         $denganHunter = Barang::where('status', 'Tersedia')
@@ -45,7 +43,7 @@ class CurrentStockOverviewWidget extends BaseWidget
             ->count();
 
         $persentaseBaru = $totalStok > 0 ? round(($barangBaru / $totalStok) * 100, 1) : 0;
-        $persentaseDiperpanjang = $totalStok > 0 ? round(($totalDiperpanjang / $totalStok) * 100, 1) : 0;
+
         $totalBarang = Barang::count();
         $totalTersedia = Barang::where('status', 'Tersedia')->count();
         $totalTerjual = Barang::where('status', 'Terjual')->count();
@@ -71,10 +69,7 @@ class CurrentStockOverviewWidget extends BaseWidget
                 ->descriptionIcon('heroicon-m-currency-dollar')
                 ->color('success'),
 
-            Stat::make('Barang Diperpanjang', $totalDiperpanjang)
-                ->description($persentaseDiperpanjang . '% dari total stok')
-                ->descriptionIcon('heroicon-m-clock')
-                ->color('warning'),
+
 
             Stat::make('Dengan Hunter', $denganHunter)
                 ->description('Barang yang memiliki hunter')

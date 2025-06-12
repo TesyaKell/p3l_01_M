@@ -6,7 +6,6 @@ use App\Models\RequestDonasi;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use App\Filament\Owner\Resources\PrintLaporanRequestResource\Pages;
@@ -29,23 +28,20 @@ class PrintLaporanRequestResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(RequestDonasi::query()->where('status', 'Diproses')->with('organisasi'))
             ->columns([
+                //TextColumn::make('id_request')->label('ID Request')->searchable(),
+                TextColumn::make('organisasi.id_organisasi')->label('ID Organisasi')->searchable(),
                 TextColumn::make('organisasi.nama_organisasi')->label('Nama Organisasi')->searchable(),
-                TextColumn::make('desk_request')->label('Deskripsi Request')->searchable(),
-                TextColumn::make('status')->label('Status')->searchable(),
+                TextColumn::make('organisasi.alamat')->label('Alamat')->searchable(),
+                TextColumn::make('desk_request')->label('Request')->searchable(),
+                TextColumn::make('status')->label('Status')->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'Diproses' => 'warning',
+                        default => 'gray',
+                    }),
             ])
-            ->actions([
-                Action::make('unduh_pdf_diproses')
-                    ->label('Unduh PDF (Diproses)')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->url(fn() => route('owner.laporan.request.pdf', ['status' => 'Diproses']))
-                    ->openUrlInNewTab(),
-                Action::make('unduh_pdf_diterima')
-                    ->label('Unduh PDF (Diterima)')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->url(fn() => route('owner.laporan.request.pdf', ['status' => 'Diterima']))
-                    ->openUrlInNewTab(),
-            ]);
+            ->actions([]);
     }
 
     public static function getRelations(): array
