@@ -147,10 +147,49 @@ class ListLaporanKomisiBulananperProduks extends ListRecords
             'top_products' => $this->getTopCommissionProducts($bulan, $tahun),
         ];
 
-        $pdf = Pdf::loadView('laporan-komi si', $data);
+        $pdf = Pdf::loadView('laporan-komisi', $data);
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
         }, 'laporan-komisi-bulanan-' . $tahun . '-' . $bulan . '.pdf');
+    }
+    protected static function getTopCommissionProducts($bulan, $tahun)
+    {
+        return DB::table('detail_transaksi')
+            ->join('transaksi', 'detail_transaksi.no_nota', '=', 'transaksi.no_nota')
+            ->join('barang', 'detail_transaksi.kode_barang', '=', 'barang.kode_barang')
+            ->select(
+                'detail_transaksi.kode_barang',
+                'detail_transaksi.nama_barang',
+                'detail_transaksi.komisi_reusmart',
+                'detail_transaksi.komisi_hunter',
+                'detail_transaksi.komisi_penitip',
+                DB::raw('(detail_transaksi.komisi_reusmart + detail_transaksi.komisi_hunter + detail_transaksi.komisi_penitip) as total_komisi')
+            )
+            ->whereMonth('barang.tanggal_laku', $bulan)
+            ->whereYear('barang.tanggal_laku', $tahun)
+            ->where('transaksi.status', 'Selesai')
+            ->orderBy('total_komisi', 'desc')
+            ->limit(10)
+            ->get();
+    }
+    protected static function getStatistikKomisiHarian($bulan, $tahun)
+    {
+        return DB::table('detail_transaksi')
+            ->join('transaksi', 'detail_transaksi.no_nota', '=', 'transaksi.no_nota')
+            ->join('barang', 'detail_transaksi.kode_barang', '=', 'barang.kode_barang')
+            ->select(
+                DB::raw('DAY(barang.tanggal_laku) as hari'),
+                DB::raw('SUM(detail_transaksi.komisi_reusmart) as total_komisi_reusmart'),
+                DB::raw('SUM(detail_transaksi.komisi_hunter) as total_komisi_hunter'),
+                DB::raw('SUM(detail_transaksi.komisi_penitip) as total_komisi_penitip'),
+                DB::raw('COUNT(*) as jumlah_produk')
+            )
+            ->whereMonth('barang.tanggal_laku', $bulan)
+            ->whereYear('barang.tanggal_laku', $tahun)
+            ->where('transaksi.status', 'Selesai')
+            ->groupBy(DB::raw('DAY(barang.tanggal_laku)'))
+            ->orderBy('hari')
+            ->get();
     }
 
 }

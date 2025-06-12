@@ -12,9 +12,163 @@ use App\Models\KategoriBarang;
 use App\Models\Kategori;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\MobileNotif;
+use Illuminate\Support\Facades\DB;
 
 class BarangController extends Controller
 {
+    public function mobile()
+    {
+        // Ambil semua data barang
+        $barang = Barang::where('status', 'Tersedia')->get();
+        return response()->json($barang);
+    }
+
+    public function averageRating()
+    {
+        $penitips = \App\Models\Penitip::whereHas('barang')
+            ->with('barang')
+            ->get()
+            ->map(function ($penitip) {
+                return [
+                    'id' => $penitip->id,
+                    'nama_penitip' => $penitip->nama_penitip,
+                    'average_rating' => round($penitip->averageRating() ?? 0.0, 1),
+                    'total_ratings' => $penitip->totalRatings() ?? 0,
+                ];
+            })
+            ->sortByDesc('average_rating')
+            ->values();
+
+        if ($penitips->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No penitips found',
+                //'data' => [],
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Top rated penitips',
+            'data' => $penitips,
+        ], 200);
+
+    }
+
+    public function topSeller()
+    {
+        $bulanLaluAwal = now()->subMonth()->startOfMonth();
+        $bulanLaluAkhir = now()->subMonth()->endOfMonth();
+
+        // Ambil semua penitip + transaksi selesai bulan lalu
+        $penitips = \App\Models\Penitip::with(['barang.detailTransaksi.transaksi'])->get();
+
+        // Hitung total penjualan per penitip
+        $penjualanData = $penitips->map(function ($penitip) use ($bulanLaluAwal, $bulanLaluAkhir) {
+            $totalPenjualan = $penitip->barang->flatMap(function ($barang) use ($bulanLaluAwal, $bulanLaluAkhir) {
+                return $barang->detailTransaksi->filter(function ($dt) use ($bulanLaluAwal, $bulanLaluAkhir) {
+                    return $dt->transaksi &&
+                           $dt->transaksi->status === 'Selesai' &&
+                           $dt->transaksi->tanggal_lunas &&
+                           $dt->transaksi->tanggal_lunas >= $bulanLaluAwal &&
+                           $dt->transaksi->tanggal_lunas <= $bulanLaluAkhir;
+                });
+            })->sum('total');
+
+            return [
+                'id_penitip' => $penitip->id_penitip,
+                'nama_penitip' => $penitip->nama_penitip,
+                'total_penjualan' => $totalPenjualan,
+            ];
+        });
+
+        $sorted = $penjualanData->sortByDesc('total_penjualan')->values();
+
+        if ($sorted->isEmpty() || $sorted->first()['total_penjualan'] <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Belum ada transaksi selesai di bulan lalu',
+            ], 200);
+        }
+
+        $topSeller = $sorted->first();
+
+        // Ambil rating penitip lewat relasi
+        $ratingData = DB::table('rating')
+            ->join('detail_transaksi', 'rating.id_detail_transaksi', '=', 'detail_transaksi.id_detail_transaksi')
+            ->join('barang', 'detail_transaksi.kode_barang', '=', 'barang.kode_barang')
+            ->where('barang.id_penitip', $topSeller['id_penitip'])
+            ->selectRaw('AVG(rating.bintang) as average_rating, COUNT(rating.id_rating) as total_ratings')
+            ->first();
+
+        // Reset semua top seller sebelum update yang baru
+        \App\Models\Penitip::where('top_seller', true)->update(['top_seller' => false]);
+
+        // Tandai sebagai top seller
+        \App\Models\Penitip::where('id_penitip', $topSeller['id_penitip'])->update([
+            'top_seller' => true,
+        ]);
+
+        // Hitung bonus
+        $bonusPoin = round($topSeller['total_penjualan'] * 0.01);
+
+        if ($bonusPoin > 0) {
+            $penitip = \App\Models\Penitip::find($topSeller['id_penitip']);
+
+            // Validasi: hanya tambahkan poin jika belum pernah diberi untuk bulan ini
+            // Misalnya: anggap poin bulan lalu belum termasuk bonusPoin
+            // Jika poin saat ini masih < bonusPoin berarti belum dikasih
+            if ($penitip->poin < $bonusPoin) {
+                $penitip->increment('poin', $bonusPoin);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Top seller bulan lalu berhasil dihitung',
+            'top_seller' => [
+                'id_penitip' => $topSeller['id_penitip'],
+                'nama_penitip' => $topSeller['nama_penitip'],
+                'total_penjualan' => $topSeller['total_penjualan'],
+                'bonus_poin' => $bonusPoin,
+                'status' => 'TOP SELLER',
+                'average_rating' => round($ratingData->average_rating ?? 0, 2),
+                'total_ratings' => $ratingData->total_ratings ?? 0,
+            ],
+        ], 200);
+    }
+
+
+    public function coba(Request $request)
+    {
+        $penitip = $request->user();
+
+        if (!($penitip instanceof \App\Models\Penitip)) {
+            \Log::info('Token: ' . $request->bearerToken());
+            \Log::info('Penitip: ' . json_encode($penitip));
+            return response()->json(['error' => 'Penitip not found'], 404);
+        }
+        $barangTersedia = Barang::with(['penitip'])
+            ->where('id_penitip', $penitip->id_penitip)
+            ->get()
+            ->map(function ($barang) {
+                $barang->average_rating = $barang->penitip->averageRating();
+                $barang->total_ratings = $barang->penitip->totalRatings();
+                return $barang;
+            });
+        return response()->json(['barangTersedia' => $barangTersedia]);
+    }
+
+
+
+    public function totalRatings()
+    {
+        return DB::table('rating')
+            ->join('detail_transaksi', 'rating.id_detail_transaksi', '=', 'detail_transaksi.id_detail_transaksi')
+            ->join('barang', 'detail_transaksi.kode_barang', '=', 'barang.kode_barang')
+            ->where('barang.id_penitip', $this->id_penitip)
+            ->count();
+    }
     public function tes()
     {
         $kategoriList = KategoriBarang::all();
@@ -32,6 +186,44 @@ class BarangController extends Controller
 
         return view('homeProduk', compact('kategoriList', 'barangTersedia'));
     }
+
+    public function statusDonasi()
+    {
+        \Log::info("📣 Memulai proses statusDonasi() pada " . now());
+
+        // Ambil barang yang sudah lewat 7 hari & status masih 'Tersedia'
+        $barangList = Barang::with('penitip')
+            ->where('tanggal_akhir', '<=', Carbon::now()->subDays(7))
+            ->where('status', 'Tersedia')
+            ->get();
+
+        foreach ($barangList as $barang) {
+            $barang->status = 'Donasi';
+            $barang->save();
+
+            \Log::info("✅ Barang {$barang->nama_barang} status diubah jadi Donasi");
+
+            // Kirim notifikasi ke penitip
+            $penitip = $barang->penitip;
+
+            if ($penitip) {
+                $title = "Barang anda telah di Donasi";
+                $message = "Barang '{$barang->nama_barang}' telah melebihi 7 hari dan telah di donasi.";
+
+                try {
+                    $penitip->notify(new MobileNotif($title, $message));
+                    \Log::info("Mengirim notif ke penitip {$penitip->id_penitip} dengan token {$penitip->fcm_token}");
+                    \Log::info("📲 Notifikasi dikirim ke penitip ID {$penitip->id_penitip}");
+                } catch (\Exception $e) {
+                    \Log::error("❌ Gagal kirim notifikasi: " . $e->getMessage());
+                }
+            }
+        }
+
+        return response()->json(['message' => 'Status barang diperbarui dan notifikasi dikirim']);
+    }
+
+
     public function index()
     {
         $barang = Barang::where('status', 'tersedia')->get();
@@ -242,9 +434,10 @@ class BarangController extends Controller
             }
 
             try {
-                \Log::info("Mengirim notif ke penitip {$penitip->id_penitip} dengan token {$penitip->fcm_token}");
                 $penitip->notify(new MobileNotif($title, $body));
                 \Log::info("Notifikasi terkirim ke penitip {$penitip->id_penitip}");
+                \Log::info("Mengirim notif ke penitip {$penitip->id_penitip} dengan token {$penitip->fcm_token}");
+
                 $notificationsSent++;
             } catch (\Exception $e) {
                 \Log::error("Gagal mengirim notifikasi untuk penitip {$penitip->id_penitip}: {$e->getMessage()}");

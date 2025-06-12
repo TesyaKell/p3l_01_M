@@ -329,7 +329,7 @@
         </table>
 
         <div class="footer">
-            <p><strong>CATATAN PENTING:</strong> Laporan ini adalah snapshot stok yang tersedia pada tanggal
+            <p><strong>CATATAN PENTING:</strong> Laporan ini adalah stok yang tersedia pada tanggal
                 {{ $tanggal_laporan }}</p>
             <p>Data tidak termasuk barang yang sudah terjual, terdonasi, atau diambil</p>
             <p>Laporan ini digenerate secara otomatis pada {{ $tanggal_cetak }}</p>
