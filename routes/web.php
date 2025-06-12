@@ -275,8 +275,6 @@ Route::post('/logout', [ProfilController::class, 'logout'])->name('logout.custom
 
 
 
-Route::get('/merchandise', [MerchandiseController::class, 'index'])->name('merchandise.index');
-Route::post('/redeem-merchandise', [MerchandiseController::class, 'redeem'])->name('merchandise.redeem');
 
 //Route to jabatan - Pegawai - CS
 Route::get('/cshomepage', function () {
@@ -331,8 +329,12 @@ Route::post('/transaksi/upload/{id}', [transaksiController::class, 'uploadBuktiP
 Route::get('/test-notifikasi', [BarangController::class, 'notifikasi']);
 
 //Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerch.index');
+
 Route::patch('/claim-merch/{id}/selesaikan', [ClaimMerchController::class, 'selesaikan'])->name('claimMerch.selesaikan');
 Route::get('/claim-merc', [ClaimMerchController::class, 'index'])->name('claimMerc');
+Route::get('/merchandise', [MerchandiseController::class, 'index'])->name('merchandise.index');
+Route::post('/redeem-merchandise', [MerchandiseController::class, 'redeem'])->name('merchandise.redeem');
+
 
 Route::delete('/delete/requestdonasi/{id}', [RequestDonasiController::class, 'delete'])->name('destroy.requestdonasi');
 Route::get('/search/requestdonasi/all', [RequestDonasiController::class, 'search'])->name('search.requestdonasi.fall');

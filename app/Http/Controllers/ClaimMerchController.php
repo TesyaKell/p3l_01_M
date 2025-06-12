@@ -23,13 +23,14 @@ class ClaimMerchController extends Controller
         $claim = ClaimMerch::findOrFail($id);
 
         if ($claim->status !== 'Proses Pengambilan') {
-            return redirect()->route('claimMerch.index')->with('error', 'Klaim ini tidak dapat diselesaikan karena statusnya bukan Proses Pengambilan.');
+            return redirect()->route('claimMerc')->with('error', 'Klaim ini tidak dapat diselesaikan karena statusnya bukan Proses Pengambilan.');
         }
 
         $claim->status = 'Selesai';
         $claim->tanggal_acc = Carbon::now();
         $claim->save();
 
-        return redirect()->route('claimMerch.index')->with('success', 'Klaim berhasil diselesaikan!');
+        return redirect()->route('claimMerc')->with('success', 'Klaim berhasil diselesaikan!');
     }
+
 }

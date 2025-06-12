@@ -10,23 +10,10 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #4361ee;
-            --secondary-color: #3f37c9;
-            --success-color: #4cc9f0;
-            --warning-color: #f72585;
-            --info-color: #4895ef;
-            --light-color: #f8f9fa;
-            --dark-color: #212529;
-            --gray-color: #6c757d;
-            --card-border-radius: 16px;
-            --btn-border-radius: 10px;
-        }
 
+    <style>
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f5f7ff;
@@ -40,10 +27,9 @@
         /* Card Styling */
         .card {
             border: none;
-            border-radius: var(--card-border-radius);
+            border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            overflow: hidden;
         }
 
         .card:hover {
@@ -51,28 +37,18 @@
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
 
-        .card-header {
-            background-color: #fff;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            padding: 1.5rem;
-        }
-
-        .card-body {
-            padding: 1.5rem;
-        }
-
         /* Stats Cards */
         .stats-card {
-            position: relative;
-            overflow: hidden;
-            border-radius: var(--card-border-radius);
+            border-radius: 16px;
             padding: 1.5rem;
-            height: 100%;
             min-height: 160px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
         }
 
         .stats-card::before {
@@ -88,7 +64,6 @@
         }
 
         .stats-card .icon-wrapper {
-            position: relative;
             z-index: 1;
             width: 70px;
             height: 70px;
@@ -103,135 +78,22 @@
 
         .stats-card .icon-wrapper i {
             font-size: 2rem;
-            color: #fff;
+            color: white;
         }
 
         .stats-card h5 {
-            position: relative;
             z-index: 1;
-            color: rgba(255, 255, 255, 0.9);
             font-weight: 500;
             margin-bottom: 0.5rem;
         }
 
         .stats-card .stats-number {
-            position: relative;
             z-index: 1;
             font-size: 2.5rem;
             font-weight: 700;
-            color: #fff;
-        }
-
-        .stats-total {
-            background: linear-gradient(135deg, #4361ee, #3a0ca3);
-        }
-
-        .stats-completed {
-            background: linear-gradient(135deg, #4cc9f0, #4895ef);
-        }
-
-        .stats-processing {
-            background: linear-gradient(135deg, #f72585, #b5179e);
-        }
-
-        /* Badge Styling */
-        .badge {
-            padding: 0.5rem 1rem;
-            font-weight: 500;
-            border-radius: 30px;
-            font-size: 0.85rem;
-        }
-
-        .badge-delivered {
-            background-color: rgba(76, 201, 240, 0.15);
-            color: #4cc9f0;
-            border: 1px solid rgba(76, 201, 240, 0.3);
-        }
-
-        .badge-approved {
-            background-color: rgba(247, 37, 133, 0.15);
-            color: #f72585;
-            border: 1px solid rgba(247, 37, 133, 0.3);
-        }
-
-        /* Button Styling */
-        .btn {
-            border-radius: var(--btn-border-radius);
-            padding: 0.6rem 1.2rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #4361ee, #3a0ca3);
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #3a0ca3, #4361ee);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #4cc9f0, #4895ef);
-            border: none;
-        }
-
-        .btn-success:hover {
-            background: linear-gradient(135deg, #4895ef, #4cc9f0);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(76, 201, 240, 0.3);
-        }
-
-        .btn-filter {
-            border-radius: 30px;
-            padding: 0.5rem 1.5rem;
-            margin-right: 0.5rem;
-            font-weight: 500;
-            border: 2px solid transparent;
-            background-color: #f8f9fa;
-            color: #6c757d;
-        }
-
-        .btn-filter.active {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .btn-filter:hover:not(.active) {
-            background-color: #e9ecef;
-        }
-
-        .btn-outline-primary {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .btn-outline-primary:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .btn-sm {
-            padding: 0.4rem 1rem;
-            font-size: 0.875rem;
         }
 
         /* Table Styling */
-        .table {
-            border-collapse: separate;
-            border-spacing: 0 0.5rem;
-        }
-
-        .table thead th {
-            border-bottom: none;
-            background-color: #f8f9fa;
-            padding: 1rem;
-            font-weight: 600;
-            color: #495057;
-        }
-
         .table tbody tr {
             background-color: white;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
@@ -245,7 +107,6 @@
         }
 
         .table tbody td {
-            padding: 1rem;
             vertical-align: middle;
             border-top: none;
         }
@@ -260,192 +121,10 @@
             border-bottom-right-radius: 10px;
         }
 
-        /* DataTables Customization */
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            padding: 0;
-            line-height: 36px;
-            text-align: center;
-            margin: 0 3px;
-            border: none !important;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-            background: var(--primary-color) !important;
-            color: white !important;
-        }
-
-        .dataTables_wrapper .dataTables_filter input {
-            border-radius: var(--btn-border-radius);
-            border: 1px solid #ced4da;
-            padding: 0.5rem 1rem;
-        }
-
-        /* Alert Styling */
-        .alert {
-            position: relative;
-            padding: 1.2rem 2rem;
-            border-radius: var(--card-border-radius);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 1.5rem;
-            border: none;
-        }
-
-        .alert-success {
-            background: linear-gradient(135deg, rgba(76, 201, 240, 0.1), rgba(72, 149, 239, 0.1));
-            border-left: 5px solid #4cc9f0;
-            color: #055160;
-        }
-
-        .alert-danger {
-            background: linear-gradient(135deg, rgba(247, 37, 133, 0.1), rgba(181, 23, 158, 0.1));
-            border-left: 5px solid #f72585;
-            color: #721c24;
-        }
-
-        .alert-icon {
-            font-size: 1.5rem;
-        }
-
-        .alert-dismissible .btn-close {
-            position: absolute;
-            top: 50%;
-            right: 1rem;
-            transform: translateY(-50%);
-            padding: 0.5rem;
-            opacity: 0.7;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-                transform: translateY(0);
-            }
-
-            to {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-        }
-
-        .alert.fade.show {
-            animation: fadeIn 0.5s ease forwards;
-        }
-
-        .alert.fade:not(.show) {
-            animation: fadeOut 0.5s ease forwards;
-        }
-
-        /* Header Styling */
-        .page-header {
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .page-header h1 {
-            font-weight: 700;
-            color: var(--dark-color);
-        }
-
-        .page-header p {
-            color: var(--gray-color);
-            font-size: 1.1rem;
-        }
-
-        /* Custom Modal Styling */
-        .modal-content {
-            border-radius: var(--card-border-radius);
-            border: none;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-        }
-
-        .modal-header {
-            background: linear-gradient(135deg, #4361ee, #3a0ca3);
-            color: white;
-            border-bottom: none;
-            padding: 1.5rem;
-        }
-
-        .modal-body {
-            padding: 2rem;
-            font-size: 1.1rem;
-        }
-
-        .modal-footer {
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
-            padding: 1.5rem;
-        }
-
-        .btn-confirm {
-            background: linear-gradient(135deg, #4cc9f0, #4895ef);
-            border: none;
-            color: white;
-            padding: 0.7rem 2rem;
-            border-radius: var(--btn-border-radius);
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .btn-confirm:hover {
-            background: linear-gradient(135deg, #4895ef, #4cc9f0);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(76, 201, 240, 0.3);
-        }
-
-        .btn-cancel {
-            background: #f8f9fa;
-            border: none;
-            color: #6c757d;
-            padding: 0.7rem 2rem;
-            border-radius: var(--btn-border-radius);
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .btn-cancel:hover {
-            background: #e9ecef;
-            transform: translateY(-2px);
-        }
-
         /* Search Box */
         .search-box {
             position: relative;
             margin-bottom: 1.5rem;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 0.75rem 1rem 0.75rem 3rem;
-            border-radius: var(--btn-border-radius);
-            border: 1px solid #ced4da;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .search-box input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
-            outline: none;
         }
 
         .search-box i {
@@ -462,12 +141,8 @@
                 margin-bottom: 1rem;
             }
 
-            .btn-filter {
-                margin-bottom: 0.5rem;
-            }
-
             .table-responsive {
-                border-radius: var(--card-border-radius);
+                border-radius: 16px;
                 overflow: hidden;
             }
         }
@@ -478,7 +153,7 @@
     <div class="container py-5">
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="bi bi-check-circle-fill alert-icon"></i>
+                <i class="bi bi-check-circle-fill me-2"></i>
                 <div>
                     <h5 class="mb-0 fw-bold">Berhasil!</h5>
                     <p class="mb-0">{{ session('success') }}</p>
@@ -488,7 +163,7 @@
         @endif
         @if (session('error'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
                 <div>
                     <h5 class="mb-0 fw-bold">Error!</h5>
                     <p class="mb-0">{{ session('error') }}</p>
@@ -498,7 +173,7 @@
         @endif
 
         <!-- Header -->
-        <div class="page-header">
+        <div class="mb-4 border-bottom pb-4">
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <h1 class="display-6 mb-2">
@@ -525,7 +200,7 @@
         <div class="row mb-4">
             <div class="col-md-4 mb-4 mb-md-0">
                 <div class="card h-100">
-                    <div class="stats-card stats-total">
+                    <div class="stats-card bg-primary">
                         <div class="icon-wrapper">
                             <i class="bi bi-box-seam"></i>
                         </div>
@@ -536,7 +211,7 @@
             </div>
             <div class="col-md-4 mb-4 mb-md-0">
                 <div class="card h-100">
-                    <div class="stats-card stats-completed">
+                    <div class="stats-card bg-success">
                         <div class="icon-wrapper">
                             <i class="bi bi-check-circle"></i>
                         </div>
@@ -547,7 +222,7 @@
             </div>
             <div class="col-md-4">
                 <div class="card h-100">
-                    <div class="stats-card stats-processing">
+                    <div class="stats-card bg-warning">
                         <div class="icon-wrapper">
                             <i class="bi bi-hourglass-split"></i>
                         </div>
@@ -564,13 +239,13 @@
                 <div
                     class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
                     <div class="d-flex mb-3 mb-md-0">
-                        <button class="btn btn-filter active" data-status="all">
+                        <button class="btn btn-outline-primary me-2 active" data-status="all">
                             <i class="bi bi-grid-3x3-gap me-2"></i>Semua
                         </button>
-                        <button class="btn btn-filter" data-status="Selesai">
+                        <button class="btn btn-outline-primary me-2" data-status="Selesai">
                             <i class="bi bi-check-circle me-2"></i>Selesai
                         </button>
-                        <button class="btn btn-filter" data-status="Proses Pengambilan">
+                        <button class="btn btn-outline-primary" data-status="Proses Pengambilan">
                             <i class="bi bi-hourglass-split me-2"></i>Proses Pengambilan
                         </button>
                     </div>
@@ -599,17 +274,17 @@
                                     <td><strong>#{{ $claim->id_claim_merch }}</strong></td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <div class="avatar bg-light-primary me-2 rounded">
+                                            <span class="avatar bg-light-primary me-2 rounded">
                                                 <i class="bi bi-box text-primary"></i>
-                                            </div>
+                                            </span>
                                             {{ $claim->merchandise->nama ?? 'N/A' }}
                                         </div>
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <div class="avatar bg-light-info me-2 rounded">
+                                            <span class="avatar bg-light-info me-2 rounded">
                                                 <i class="bi bi-person text-info"></i>
-                                            </div>
+                                            </span>
                                             {{ $claim->pembeli->nama_pembeli ?? 'N/A' }}
                                         </div>
                                     </td>
@@ -634,9 +309,11 @@
                                         @php
                                             $status = ucfirst($claim->status);
                                             $badgeClass = match ($status) {
-                                                'Selesai' => 'badge-delivered',
-                                                'Proses Pengambilan' => 'badge-approved',
-                                                default => 'badge-secondary',
+                                                'Selesai'
+                                                    => 'bg-success-subtle text-success border border-success-subtle',
+                                                'Proses Pengambilan'
+                                                    => 'bg-warning-subtle text-warning border border-warning-subtle',
+                                                default => 'bg-secondary-subtle text-secondary',
                                             };
                                             $icon = match ($status) {
                                                 'Selesai' => 'bi-check-circle-fill',
@@ -664,12 +341,10 @@
                                 </tr>
                             @endforeach
                         </tbody>
-
                     </table>
-                    <div class="mt-10 text-center">
-                        <button onclick="window.history.back()"
-                            class="btn btn-sm btn-success selesaikan-btn px-6 py-3 gradient-bg text-white rounded-lg hover:bg-pink-700 shadow-md transition-colors">
-                            <i class="fas fa-arrow-left mr-2"></i>Kembali
+                    <div class="mt-4 text-center">
+                        <button onclick="window.history.back()" class="btn btn-sm btn-success">
+                            <i class="bi bi-arrow-left me-2"></i>Kembali
                         </button>
                     </div>
                 </div>
@@ -682,25 +357,26 @@
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="confirmModalLabel">
                         <i class="bi bi-question-circle me-2"></i>
-                        127.0.0.1:8000 menyatakan
+                        Konfirmasi
                     </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p class="mb-0">Apakah Anda yakin ingin menyelesaikan klaim ini?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-confirm" id="confirmButton">Oke</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="confirmButton">Oke</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Hidden form for submission -->
-    <form id="selesaikanForm" method="POST" style="display: none;">
+    <form id="selesaikanForm" method="POST" action="" style="display: none;">
         @csrf
         @method('PATCH')
     </form>
@@ -733,67 +409,51 @@
                 "responsive": true
             });
 
-            // Debug: Log all status values to console
-            table.column(5).data().each(function(value, index) {
-                console.log('Row ' + index + ' status:', value);
-            });
-
             // Custom search box
             $('#tableSearch').on('keyup', function() {
                 table.search(this.value).draw();
             });
 
-            // Filter functionality with improved matching
+            // Filter functionality
             $('.btn-filter').on('click', function() {
                 $('.btn-filter').removeClass('active');
                 $(this).addClass('active');
 
                 var status = $(this).data('status').trim();
-
-                // Add animation to table rows
-                $('#claimMerchTable tbody tr').addClass('animate__animated animate__fadeOut');
-
-                setTimeout(function() {
-                    if (status === 'all') {
-                        table.column(5).search('').draw();
-                    } else {
-                        // Use a more flexible search that matches the badge content
-                        table.column(5).search(status, false, false, true).draw();
-                    }
-
-                    // Remove animation class and add fade in
-                    $('#claimMerchTable tbody tr').removeClass('animate__fadeOut').addClass(
-                        'animate__fadeIn');
-
-                    setTimeout(function() {
-                        $('#claimMerchTable tbody tr').removeClass(
-                            'animate__animated animate__fadeIn');
-                    }, 500);
-                }, 300);
+                console.log('Filtering by status:', status); // Debug
+                if (status === 'all') {
+                    table.column(5).search('').draw();
+                } else {
+                    table.column(5).search(status, false, false, true).draw();
+                }
             });
 
             // Modal confirmation functionality
-            let currentClaimId = null;
-
-            $('.selesaikan-btn').on('click', function() {
-                currentClaimId = $(this).data('claim-id');
+            $('#confirmModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var claimId = button.data('claim-id'); // Extract claim ID
+                console.log('Claim ID:', claimId); // Debug
+                var form = $('#selesaikanForm');
+                form.attr('action', `/claim-merch/${claimId}/selesaikan`);
             });
 
             $('#confirmButton').on('click', function() {
-                if (currentClaimId) {
-                    // Add loading state
+                var form = $('#selesaikanForm');
+                var action = form.attr('action');
+                console.log('Submitting form to:', action); // Debug
+                if (action) {
                     $(this).html(
                         '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Memproses...'
                     );
                     $(this).prop('disabled', true);
-
-                    const form = $('#selesaikanForm');
-                    form.attr('action', `/claim-merch/${currentClaimId}/selesaikan`);
                     form.submit();
+                } else {
+                    console.error('Form action not set');
+                    alert('Error: Tidak dapat menyelesaikan klaim. Silakan coba lagi.');
                 }
             });
 
-            // Auto-hide alerts with animation
+            // Auto-hide alerts
             const alerts = document.querySelectorAll('.alert-dismissible');
             alerts.forEach(alert => {
                 setTimeout(() => {
@@ -801,13 +461,6 @@
                         bootstrap.Alert.getOrCreateInstance(alert).close();
                     });
                 }, 5000);
-            });
-
-            // Add hover effect to table rows
-            $('#claimMerchTable tbody').on('mouseenter', 'tr', function() {
-                $(this).addClass('highlight');
-            }).on('mouseleave', 'tr', function() {
-                $(this).removeClass('highlight');
             });
         });
     </script>

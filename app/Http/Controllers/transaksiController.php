@@ -278,9 +278,25 @@ class transaksiController extends Controller
             return response()->json(['error' => 'User not found'], 404);
         }
 
-        $transaksiList = Transaksi::with('detailTransaksi')
-                          ->where('id_pembeli', $pembeli->id_pembeli)
-                          ->get();
+        // Build the query
+        $query = Transaksi::with('detailTransaksi')
+                         ->where('id_pembeli', $pembeli->id_pembeli);
+
+        // Apply date filters if provided
+        if ($request->has('day') && is_numeric($request->day)) {
+            $query->whereDay('tanggal_pesan', $request->day);
+        }
+
+        if ($request->has('month') && is_numeric($request->month)) {
+            $query->whereMonth('tanggal_pesan', $request->month);
+        }
+
+        if ($request->has('year') && is_numeric($request->year)) {
+            $query->whereYear('tanggal_pesan', $request->year);
+        }
+
+        // Execute the query
+        $transaksiList = $query->get();
 
         return response()->json(['transaksiList' => $transaksiList]);
     }
