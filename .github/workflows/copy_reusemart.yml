@@ -23,6 +23,15 @@ jobs:
         with:
           php-version: '8.2'
 
+      - name: Set up environment
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_DATABASE: p3l
+          DB_USERNAME: avnadmin
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        
       - name: Check if composer.json exists
         id: check_files
         uses: andstor/file-existence-action@v1
