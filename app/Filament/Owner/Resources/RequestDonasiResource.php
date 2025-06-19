@@ -19,11 +19,7 @@ class RequestDonasiResource extends Resource
     protected static ?string $navigationLabel = 'Permintaan Donasi';
     protected static ?int $navigationSort = 1;
 
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->whereMonth('created_at', now()->month); // dinamis ambil bulan sekarang
-    }
+
 
     public static function form(Form $form): Form
     {
@@ -81,17 +77,19 @@ class RequestDonasiResource extends Resource
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Status')
                     ->colors([
-                        'pending' => 'warning',
-                        'approved' => 'success',
-                        'rejected' => 'danger',
-                        'completed' => 'primary',
+                        'warning' => 'pending',
+                        'success' => 'approved',
+                        'danger' => 'rejected',
+                        'primary' => 'completed',
                     ])
-                    ->enum([
+                    ->formatStateUsing(fn (string $state) => match ($state) {
                         'pending' => 'Pending',
                         'approved' => 'Disetujui',
                         'rejected' => 'Ditolak',
                         'completed' => 'Selesai',
-                    ]),
+                        default => ucfirst($state),
+                    }),
+
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')

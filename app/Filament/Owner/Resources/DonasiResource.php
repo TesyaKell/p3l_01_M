@@ -30,18 +30,18 @@ class DonasiResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id_donasi')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('request.desk_request')->searchable(),
+                Tables\Columns\TextColumn::make('requestDonasi.desk_request')->searchable(),
                 Tables\Columns\TextColumn::make('barang.nama_barang')->searchable(),
                 Tables\Columns\TextColumn::make('penitip.nama_penitip')->searchable(),
                 Tables\Columns\TextColumn::make('tanggal_donasi')->date()->sortable(),
                 Tables\Columns\TextColumn::make('nama_penerima')->searchable(),
-                Tables\Columns\TextColumn::make('request.organisasi.nama_organisasi')
+                Tables\Columns\TextColumn::make('requestDonasi.organisasi.nama_organisasi')
                     ->label('Organisasi')
                     ->searchable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('organisasi')
-                    ->relationship('request.organisasi', 'nama_organisasi'),
+                    ->relationship('requestDonasi.organisasi', 'nama_organisasi'),
                 Tables\Filters\Filter::make('tanggal_donasi')
                     ->form([
                         Forms\Components\DatePicker::make('dari_tanggal'),
@@ -51,11 +51,11 @@ class DonasiResource extends Resource
                         return $query
                             ->when(
                                 $data['dari_tanggal'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('tanggal_donasi', '>=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('tanggal_donasi', '>=', $date),
                             )
                             ->when(
                                 $data['sampai_tanggal'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('tanggal_donasi', '<=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('tanggal_donasi', '<=', $date),
                             );
                     }),
             ])

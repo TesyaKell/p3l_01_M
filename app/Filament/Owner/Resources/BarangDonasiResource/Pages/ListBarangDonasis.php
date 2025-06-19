@@ -10,10 +10,10 @@ class ListBarangDonasis extends ListRecords
 {
     protected static string $resource = BarangDonasiResource::class;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\CreateAction::make(),
-        ];
-    }
+    // protected function getHeaderActions(): array
+    // {
+    //     return [
+    //         Actions\CreateAction::make(),
+    //     ];
+    // }
 }
