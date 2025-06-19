@@ -22,9 +22,9 @@ class RequestDonasiResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->whereMonth('created_at', 5);
-
+            ->whereMonth('created_at', now()->month); // dinamis ambil bulan sekarang
     }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -38,8 +38,12 @@ class RequestDonasiResource extends Resource
                 ->required()
                 ->columnSpanFull(),
 
-            Forms\Components\DatePicker::make('tanggal_request')
-                ->required(),
+            // Tampilkan created_at sebagai readonly
+            Forms\Components\DatePicker::make('created_at')
+                ->label('Tanggal Request')
+                ->disabled()
+                ->dehydrated(false) // agar tidak dikirim saat submit
+                ->default(now()),
 
             Forms\Components\Select::make('status')
                 ->options([
@@ -61,23 +65,41 @@ class RequestDonasiResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('organisasi.nama_organisasi')
+                    ->label('Organisasi')
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('desk_request')
+                    ->label('Deskripsi')
                     ->searchable(),
 
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Tanggal Request')
+                    ->dateTime('d M Y H:i')
+                    ->sortable(),
+
                 Tables\Columns\BadgeColumn::make('status')
+                    ->label('Status')
                     ->colors([
-                        'success' => 'Diterima',
-                        'primary' => 'Diproses',
+                        'pending' => 'warning',
+                        'approved' => 'success',
+                        'rejected' => 'danger',
+                        'completed' => 'primary',
+                    ])
+                    ->enum([
+                        'pending' => 'Pending',
+                        'approved' => 'Disetujui',
+                        'rejected' => 'Ditolak',
+                        'completed' => 'Selesai',
                     ]),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
-                        'success' => 'Diterima',
-                        'primary' => 'Diproses',
+                        'pending' => 'Pending',
+                        'approved' => 'Disetujui',
+                        'rejected' => 'Ditolak',
+                        'completed' => 'Selesai',
                     ]),
 
                 Tables\Filters\SelectFilter::make('organisasi')

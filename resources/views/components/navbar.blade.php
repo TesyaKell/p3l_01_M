@@ -124,13 +124,13 @@ use App\Http\Helper\Helper;
                                             Donasi panel</a></li>
                                 @endif
 
-                                <li>
+                                {{-- <li>
                                     <hr class="dropdown-divider">
                                 </li>
                                 <a class="dropdown-item" href="{{ route('dataSaldoPenitip') }}">Data Saldo Penitip diatas 500000 dan sudah jual lebih dari sama dengan 2</a>
                                 <li>
                                     <hr class="dropdown-divider">
-                                </li>
+                                </li> --}}
                                 <li>
                                     <form action="{{ url('/') }}" method="POST">
                                         @csrf
