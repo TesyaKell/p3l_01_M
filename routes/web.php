@@ -128,7 +128,7 @@ Route::get('/detail-produk/{id}', [BarangController::class, 'detailProduk'])->na
 Route::get('/produk', [BarangController::class, 'index'])->name('produk');
 Route::get('/search', [BarangController::class, 'search'])->name('search');
 
-Route::get('/barangDiperpanjang/{id_penitip}', [BarangController::class, 'barangPenitipDiperpanjang'])->name('historyBarangDiperpanjangx1');
+
 
 
 
@@ -136,7 +136,6 @@ Route::get('/barangDiperpanjang/{id_penitip}', [BarangController::class, 'barang
 Route::get('/barang/{id_penitip}', [BarangController::class, 'barangPenitipAll'])->name('historyBarang');
 Route::get('/barang/updateA/{id}', [BarangController::class, 'updateBarangDiambil'])->name('barangDiambil');
 Route::get('/barang/updateB/{id}', [BarangController::class, 'updatePerpanjangan'])->name('barangDiperpanjang');
-Route::get('/barang/updateB/{id}', [BarangController::class, 'updatePerpanjanganLagi'])->name('barangDiperpanjangx1');
 Route::get('/search/{id_penitip}', [BarangController::class, 'searchBarangTitipan'])->name('searchBarangTitipan');
 
 //KERANJANG

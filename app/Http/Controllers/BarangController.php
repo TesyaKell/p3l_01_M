@@ -391,21 +391,6 @@ class BarangController extends Controller
         //barang yang ditampilkan semua atau yang belum terbeli/didonasikan?
         return view('historyPenitipanBarang', compact('barangUser', 'id_penitip', 'condition', 'query', 'activeStatus'));
     }
-    public function barangPenitipDiperpanjang(Request $request, $id_penitip)
-    {
-        $status = $request->get('status', 'x');
-        $barangUser = Barang::where('id_penitip', $id_penitip)
-            ->where('status', '=', 'Tersedia')
-            ->where('opsi', '=', 'Diperpanjang')
-            ->where('jumlah_perpanjang', 1)
-            ->with('penitip')->get();
-        
-        $condition = 'show';
-        $query = '';
-        $activeStatus = $status;
-        //barang yang ditampilkan semua atau yang belum terbeli/didonasikan?
-        return view('penitipanBarangDiperpanjangLagi', compact('barangUser', 'id_penitip', 'condition', 'query', 'activeStatus'));
-    }
 
     public function barangPenitipByStatus($id_penitip, string $status)
     {
@@ -483,30 +468,9 @@ class BarangController extends Controller
             'tanggal_akhir' => Carbon::parse($barang->tanggal_akhir)->addDays(30),
             'tanggal_batas' => Carbon::parse($barang->tanggal_)->addDays(30),
             'opsi' => 'Diperpanjang',
-            'jumlah_perpanjang' => $barang->jumlah_perpanjang + 1
         ]);
         $id_penitip = $barang->id_penitip;
         return redirect()->route('historyBarang', ['id_penitip' => $id_penitip])->with('status', 'Data penitip berhasil diperbarui!');
-
-        //barang yang ditampilkan semua atau yang belum terbeli/didonasikan?
-
-    }
-    public function updatePerpanjanganLagi(Request $request, $id)
-    {
-        $barang = Barang::where('kode_barang', $id)->firstOrFail();
-        $barang->update([
-            'tanggal_akhir' => Carbon::parse($barang->tanggal_akhir)->addDays(30),
-            'tanggal_batas' => Carbon::parse($barang->tanggal_batas)->addDays(30),
-            'opsi' => 'Diperpanjang',
-            'jumlah_perpanjang' => $barang->jumlah_perpanjang + 1
-        ]);
-
-        $id_penitip = Penitip::where('id_penitip', $barang->id_penitip)->first();
-        $id_penitip->update([
-            'saldo' => $id_penitip->saldo - ($barang->harga * 0.05)
-        ]);
-        
-        return redirect()->route('historyBarangDiperpanjangx1', ['id_penitip' => $id_penitip])->with('status', 'Data penitip berhasil diperbarui!');
 
         //barang yang ditampilkan semua atau yang belum terbeli/didonasikan?
 

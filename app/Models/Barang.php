@@ -22,7 +22,6 @@ class Barang extends Model
         'deskripsi',
         'status',
         'opsi',
-        'jumlah_perpanjang',
         'harga',
         'garansi',
         'tanggal_masuk',
