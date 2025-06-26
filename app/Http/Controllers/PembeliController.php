@@ -201,27 +201,13 @@ class PembeliController extends Controller
         // $bulan = $request->input('bulan', now()->month);
         // $tahun = $request->input('tahun', now()->year);
 
-        $transaksi = DB::table('detail_transaksi')
-            ->join('transaksi', 'detail_transaksi.no_nota', '=', 'transaksi.no_nota')
-            ->where('transaksi.id_pembeli', $user->id_pembeli)
-            // ->whereMonth('transaksi.tanggal_lunas', $bulan)
-            // ->whereYear('transaksi.tanggal_lunas', $tahun)
-            ->select(
-                'transaksi.no_nota',
-                'detail_transaksi.nama_barang',
-                'transaksi.tambah_poin',
-                'transaksi.tipe_delivery',
-                'transaksi.total_pembayaran',
-                'transaksi.alamat_pengiriman',
-                'transaksi.status',
-            )
+        $transaksi = Transaksi::with(['detailTransaksi.barang'])
+            ->where('id_pembeli', $user->id_pembeli)
+            ->orderBy('tanggal_pesan', 'asc')
             ->get();
 
         return view('transaksi_pembelian', [
             'transaksi' => $transaksi,
-            // 'bulan' => (int) $bulan,
-            // 'tahun' => (int) $tahun,
-            'tanggal_cetak' => now()->format('d/m/Y'),
         ]);
     }
 

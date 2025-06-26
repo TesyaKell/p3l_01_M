@@ -111,6 +111,7 @@ use App\Http\Helper\Helper;
                                             href="{{ route('historyBarang', ['id_penitip' => Helper::getLoggedInUser()->id_penitip]) }}">History
                                             Barang</a>
                                     </li>
+                                    
                                     <li><a class="dropdown-item" href="{{ route('historyPenjualanPenitip') }}">History
                                             Penjualan</a>
                                     </li>

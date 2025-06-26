@@ -465,9 +465,9 @@ class BarangController extends Controller
     {
         $barang = Barang::where('kode_barang', $id)->firstOrFail();
         $barang->update([
-            'tanggal_akhir' => Carbon::parse($barang->tanggal_akhir)->addDays(60),
-            'tanggal_batas' => Carbon::parse($barang->tanggal_)->addDays(60),
-            'opsi' => 'Diperpanjang'
+            'tanggal_akhir' => Carbon::parse($barang->tanggal_akhir)->addDays(30),
+            'tanggal_batas' => Carbon::parse($barang->tanggal_)->addDays(30),
+            'opsi' => 'Diperpanjang',
         ]);
         $id_penitip = $barang->id_penitip;
         return redirect()->route('historyBarang', ['id_penitip' => $id_penitip])->with('status', 'Data penitip berhasil diperbarui!');
@@ -515,16 +515,15 @@ class BarangController extends Controller
     public function searchBarangTitipan(Request $request, $id_penitip)
     {
         $query = $request->input('query');
-
         $barangUser = Barang::with('kategori')
             ->where('nama_barang', 'like', "%{$query}%")
+            ->where('id_penitip', $id_penitip)
             ->orWhereHas(
                 'kategori',
                 function ($q) use ($query) {
                     $q->where('nama_kategori', 'like', "%{$query}%");
                 }
             )
-            ->where('id_penitip', $id_penitip)
             ->get();
         $condition = 'search';
         return view('historyPenitipanBarang', compact('barangUser', 'query', 'condition'));

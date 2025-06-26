@@ -77,7 +77,7 @@ class PenitipController extends Controller
 
         Notification::route('mail', $request->email)->notify(new VerifyEmail($details));
 
-        return redirect('/login/penitip')->with('status', 'Registration successful, please verify your email!');
+        return redirect()->back()->with('status', 'Registration successful, please verify your email!');
     }
 
     public function login(Request $request)

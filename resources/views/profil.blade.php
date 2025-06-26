@@ -190,10 +190,10 @@ use App\Models\Merchandise;
                             @endif
                         </div>
                     @endif
-                    @if (@$guard === 'pembeli')
-                        <a href="{{ route('pembeli.transaksi') }}" class="btn btn-outline-primary">Lihat Riwayat
+                    <!-- @if (@$guard === 'pembeli')
+                        <a href="{{ route('pembeli.transaksi') }}" class="btn btn-outline-primary mt-2">Lihat Riwayat
                             Pembelian</a>
-                    @endif
+                    @endif -->
                 </div>
             </div>
 
