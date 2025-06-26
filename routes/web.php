@@ -39,9 +39,6 @@ Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi
 Route::post('/rate-product', [TransaksiController::class, 'rateProduct'])->name('pembeli.rateProduct');
 
 
-
-
-
 Route::prefix('owner/laporan')->middleware(['auth:pegawai'])->group(function () {
     Route::get('/donasi/pdf', [LaporanOwnerController::class, 'donasiPdf'])->name('owner.laporan.donasi.pdf');
     Route::get('/owner/laporan/request/pdf', [LaporanOwnerController::class, 'requestPdf'])
