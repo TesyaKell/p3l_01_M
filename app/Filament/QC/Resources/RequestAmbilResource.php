@@ -36,8 +36,11 @@ class RequestAmbilResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('status', 'Diambil')
-            ->whereNull('tanggal_ambil');
+        ->where(function ($query) {
+            $query->where('status', 'Selesai')
+                  ->orWhere('status', 'Diambil')
+                  ->orderBy('updated_at', 'desc');
+        });
     }
 
     public static function table(Table $table): Table
@@ -78,11 +81,12 @@ class RequestAmbilResource extends Resource
                     ->action(function ($record) {
                         app(BarangController::class)->terimaBarangDiambil($record->kode_barang);
                         Notification::make()
-                                ->title('Berhasil Diambil')
-                                ->body('Pengambilan Barang oleh Penitip Berhasil')
-                                ->success()
-                                ->send();
-                    }),
+                            ->title('Barang Berhasil Diambil')
+                            ->body('Pengambilan barang oleh penitip telah berhasil dikonfirmasi.')
+                            ->success()
+                            ->send();
+                    })
+                    ->visible(fn ($record) => $record->tanggal_ambil === null && $record->status === 'Diambil'),
 
                 Action::make('tolak')
                     ->label('Tolak')
@@ -91,12 +95,13 @@ class RequestAmbilResource extends Resource
                     ->action(function ($record) {
                         app(BarangController::class)->tolakBarangDiambil($record->kode_barang);
                         Notification::make()
-                                ->title('Berhasil Didonasikan')
-                                ->body('Barang Berhasil Didonasikan')
-                                ->success()
-                                ->send();
-                    }),
-                Tables\Actions\EditAction::make(),
+                            ->title('Barang Didonasikan')
+                            ->body('Barang telah berhasil didonasikan.')
+                            ->success()
+                            ->send();
+                    })
+                    ->visible(fn ($record) => $record->tanggal_ambil === null && $record->status === 'Diambil'),
+                // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

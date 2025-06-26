@@ -517,13 +517,13 @@ class BarangController extends Controller
         $query = $request->input('query');
         $barangUser = Barang::with('kategori')
             ->where('nama_barang', 'like', "%{$query}%")
+            ->where('id_penitip', $id_penitip)
             ->orWhereHas(
                 'kategori',
                 function ($q) use ($query) {
                     $q->where('nama_kategori', 'like', "%{$query}%");
                 }
             )
-            ->where('id_penitip', $id_penitip)
             ->get();
         $condition = 'search';
         return view('historyPenitipanBarang', compact('barangUser', 'query', 'condition'));
