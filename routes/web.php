@@ -187,16 +187,13 @@ Route::get('/login', function () {
     return redirect()->route('jabatan');
 })->name('login');
 
-Route::get('/barang', [BarangController::class, 'mobile']);
-
-Route::get('/topSeller', [BarangController::class, 'topSeller']);
-
-Route::middleware('auth:sanctum')->get('/riwayat-transaksi', [TransaksiController::class, 'coba']);
-
+// Route::get('/barang', [BarangController::class, 'mobile']);
+// Route::get('/topSeller', [BarangController::class, 'topSeller']);
+// Route::middleware('auth:sanctum')->get('/riwayat-penitipan', [BarangController::class, 'coba']);
+//Route::middleware('auth:sanctum')->get('/riwayat-transaksi', [TransaksiController::class, 'coba']);
 Route::middleware('auth:sanctum')->get('/status-donasi', [BarangController::class, 'statusDonasi']);
 
 
-Route::middleware('auth:sanctum')->get('/riwayat-penitipan', [BarangController::class, 'coba']);
 
 // Login routes
 Route::post('/login/pembeli', [PembeliController::class, 'login'])->name('login.pembeli.post');

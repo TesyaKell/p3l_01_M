@@ -15,13 +15,13 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login-mobile', [UserController::class, 'loginApi']);
 Route::post('/transaksi/{no_nota}/cancel', [transaksiController::class, 'cancelTransaction'])->name('transaksi.cancel');
 
-Route::get('/home-barang',[BarangController::class, 'mobilebarang'])->name('ambilDataBarang');
+Route::get('/home-barang', [BarangController::class, 'mobilebarang'])->name('ambilDataBarang');
 
-Route::get('/merchandise',[MerchandiseController::class, 'dataMerchandise'])->name('ambilDataMerchandise');
+Route::get('/merchandise', [MerchandiseController::class, 'dataMerchandise'])->name('ambilDataMerchandise');
 
-Route::post('/claim-merchandise',[ClaimMerchController::class, 'tukarPoinMerchandise']);
+Route::post('/claim-merchandise', [ClaimMerchController::class, 'tukarPoinMerchandise']);
 
-Route::get('history-komisi/hunter/{$id}',[DetailTransaksiController::class, 'getProfilDanTotalKomisi'])->name('ambilDataHistoriKomisi');
+Route::get('history-komisi/hunter/{$id}', [DetailTransaksiController::class, 'getProfilDanTotalKomisi'])->name('ambilDataHistoriKomisi');
 
 // contoh untuk testing notif
 Route::middleware('auth:sanctum')->group(function () {
@@ -44,3 +44,8 @@ Route::get('/test-fcm', function (Request $request) {
     // ga perlu return ini, cmn karena kita testing di postman
     return response()->json(['message' => 'Notification sent successfully']);
 });
+
+Route::get('/barang', [BarangController::class, 'mobile']);
+Route::get('/topSeller', [BarangController::class, 'topSeller']);
+Route::middleware('auth:sanctum')->get('/riwayat-penitipan', [BarangController::class, 'coba']);
+Route::middleware('auth:sanctum')->get('/riwayat-transaksi', [TransaksiController::class, 'coba']);
