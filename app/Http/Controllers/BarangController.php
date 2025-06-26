@@ -30,8 +30,8 @@ class BarangController extends Controller
         $barang = Barang::where('status', 'Tersedia')->get();
         return response()->json($barang);
     }
-    
-    
+
+
     public function averageRating()
     {
         $penitips = \App\Models\Penitip::whereHas('barang')
@@ -152,7 +152,7 @@ class BarangController extends Controller
     {
         $penitip = $request->user();
 
-        if (!($penitip instanceof \App\Models\Penitip)) {
+        if (!($penitip instanceof Penitip)) {
             \Log::info('Token: ' . $request->bearerToken());
             \Log::info('Penitip: ' . json_encode($penitip));
             return response()->json(['error' => 'Penitip not found'], 404);
@@ -562,7 +562,7 @@ class BarangController extends Controller
                         ));
                     }
                 }
-                 
+
             }
             $transaksi->update(['status' => 'Batal']);
         }
