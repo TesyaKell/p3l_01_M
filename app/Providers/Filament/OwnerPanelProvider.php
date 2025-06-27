@@ -53,7 +53,7 @@ class OwnerPanelProvider extends PanelProvider
                 \App\Http\Middleware\Owner::class
             ])
             ->authMiddleware([
-                Authenticate::class,
+                \App\Http\Middleware\AuthenticatePegawai::class,
             ]);
     }
 }
