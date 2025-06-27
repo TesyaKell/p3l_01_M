@@ -164,7 +164,7 @@ class BarangDonasiResource extends Resource
 
                        $request = RequestDonasi::find($data['id_request']);
                        if ($request) {
-                           $request->status = 'Dikirim';
+                           $request->status = 'Selesai';
                            $request->save();
                        }
 
