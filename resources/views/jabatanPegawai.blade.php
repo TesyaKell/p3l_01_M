@@ -182,14 +182,14 @@
                 <i class="fas fa-chevron-right arrow-icon"></i>
             </a>
 
-            <a href="{{ url('/hunter/login') }}" class="role-card">
+            {{-- <a href="{{ url('/hunter/login') }}" class="role-card">
                 <div class="role-icon"><i class="fas fa-box"></i></div>
                 <div class="role-text">
                     <div class="role-name">Hunter</div>
                     <p class="role-description">Login sebagai Hunter.</p>
                 </div>
                 <i class="fas fa-chevron-right arrow-icon"></i>
-            </a>
+            </a> --}}
 
             <a href="{{ url('/qc/login') }}" class="role-card">
                 <div class="role-icon"><i class="fas fa-shopping-cart"></i></div>
@@ -200,7 +200,7 @@
                 <i class="fas fa-chevron-right arrow-icon"></i>
             </a>
 
-            <a href="{{ route ('login.pegawai')}}" class="role-card">
+            <a href="{{ route('login.pegawai') }}" class="role-card">
                 <div class="role-icon"><i class="fas fa-building"></i></div>
                 <div class="role-text">
                     <div class="role-name">Customer Service</div>
@@ -209,14 +209,14 @@
                 <i class="fas fa-chevron-right arrow-icon"></i>
             </a>
 
-            <a href="{{ url('/kurir/login') }}" class="role-card">
+            {{-- <a href="{{ url('/kurir/login') }}" class="role-card">
                 <div class="role-icon"><i class="fas fa-building"></i></div>
                 <div class="role-text">
                     <div class="role-name">Kurir</div>
                     <p class="role-description">Login sebagai Kurir.</p>
                 </div>
                 <i class="fas fa-chevron-right arrow-icon"></i>
-            </a>
+            </a> --}}
         </div>
 
 

@@ -277,9 +277,10 @@ use App\Http\Helper\Helper;
                                         <a href="{{ route('kategoriBarang', ['id' => $kategori->id_kategori]) }}"
                                             class="text-decoration-none text-gray-800">
                                             <img src="{{ asset('images/kategori/' . $kategori->foto_kategori) }}"
-                                                class="h-32 object-contain p-4 rounded-t-xl"
+                                                class="h-32 object-contain p-4 rounded-t-xl mx-auto"
                                                 alt="{{ $kategori->nama_kategori }}">
-                                            <div class="text-center p-4">
+
+                                            <div class="text-center p-2">
                                                 <h6 class="text-base font-medium">{{ $kategori->nama_kategori }}</h6>
                                             </div>
                                         </a>
