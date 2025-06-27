@@ -54,7 +54,7 @@ class HunterPanelProvider extends PanelProvider
                 \App\Http\Middleware\EnsureUserIsHunter::class
             ])
             ->authMiddleware([
-                Authenticate::class,
+                \App\Http\Middleware\AuthenticatePegawai::class,
             ]);
     }
 

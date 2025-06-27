@@ -58,7 +58,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Http\Middleware\Admin::class
             ])
             ->authMiddleware([
-                Authenticate::class,
+                \App\Http\Middleware\AuthenticatePegawai::class,
             ])
             ->resources([
                 JabatanResource::class,

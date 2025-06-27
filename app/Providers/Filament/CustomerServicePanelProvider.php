@@ -53,7 +53,7 @@ class CustomerServicePanelProvider extends PanelProvider
                 \App\Http\Middleware\EnsureUserIsCustomerService::class,
             ])
             ->authMiddleware([
-                Authenticate::class,
+                \App\Http\Middleware\AuthenticatePegawai::class,
             ]);
     }
 }

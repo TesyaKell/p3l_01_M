@@ -52,7 +52,7 @@ class QCPanelProvider extends PanelProvider
                 \App\Http\Middleware\QC::class
             ])
             ->authMiddleware([
-                Authenticate::class,
+                \App\Http\Middleware\AuthenticatePegawai::class,
             ]);
     }
 }
