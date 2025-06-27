@@ -112,6 +112,20 @@
                                         Detail Produk
                                     </a>
                                 </div>
+                            @elseif (auth()->guard('pegawai')->check())
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="{{ route('detailProduk', ['id' => $barang->kode_barang]) }}"
+                                        class="btn btn-primary w-100" target="_parent">
+                                        Lihat Detail & Komentar
+                                    </a>
+                                </div>
+                            @else
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="{{ route('detailProduk', ['id' => $barang->kode_barang]) }}"
+                                        class="btn btn-outline-secondary w-100">
+                                        Detail Produk
+                                    </a>
+                                </div>
                             @endif
                         </div>
                     </div>
