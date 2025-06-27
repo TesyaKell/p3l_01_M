@@ -64,7 +64,7 @@
                     <i class="me-1">📋</i><span>Data Penitip</span>
                 </a>
                 <a class="nav-link" href="{{ route('katalogbarang') }}" target="cs-content">
-                    <i class="me-1">💬</i><span>Komentar</span>
+                    <i class="me-1">🛍️</i><span>Produk & Komentar</span>
                 </a>
                 <a class="nav-link" href="{{ route('verifikasi.pembayaran') }}" target="cs-content">
                     <i class="me-1">🪙</i><span>Verifikasi</span>
@@ -87,7 +87,8 @@
 
         <!-- Main Content -->
         <div class="flex-grow-1 content-area">
-            <iframe name="cs-content" title="CS Content Frame"></iframe>
+            <iframe name="cs-content" title="CS Content Frame"
+                sandbox="allow-same-origin allow-scripts allow-forms allow-top-navigation"></iframe>
         </div>
     </div>
 
