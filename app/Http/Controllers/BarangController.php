@@ -604,5 +604,25 @@ class BarangController extends Controller
 
         //3. barang yang di request ambil tapi tidak diambil dalam 2 hari
         // $barangRequested = Barang::where('status', 'Diambil')->get();
+        $batasWaktu = Carbon::now()->subDays(2);
+
+        $barangAutoDonasi = Barang::where('status', 'Diambil')
+            ->where('updated_at', '<', $batasWaktu)
+            ->get();
+
+        foreach ($barangAutoDonasi as $barang) {
+            $barang->status = 'Didonasikan';
+            $barang->save();
+
+            // Jika ingin log atau notifikasi, tambahkan di sini
+            // Notifikasi ke penitip
+            $penitip = Penitip::find($barang->id_penitip);
+            if ($penitip && filled($penitip->fcm_token)) {
+                $penitip->notify(new MobileNotif(
+                    'Barang Didonasikan',
+                    "Barang '{$barang->nama_barang}' didonasikan karena Anda tidak mengambilnya dalam 2 hari."
+                ));
+            }
+        }
     }
 }
