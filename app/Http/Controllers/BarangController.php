@@ -233,6 +233,76 @@ class BarangController extends Controller
     //     return response()->json(['message' => 'Status barang diperbarui dan notifikasi dikirim']);
     // }
 
+    public function statusDonasi()
+    {
+        \Log::info("🚀 Memulai proses notifikasiGabungan() pada " . now());
+        Carbon::setLocale('id');
+        $today = Carbon::now('Asia/Jakarta')->toDateString();
+        $now = Carbon::now('Asia/Jakarta');
+
+        $items = Barang::with('penitip')
+            ->where('status', 'Tersedia')
+            ->get();
+
+        $notificationsSent = 0;
+        $barangDidonasikan = 0;
+
+        foreach ($items as $item) {
+            $penitip = $item->penitip;
+            if (!$penitip || !$penitip->fcm_token) {
+                \Log::warning("⚠️ Penitip atau FCM token kosong untuk barang {$item->kode_barang}");
+                continue;
+            }
+
+            $tanggalH = Carbon::parse($item->tanggal_akhir, 'Asia/Jakarta')->toDateString(); // hari terakhir titip
+            $tanggalHMinus3 = Carbon::parse($item->tanggal_akhir, 'Asia/Jakarta')->subDays(3)->toDateString();
+
+            // 1) Notifikasi H-3
+            if ($tanggalHMinus3 === $today) {
+                $title = "⏳ Masa Titip Barang {$item->nama_barang} Sisa 3 Hari Lagi";
+                $body = "Masa titip untuk {$item->nama_barang} sisa 3 hari, berakhir pada {$tanggalH}. Silakan ambil tindakan.";
+                \Log::info("📌 Barang {$item->nama_barang} sisa 3 hari (H-3): {$tanggalHMinus3}");
+            }
+            // 2) Notifikasi hari H
+            elseif ($tanggalH === $today) {
+                $title = "📅 Masa Titip Barang {$item->nama_barang} Berakhir Hari Ini!";
+                $body = "Masa titip untuk {$item->nama_barang} berakhir hari ini ({$tanggalH}). Silakan ambil barang di gudang.";
+                \Log::info("📌 Barang {$item->nama_barang} berakhir hari ini (H): {$tanggalH}");
+            }
+            // 3) Sudah lebih dari 7 hari sejak tanggal_akhir
+            elseif (Carbon::parse($item->tanggal_akhir)->addDays(7)->lt($now)) {
+                $item->status = 'Donasi';
+                $item->save();
+
+                $title = "🎁 Barang Anda Telah Didonasikan";
+                $body = "Barang '{$item->nama_barang}' telah melewati 7 hari masa titip dan telah didonasikan.";
+                \Log::info("✅ Barang {$item->nama_barang} status diubah jadi Donasi");
+
+                $barangDidonasikan++;
+            }
+            // Bukan H-3, bukan H, belum +7 hari → lanjut
+            else {
+                continue;
+            }
+
+            // Kirim notifikasi jika title dan body sudah diisi
+            try {
+                $penitip->notify(new MobileNotif($title, $body));
+                \Log::info("📲 Notifikasi terkirim ke penitip {$penitip->id_penitip} dengan token {$penitip->fcm_token}");
+                $notificationsSent++;
+            } catch (\Exception $e) {
+                \Log::error("❌ Gagal mengirim notifikasi ke penitip {$penitip->id_penitip}: {$e->getMessage()}");
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Notifikasi selesai. Total: {$notificationsSent} notifikasi dikirim, {$barangDidonasikan} barang didonasikan.",
+            'today' => $today
+        ]);
+    }
+
+
 
     public function index()
     {
