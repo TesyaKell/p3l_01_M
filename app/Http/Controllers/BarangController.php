@@ -542,7 +542,7 @@ class BarangController extends Controller
             foreach ($details as $detail) {
                 $barang = Barang::where('kode_barang', $detail->kode_barang)->first();
                 if ($barang) {
-                    $barang->update(['status' => 'Terdonasi']);
+                    $barang->update(['status' => 'Didonasikan']);
 
                     // Notifikasi ke penitip
                     $penitip = Penitip::find($barang->id_penitip);
@@ -578,7 +578,7 @@ class BarangController extends Controller
             foreach ($details as $detail) {
                 $barang = Barang::where('kode_barang', $detail->kode_barang)->first();
                 if ($barang) {
-                    $barang->update(['status' => 'Terdonasi']);
+                    $barang->update(['status' => 'Didonasikan']);
 
                     // Notifikasi ke penitip
                     $penitip = Penitip::find($barang->id_penitip);
@@ -604,5 +604,21 @@ class BarangController extends Controller
 
         //3. barang yang di request ambil tapi tidak diambil dalam 2 hari
         // $barangRequested = Barang::where('status', 'Diambil')->get();
+        $barangRequested = Barang::where('status', 'Diambil')
+            ->where('updated_at', '<=', now()->subDays(2))
+            ->get();
+
+        foreach ($barangRequested as $barang) {
+            $barang->update(['status' => 'Didonasikan']);
+
+            // Notifikasi ke penitip
+            $penitip = Penitip::find($barang->id_penitip);
+            if ($penitip && filled($penitip->fcm_token)) {
+                $penitip->notify(new MobileNotif(
+                    'Barang Didonasikan',
+                    "Barang '{$barang->nama_barang}' didonasikan karena tidak diambil lebih dari 2 hari setelah request ambil."
+                ));
+            }
+        }
     }
 }

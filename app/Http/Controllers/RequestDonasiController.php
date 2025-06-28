@@ -84,15 +84,20 @@ class RequestDonasiController extends Controller
     }
     public function search(Request $request)
     {
-        $query = $request->input('search');
         $id_organisasi = $request->input('id_organisasi');
-    
-        $data = RequestDonasi::when($query, function ($q) use ($query) {
+        $query = $request->input('search');
+
+        $data = RequestDonasi::where('id_organisasi', $id_organisasi)
+            ->when($query, function ($q) use ($query) {
                 $q->where('desk_request', 'like', '%' . $query . '%');
             })
             ->paginate(10);
 
-        return view('allkatalogrequestdonasi', compact('data', 'query', 'id_organisasi'));
+        return view('katalogrequestdonasi', [
+            'data' => $data,
+            'id_organisasi' => $id_organisasi,
+            'query' => $query,
+        ]);
     }
     public function searchById(Request $request)
     {
