@@ -197,41 +197,41 @@ class BarangController extends Controller
         return view('homeProduk', compact('kategoriList', 'barangTersedia'));
     }
 
-    public function statusDonasi()
-    {
-        \Log::info("📣 Memulai proses statusDonasi() pada " . now());
+    // public function statusDonasi()
+    // {
+    //     \Log::info("📣 Memulai proses statusDonasi() pada " . now());
 
-        // Ambil barang yang sudah lewat 7 hari & status masih 'Tersedia'
-        $barangList = Barang::with('penitip')
-            ->where('tanggal_akhir', '>=', Carbon::now()->subDays(7))
-            ->where('status', 'Tersedia')
-            ->get();
+    //     // Ambil barang yang sudah lewat 7 hari & status masih 'Tersedia'
+    //     $barangList = Barang::with('penitip')
+    //         ->where('tanggal_akhir', '>=', Carbon::now()->subDays(7))
+    //         ->where('status', 'Tersedia')
+    //         ->get();
 
-        foreach ($barangList as $barang) {
-            $barang->status = 'Donasi';
-            $barang->save();
+    //     foreach ($barangList as $barang) {
+    //         $barang->status = 'Donasi';
+    //         $barang->save();
 
-            \Log::info("✅ Barang {$barang->nama_barang} status diubah jadi Donasi");
+    //         \Log::info("✅ Barang {$barang->nama_barang} status diubah jadi Donasi");
 
-            // Kirim notifikasi ke penitip
-            $penitip = $barang->penitip;
+    //         // Kirim notifikasi ke penitip
+    //         $penitip = $barang->penitip;
 
-            if ($penitip) {
-                $title = "Barang anda telah di Donasi";
-                $message = "Barang '{$barang->nama_barang}' telah melebihi 7 hari dan telah di donasi.";
+    //         if ($penitip) {
+    //             $title = "Barang anda telah di Donasi";
+    //             $message = "Barang '{$barang->nama_barang}' telah melebihi 7 hari dan telah di donasi.";
 
-                try {
-                    $penitip->notify(new MobileNotif($title, $message));
-                    \Log::info("Mengirim notif ke penitip {$penitip->id_penitip} dengan token {$penitip->fcm_token}");
-                    \Log::info("📲 Notifikasi dikirim ke penitip ID {$penitip->id_penitip}");
-                } catch (\Exception $e) {
-                    \Log::error("❌ Gagal kirim notifikasi: " . $e->getMessage());
-                }
-            }
-        }
+    //             try {
+    //                 $penitip->notify(new MobileNotif($title, $message));
+    //                 \Log::info("Mengirim notif ke penitip {$penitip->id_penitip} dengan token {$penitip->fcm_token}");
+    //                 \Log::info("📲 Notifikasi dikirim ke penitip ID {$penitip->id_penitip}");
+    //             } catch (\Exception $e) {
+    //                 \Log::error("❌ Gagal kirim notifikasi: " . $e->getMessage());
+    //             }
+    //         }
+    //     }
 
-        return response()->json(['message' => 'Status barang diperbarui dan notifikasi dikirim']);
-    }
+    //     return response()->json(['message' => 'Status barang diperbarui dan notifikasi dikirim']);
+    // }
 
 
     public function index()
