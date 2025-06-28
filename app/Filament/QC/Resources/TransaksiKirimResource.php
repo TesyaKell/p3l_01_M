@@ -129,13 +129,15 @@ class TransaksiKirimResource extends Resource
                         DateTimePicker::make('tanggal_ambil_kirim')
                             ->label('Jadwal Pengiriman')
                             ->required()
-                            ->withoutSeconds()
+                            ->native(false)
                             ->displayFormat('d/m/Y H:i')
                             ->format('Y-m-d H:i:s')
                             ->timezone('Asia/Jakarta')
                             ->minDate(now())
-                            ->native(false)
-                            ->helperText('Pilih tanggal dan waktu pengiriman (jam kerja: 08:00 - 17:00)'),
+                            ->seconds(false)
+                            ->minuteStep(30)
+                            ->default(now()->addHours(2)->format('Y-m-d H:i:s'))
+                            ->helperText('Pilih tanggal dan waktu pengiriman (jam kerja: 08:00 - 17:00, interval 30 menit)'),
 
                         Select::make('id_kurir_pegawai')
                             ->label('Pilih Kurir')
@@ -156,6 +158,16 @@ class TransaksiKirimResource extends Resource
                             Notification::make()
                                 ->title('Waktu pengiriman tidak valid')
                                 ->body('Pengiriman hanya dapat dijadwalkan antara jam 08:00 - 17:00.')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
+                        // Validasi menit hanya 00 atau 30
+                        if (!in_array($jadwal->minute, [0, 30])) {
+                            Notification::make()
+                                ->title('Waktu tidak valid')
+                                ->body('Waktu hanya dapat dijadwalkan pada interval 30 menit (contoh: 08:00, 08:30, 09:00).')
                                 ->danger()
                                 ->send();
                             return;
@@ -223,13 +235,15 @@ class TransaksiKirimResource extends Resource
                         DateTimePicker::make('tanggal_ambil_kirim')
                             ->label('Jadwal Pengambilan')
                             ->required()
-                            ->withoutSeconds()
+                            ->native(false)
                             ->displayFormat('d/m/Y H:i')
                             ->format('Y-m-d H:i:s')
                             ->timezone('Asia/Jakarta')
                             ->minDate(now())
-                            ->native(false)
-                            ->helperText('Pilih tanggal dan waktu pengambilan (jam kerja: 08:00 - 20:00)'),
+                            ->seconds(false)
+                            ->minuteStep(30)
+                            ->default(now()->addHours(2)->format('Y-m-d H:i:s'))
+                            ->helperText('Pilih tanggal dan waktu pengambilan (jam kerja: 08:00 - 20:00, interval 30 menit)'),
 
                     ])->action(function ($record, array $data) {
                         $jadwal = \Carbon\Carbon::parse($data['tanggal_ambil_kirim']);
@@ -240,6 +254,16 @@ class TransaksiKirimResource extends Resource
                             Notification::make()
                                 ->title('Waktu pengambilan tidak valid')
                                 ->body('Pengambilan hanya dapat dijadwalkan antara jam 08:00 - 20:00.')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
+                        // Validasi menit hanya 00 atau 30
+                        if (!in_array($jadwal->minute, [0, 30])) {
+                            Notification::make()
+                                ->title('Waktu tidak valid')
+                                ->body('Waktu hanya dapat dijadwalkan pada interval 30 menit (contoh: 08:00, 08:30, 09:00).')
                                 ->danger()
                                 ->send();
                             return;
