@@ -14,8 +14,7 @@ use Carbon\Carbon;
 use Filament\Tables\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\TimePicker;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -127,23 +126,9 @@ class TransaksiKirimResource extends Resource
                     ->icon('heroicon-o-truck')
                     ->color('info')
                     ->form([
-                        DatePicker::make('tanggal_kirim')
-                            ->label('Tanggal Pengiriman')
-                            ->required()
-                            ->native(false)
-                            ->displayFormat('d/m/Y')
-                            ->minDate(now())
-                            ->helperText('Pilih tanggal pengiriman'),
-
-                        TimePicker::make('waktu_kirim')
-                            ->label('Waktu Pengiriman')
-                            ->required()
-                            ->native(false)
-                            ->displayFormat('H:i')
-                            ->minuteStep(30)
-                            ->seconds(false)
-                            ->default('08:00')
-                            ->helperText('Pilih waktu pengiriman (08:00 - 17:00, interval 30 menit)'),
+                        DateTimePicker::make('tanggal_ambil_kirim')
+                            ->label('Jadwal Pengiriman')
+                            ->required(),
 
                         Select::make('id_kurir_pegawai')
                             ->label('Pilih Kurir')
@@ -151,53 +136,15 @@ class TransaksiKirimResource extends Resource
                                 'pegawai',
                                 'nama_pegawai',
                                 modifyQueryUsing: fn($query) => $query->where('kode_jabatan', 'J06')
-                            )
+                            ) // asumsi ada relasi ke model Kurir
                             ->searchable()
                             ->preload()
                             ->required(),
                     ])->action(function ($record, array $data) {
-                        try {
-                            // Gabungkan tanggal dan waktu dengan format yang benar
-                            $tanggal = $data['tanggal_kirim'];
-                            $waktu = $data['waktu_kirim'];
-
-                            // Parse tanggal dan waktu secara terpisah kemudian gabungkan
-                            $jadwal = \Carbon\Carbon::parse($tanggal . ' ' . $waktu);
-                            $now = \Carbon\Carbon::now();
-
-                            // Validasi waktu kerja (8:00 - 17:00)
-                            if ($jadwal->hour < 8 || $jadwal->hour >= 17) {
-                                Notification::make()
-                                    ->title('Waktu pengiriman tidak valid')
-                                    ->body('Pengiriman hanya dapat dijadwalkan antara jam 08:00 - 17:00.')
-                                    ->danger()
-                                    ->send();
-                                return;
-                            }
-
-                            // Validasi menit hanya 00 atau 30
-                            if (!in_array($jadwal->minute, [0, 30])) {
-                                Notification::make()
-                                    ->title('Waktu tidak valid')
-                                    ->body('Waktu hanya dapat dijadwalkan pada interval 30 menit (contoh: 08:00, 08:30, 09:00).')
-                                    ->danger()
-                                    ->send();
-                                return;
-                            }
-
-                            $record->tanggal_ambil_kirim = $jadwal;
-                            $record->id_kurir_pegawai = $data['id_kurir_pegawai'];
-                            $record->status = 'Dikirim';
-                            $record->save();
-
-                        } catch (\Exception $e) {
-                            Notification::make()
-                                ->title('Error')
-                                ->body('Terjadi kesalahan saat menyimpan jadwal: ' . $e->getMessage())
-                                ->danger()
-                                ->send();
-                            return;
-                        }
+                        $record->tanggal_ambil_kirim = $data['tanggal_ambil_kirim'];
+                        $record->id_kurir_pegawai = $data['id_kurir_pegawai'];
+                        $record->status = 'Dikirim';
+                        $record->save();
 
                         // Notifikasi untuk Kurir
                         $kurir = $record->pegawai;
@@ -253,77 +200,28 @@ class TransaksiKirimResource extends Resource
                     ->icon('heroicon-o-truck')
                     ->color('info')
                     ->form([
-                        DatePicker::make('tanggal_ambil')
-                            ->label('Tanggal Pengambilan')
-                            ->required()
-                            ->native(false)
-                            ->displayFormat('d/m/Y')
-                            ->minDate(now())
-                            ->helperText('Pilih tanggal pengambilan'),
-
-                        TimePicker::make('waktu_ambil')
-                            ->label('Waktu Pengambilan')
-                            ->required()
-                            ->native(false)
-                            ->displayFormat('H:i')
-                            ->minuteStep(30)
-                            ->seconds(false)
-                            ->default('08:00')
-                            ->helperText('Pilih waktu pengambilan (08:00 - 20:00, interval 30 menit)'),
+                        DateTimePicker::make('tanggal_ambil_kirim')
+                            ->label('Jadwal Pengambilan')
+                            ->required(),
 
                     ])->action(function ($record, array $data) {
-                        try {
-                            // Gabungkan tanggal dan waktu dengan format yang benar
-                            $tanggal = $data['tanggal_ambil'];
-                            $waktu = $data['waktu_ambil'];
+                        $jadwal = \Carbon\Carbon::parse($data['tanggal_ambil_kirim']);
+                        $now = \Carbon\Carbon::now();
 
-                            // Parse tanggal dan waktu secara terpisah kemudian gabungkan
-                            $jadwal = \Carbon\Carbon::parse($tanggal . ' ' . $waktu);
-                            $now = \Carbon\Carbon::now();
-
-                            // Validasi waktu kerja (8:00 - 20:00)
-                            if ($jadwal->hour < 8 || $jadwal->hour >= 20) {
-                                Notification::make()
-                                    ->title('Waktu pengambilan tidak valid')
-                                    ->body('Pengambilan hanya dapat dijadwalkan antara jam 08:00 - 20:00.')
-                                    ->danger()
-                                    ->send();
-                                return;
-                            }
-
-                            // Validasi menit hanya 00 atau 30
-                            if (!in_array($jadwal->minute, [0, 30])) {
-                                Notification::make()
-                                    ->title('Waktu tidak valid')
-                                    ->body('Waktu hanya dapat dijadwalkan pada interval 30 menit (contoh: 08:00, 08:30, 09:00).')
-                                    ->danger()
-                                    ->send();
-                                return;
-                            }
-
-                            // Jika sekarang lewat jam 20:00 dan tanggal pengambilan = hari ini, tolak
-                            if ($now->format('H') >= 20 && $jadwal->isSameDay($now)) {
-                                Notification::make()
-                                    ->title('Pengambilan tidak valid')
-                                    ->body('Pengambilan tidak bisa dijadwalkan di hari yang sama setelah jam 20:00.')
-                                    ->danger()
-                                    ->send();
-                                return;
-                            }
-
-                            // Simpan data pengambilan
-                            $record->tanggal_ambil_kirim = $jadwal;
-                            $record->status = 'Menunggu Pickup';
-                            $record->save();
-
-                        } catch (\Exception $e) {
+                        // Jika sekarang lewat jam 4 sore dan tanggal pengiriman = hari ini, tolak
+                        if ($now->format('H') >= 20 && $jadwal->isSameDay($now)) {
                             Notification::make()
-                                ->title('Error')
-                                ->body('Terjadi kesalahan saat menyimpan jadwal: ' . $e->getMessage())
+                                ->title('Pengambilan tidak valid')
+                                ->body('Pengambilan tidak bisa dijadwalkan di hari yang sama setelah jam 20:00.')
                                 ->danger()
                                 ->send();
                             return;
                         }
+
+                        // Simpan data pengiriman
+                        $record->tanggal_ambil_kirim = $jadwal;
+                        $record->status = 'Menunggu Pickup';
+                        $record->save();
 
                         // Notifikasi ke pembeli
                         if ($record->pembeli && filled($record->pembeli->fcm_token)) {
@@ -422,31 +320,20 @@ class TransaksiKirimResource extends Resource
                                 ));
                             }
                         }
-                        $pembeli = Pembeli::where('id_pembeli', $record->id_pembeli)->first();
-
-                        if (!$pembeli) {
-                            Notification::make()
-                                ->title('Error')
-                                ->body('Data pembeli tidak ditemukan.')
-                                ->danger()
-                                ->send();
-                            return;
-                        }
+                        $pembeli = Pembeli::where('id_pembeli', $record->id_pembeli)->get();
 
                         $poinSebelum = $pembeli->poin ?? 0;
                         $poinDasar = floor($totalHarga / 10000);
                         $bonusPoin = $totalHarga > 500000 ? floor($poinDasar * 0.2) : 0;
                         $totalPoinDapat = $poinDasar + $bonusPoin;
 
-                        $tukarPoin = $record->tukar_poin ?? 0;
+                        $tukarPoin = $record->tukar_poin;
                         $poinSetelah = max(0, $poinSebelum + $totalPoinDapat - $tukarPoin);
 
-                        $record->update([
-                            'poin_sebelum' => $poinSebelum,
-                            'tambah_poin' => $totalPoinDapat,
-                            'poin_setelah' => $poinSetelah,
-                            'tukar_poin' => $tukarPoin,
-                        ]);
+                        $record->poin_sebelum = $poinSebelum;
+                        $record->tambah_poin = $totalPoinDapat;
+                        $record->poin_setelah = $poinSetelah;
+                        $record->tukar_poin = $tukarPoin;
 
                         $pembeli->update([
                             'poin' => $poinSetelah
