@@ -56,16 +56,16 @@
                 class="btn {{ ($activeStatus ?? '') == 'x' ? 'btn-primary' : 'btn-outline-primary' }}">
                 All
             </a>
-            <a href="{{ route('historyBarang', ['status' => 'tersedia', 'id_penitip' => $penitipUser->id_penitip]) }}"
-                class="btn {{ ($activeStatus ?? '') == 'tersedia' ? 'btn-primary' : 'btn-outline-primary' }}">
+            <a href="{{ route('historyBarang', ['status' => 'Tersedia', 'id_penitip' => $penitipUser->id_penitip]) }}"
+                class="btn {{ ($activeStatus ?? '') == 'Tersedia' ? 'btn-primary' : 'btn-outline-primary' }}">
                 Tersedia
             </a>
-            <a href="{{ route('historyBarang', ['status' => 'terdonasi', 'id_penitip' => $penitipUser->id_penitip]) }}"
-                class="btn {{ ($activeStatus ?? '') == 'terdonasi' ? 'btn-primary' : 'btn-outline-primary' }}">
-                Terdonasi
+            <a href="{{ route('historyBarang', ['status' => 'Didonasikan', 'id_penitip' => $penitipUser->id_penitip]) }}"
+                class="btn {{ ($activeStatus ?? '') == 'Didonasikan' ? 'btn-primary' : 'btn-outline-primary' }}">
+                Didonasikan
             </a>
-            <a href="{{ route('historyBarang', ['status' => 'terjual', 'id_penitip' => $penitipUser->id_penitip]) }}"
-                class="btn {{ ($activeStatus ?? '') == 'terjual' ? 'btn-primary' : 'btn-outline-primary' }}">
+            <a href="{{ route('historyBarang', ['status' => 'Terjual', 'id_penitip' => $penitipUser->id_penitip]) }}"
+                class="btn {{ ($activeStatus ?? '') == 'Terjual' ? 'btn-primary' : 'btn-outline-primary' }}">
                 Terjual
             </a>
             <form class="d-flex mx-auto search-bar"

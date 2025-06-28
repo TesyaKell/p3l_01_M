@@ -466,7 +466,7 @@ class BarangController extends Controller
         $barang = Barang::where('kode_barang', $id)->firstOrFail();
         $barang->update([
             'tanggal_akhir' => Carbon::parse($barang->tanggal_akhir)->addDays(30),
-            'tanggal_batas' => Carbon::parse($barang->tanggal_)->addDays(30),
+            'tanggal_batas' => Carbon::parse($barang->tanggal_batas)->addDays(30),
             'opsi' => 'Diperpanjang',
         ]);
         $id_penitip = $barang->id_penitip;
