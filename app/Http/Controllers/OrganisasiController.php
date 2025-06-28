@@ -22,7 +22,7 @@ class OrganisasiController extends Controller
             $lastNumber = Organisasi::withTrashed()
                 ->select('id_organisasi')
                 ->get()
-                ->map(fn ($item) => (int) substr($item->id_organisasi, 3))
+                ->map(fn($item) => (int) substr($item->id_organisasi, 3))
                 ->sortDesc()
                 ->first();
 
@@ -43,7 +43,7 @@ class OrganisasiController extends Controller
             'email' => 'required|string|email|max:255|unique:organisasi',
             'password' => 'required|string|min:2|confirmed',
             'no_telp' => 'required|string|max:20',
-            'alamat' => 'required|string|max:255',
+            'alamat' => 'required|string|max:500',
         ]);
 
         $verify_key = Str::random(75);

@@ -190,6 +190,10 @@
                         placeholder="Enter phone number">
                 </div>
                 <div class="mb-3">
+                    <label for="alamat" class="form-label">Address</label>
+                    <textarea class="form-control" id="alamat" name="alamat" rows="3" placeholder="Enter organization address"></textarea>
+                </div>
+                <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
                     <input type="password" class="form-control" id="password" name="password"
                         placeholder="Enter your password">
