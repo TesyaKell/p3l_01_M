@@ -18,36 +18,53 @@
     <style>
         body {
             background: #e9c8ce;
-            height: 100vh;
+            min-height: 100vh;
+            width: 100vw;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: 'Quicksand', sans-serif;
+            overflow-x: hidden;
         }
 
         .wrapper {
             display: flex;
             gap: 2rem;
-            max-width: 1000px;
+            max-width: 1300px;
             width: 100%;
             padding: 20px;
         }
 
         .image-card {
-            flex: 1;
+            flex: 1.2;
+            min-width: 650px;
+            min-height: 450px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
             background-color: #f8f9fa;
         }
 
+        .image-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
         .register-card {
             flex: 1;
-            max-width: 400px;
-            max-height: 600px;
+            max-width: 500px;
+            max-height: 90vh;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             background-color: white;
             padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            padding-left: 2rem;
         }
 
         .image-card img {
@@ -132,6 +149,36 @@
             width: auto;
             margin-right: 10px;
         }
+
+        .form-container {
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 8px;
+        }
+
+        /* Custom scrollbar styling */
+        .form-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .form-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .form-container::-webkit-scrollbar-thumb {
+            background: #e84393;
+            border-radius: 10px;
+        }
+
+        .form-container::-webkit-scrollbar-thumb:hover {
+            background: #d63384;
+        }
+
+        .form-header {
+            flex-shrink: 0;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 
@@ -168,51 +215,55 @@
                 </div>
             @endif
 
-            <h3 class="text-center mb-4 fw-bold" style="color: #504f4f;">
-                {{ isset($role) ? 'Register as ' . ucfirst($role) : 'Welcome to ReUsMart' }}
-            </h3>
+            <div class="form-header">
+                <h3 class="text-center mb-0 fw-bold" style="color: #504f4f;">
+                    {{ isset($role) ? 'Register as ' . ucfirst($role) : 'Welcome to ReUsMart' }}
+                </h3>
+            </div>
 
-            <form method="post" action="{{ route('register.organisasi.post') }}">
-                @csrf
-                <div class="mb-3">
-                    <label for="nama_organisasi" class="form-label">Organization Name</label>
-                    <input type="text" class="form-control" id="nama_organisasi" name="nama_organisasi"
-                        placeholder="Enter organization name">
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email address</label>
-                    <input type="email" class="form-control" id="email" name="email"
-                        placeholder="Enter your email">
-                </div>
-                <div class="mb-3">
-                    <label for="no_telp" class="form-label">Phone Number</label>
-                    <input type="text" class="form-control" id="no_telp" name="no_telp"
-                        placeholder="Enter phone number">
-                </div>
-                <div class="mb-3">
-                    <label for="alamat" class="form-label">Address</label>
-                    <textarea class="form-control" id="alamat" name="alamat" rows="3" placeholder="Enter organization address"></textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password"
-                        placeholder="Enter your password">
-                </div>
-                <div>
-                    <label for="password_confirmation" class="form-label">Confirm Password</label>
-                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation"
-                        placeholder="Confirm your password">
-                </div>
+            <div class="form-container">
+                <form method="post" action="{{ route('register.organisasi.post') }}">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="nama_organisasi" class="form-label">Organization Name</label>
+                        <input type="text" class="form-control" id="nama_organisasi" name="nama_organisasi"
+                            placeholder="Enter organization name" value="{{ old('nama_organisasi') }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email"
+                            placeholder="Enter your email" value="{{ old('email') }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="no_telp" class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" id="no_telp" name="no_telp"
+                            placeholder="Enter phone number" value="{{ old('no_telp') }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="alamat" class="form-label">Address</label>
+                        <textarea class="form-control" id="alamat" name="alamat" rows="3" placeholder="Enter organization address">{{ old('alamat') }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password"
+                            placeholder="Enter your password">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password_confirmation" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="password_confirmation"
+                            name="password_confirmation" placeholder="Confirm your password">
+                    </div>
 
-                <div class="d-grid gap-2 mb-4">
-                    <button type="submit" class="btn btn-primary mt-3">Register</button>
-                </div>
+                    <div class="d-grid gap-2 mb-4">
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </div>
 
-                <div class="text-center">
-                    <p><a class="link-opacity-10" href="{{ route('login.organisasi') }}">Already have an account?
-                            Login</a></p>
-                </div>
-            </form>
+                    <div class="text-center mb-3">
+                        <p><a class="link-opacity-10" href="{{ route('login.organisasi') }}">Already have an account?
+                                Login</a></p>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </body>
