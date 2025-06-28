@@ -14,7 +14,8 @@ use Carbon\Carbon;
 use Filament\Tables\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Forms;
-use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -126,18 +127,23 @@ class TransaksiKirimResource extends Resource
                     ->icon('heroicon-o-truck')
                     ->color('info')
                     ->form([
-                        DateTimePicker::make('tanggal_ambil_kirim')
-                            ->label('Jadwal Pengiriman')
+                        DatePicker::make('tanggal_kirim')
+                            ->label('Tanggal Pengiriman')
                             ->required()
                             ->native(false)
-                            ->displayFormat('d/m/Y H:i')
-                            ->format('Y-m-d H:i:s')
-                            ->timezone('Asia/Jakarta')
+                            ->displayFormat('d/m/Y')
                             ->minDate(now())
-                            ->seconds(false)
+                            ->helperText('Pilih tanggal pengiriman'),
+
+                        TimePicker::make('waktu_kirim')
+                            ->label('Waktu Pengiriman')
+                            ->required()
+                            ->native(false)
+                            ->displayFormat('H:i')
                             ->minuteStep(30)
-                            ->default(now()->addHours(2)->format('Y-m-d H:i:s'))
-                            ->helperText('Pilih tanggal dan waktu pengiriman (jam kerja: 08:00 - 17:00, interval 30 menit)'),
+                            ->seconds(false)
+                            ->default('08:00')
+                            ->helperText('Pilih waktu pengiriman (08:00 - 17:00, interval 30 menit)'),
 
                         Select::make('id_kurir_pegawai')
                             ->label('Pilih Kurir')
@@ -150,7 +156,10 @@ class TransaksiKirimResource extends Resource
                             ->preload()
                             ->required(),
                     ])->action(function ($record, array $data) {
-                        $jadwal = \Carbon\Carbon::parse($data['tanggal_ambil_kirim']);
+                        // Gabungkan tanggal dan waktu
+                        $tanggal = $data['tanggal_kirim'];
+                        $waktu = $data['waktu_kirim'];
+                        $jadwal = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $tanggal . ' ' . $waktu . ':00');
                         $now = \Carbon\Carbon::now();
 
                         // Validasi waktu kerja (8:00 - 17:00)
@@ -232,21 +241,29 @@ class TransaksiKirimResource extends Resource
                     ->icon('heroicon-o-truck')
                     ->color('info')
                     ->form([
-                        DateTimePicker::make('tanggal_ambil_kirim')
-                            ->label('Jadwal Pengambilan')
+                        DatePicker::make('tanggal_ambil')
+                            ->label('Tanggal Pengambilan')
                             ->required()
                             ->native(false)
-                            ->displayFormat('d/m/Y H:i')
-                            ->format('Y-m-d H:i:s')
-                            ->timezone('Asia/Jakarta')
+                            ->displayFormat('d/m/Y')
                             ->minDate(now())
-                            ->seconds(false)
+                            ->helperText('Pilih tanggal pengambilan'),
+
+                        TimePicker::make('waktu_ambil')
+                            ->label('Waktu Pengambilan')
+                            ->required()
+                            ->native(false)
+                            ->displayFormat('H:i')
                             ->minuteStep(30)
-                            ->default(now()->addHours(2)->format('Y-m-d H:i:s'))
-                            ->helperText('Pilih tanggal dan waktu pengambilan (jam kerja: 08:00 - 20:00, interval 30 menit)'),
+                            ->seconds(false)
+                            ->default('08:00')
+                            ->helperText('Pilih waktu pengambilan (08:00 - 20:00, interval 30 menit)'),
 
                     ])->action(function ($record, array $data) {
-                        $jadwal = \Carbon\Carbon::parse($data['tanggal_ambil_kirim']);
+                        // Gabungkan tanggal dan waktu
+                        $tanggal = $data['tanggal_ambil'];
+                        $waktu = $data['waktu_ambil'];
+                        $jadwal = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $tanggal . ' ' . $waktu . ':00');
                         $now = \Carbon\Carbon::now();
 
                         // Validasi waktu kerja (8:00 - 20:00)
