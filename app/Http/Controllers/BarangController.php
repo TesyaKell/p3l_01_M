@@ -203,7 +203,7 @@ class BarangController extends Controller
 
         // Ambil barang yang sudah lewat 7 hari & status masih 'Tersedia'
         $barangList = Barang::with('penitip')
-            ->where('tanggal_akhir', '<=', Carbon::now()->subDays(7))
+            ->where('tanggal_akhir', '>=', Carbon::now()->subDays(7))
             ->where('status', 'Tersedia')
             ->get();
 
