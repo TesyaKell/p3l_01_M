@@ -66,7 +66,7 @@
                         </a>
                     </td> 
                     <td> 
-                        <form onsubmit="return confirm('Apakah Anda Yakin ?');" action="{{ route('destroy.penitip', $penitip->id_penitip)}}" method="POST"> 
+                        <form onsubmit="return confirm('Apakah Anda Yakin ?');" action="{{ route('destroy.penitip', [ 'id' => $penitip->id_penitip ])}}" method="POST"> 
                             @csrf 
                             @method('delete') 
                             <input type="hidden" name="id" value="{{ $penitip->id_penitip }}">

@@ -69,9 +69,9 @@
                 <a class="nav-link" href="{{ route('verifikasi.pembayaran') }}" target="cs-content">
                     <i class="me-1">🪙</i><span>Verifikasi</span>
                 </a>
-                <a class="nav-link" href="/">
+                <!-- <a class="nav-link" href="/">
                     <i class="me-1">🏠</i><span>Beranda</span>
-                </a>
+                </a> -->
                 <a class="nav-link" href="{{ route('claimMerc') }}" target="cs-content">
                     <i class="me-1">💬</i><span>Claim Merchandise</span>
                 </a>
