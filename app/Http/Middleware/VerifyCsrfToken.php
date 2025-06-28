@@ -2,9 +2,20 @@
 
 namespace App\Http\Middleware;
 
-class VerifyCsrfToken
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
+
+class VerifyCsrfToken extends Middleware
 {
     protected $except = [
         'livewire/upload-file',
     ];
+
+
+    public function handle($request, Closure $next)
+    {
+        return $next($request);
+    }
 }
