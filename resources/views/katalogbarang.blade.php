@@ -62,13 +62,13 @@
 
         <!-- Tombol Filter -->
         <div class="mb-4 d-flex gap-3">
-            <a href="{{ route('katalogbarang', ['status' => 'tersedia']) }}"
-                class="btn {{ ($activeStatus ?? '') == 'tersedia' ? 'btn-primary' : 'btn-outline-primary' }}">
+            <a href="{{ route('katalogbarang', ['status' => 'Tersedia']) }}"
+                class="btn {{ ($activeStatus ?? '') == 'Tersedia' ? 'btn-primary' : 'btn-outline-primary' }}">
                 Tersedia
             </a>
-            <a href="{{ route('katalogbarang', ['status' => 'terdonasi']) }}"
-                class="btn {{ ($activeStatus ?? '') == 'terdonasi' ? 'btn-primary' : 'btn-outline-primary' }}">
-                Terdonasi
+            <a href="{{ route('katalogbarang', ['status' => 'Didonasikan']) }}"
+                class="btn {{ ($activeStatus ?? '') == 'Didonasikan' ? 'btn-primary' : 'btn-outline-primary' }}">
+                Didonasikan
             </a>
         </div>
 
