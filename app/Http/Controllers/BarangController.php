@@ -432,12 +432,14 @@ class BarangController extends Controller
             if ($hMinus3 === $today) {
                 $title = "Masa Titip Barang {$item->nama_barang} Sisa 3 Hari Lagi";
                 $body = "Masa titip untuk {$item->nama_barang} sisa 3 hari, berakhir pada {$tanggalBatas}. Silakan ambil tindakan.";
+                \Log::info("barang sisa 3 hari {$hMinus3}");
             }
             // 2) Kapan today == tanggalBatas? (hari H)
             //    --> Kirim pesan “berakhir hari ini (tanggal_batas)”.
             elseif ($tanggalBatas === $today) {
                 $title = "Masa Titip Barang {$item->nama_barang} Berakhir Hari Ini!";
                 $body = "Masa titip untuk {$item->nama_barang} berakhir hari ini ({$tanggalBatas}). Silakan ambil barang di gudang.";
+                \Log::info("barang habis {$tanggalBatas}");
             } else {
                 // Bukan saat notifikasi (bukan H-3, bukan H), lanjutkan ke item berikut
                 continue;
