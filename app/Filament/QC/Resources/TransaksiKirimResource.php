@@ -313,6 +313,25 @@ class TransaksiKirimResource extends Resource
                             $record->status = 'Menunggu Pickup';
                             $record->save();
 
+                            // Notifikasi ke pembeli
+                            if ($record->pembeli && filled($record->pembeli->fcm_token)) {
+                                $record->pembeli->notify(new MobileNotif(
+                                    title: 'Pengambilan Dijadwalkan',
+                                    body: 'Barang Anda dapat diambil pada tanggal' . $jadwal->translatedFormat('l, d F Y H:i')
+                                ));
+                            }
+
+                            // Notifikasi ke semua penitip barang
+                            foreach ($record->detailTransaksi as $detail) {
+                                $barang = $detail->barang;
+                                if ($barang && filled($barang->penitip->fcm_token)) {
+                                    $barang->penitip->notify(new MobileNotif(
+                                        title: 'Barang Anda Akan Diambil',
+                                        body: 'Barang "' . $barang->nama_barang . '" dapat diambil pada ' . $jadwal->translatedFormat('d F Y')
+                                    ));
+                                }
+                            }
+
                         } catch (\Exception $e) {
                             Notification::make()
                                 ->title('Error')
